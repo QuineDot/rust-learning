@@ -1,0 +1,16 @@
+[book]
+author		= "QuineDot"
+title		= "Learning Rust"
+description	= "Advice for learning Rust"
+language	= "en"
+multilingual	= false
+src		= "src"
+
+[rust]
+edition = "2021"
+
+[output.html]
+git-repository-url = "https://github.com/QuineDot/rust-learning"
+default-theme = "dark"
+site-url = "/rust-learning/"
+fold.enable = true
