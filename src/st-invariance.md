@@ -5,8 +5,8 @@ Now let's consider nested references:
 * A `&'medium mut &'long mut U` coerces to a `&'short mut &'long mut U`...
     * ...but *not* to a `&'short mut &'short mut U`
 
-We say that `&mut T` is *invariant* in `T`, which means any lifetimes in `T` cannot change (grow or shrink) at all.  
-In the example, `T` is `&'long mut U`, and the `'long` cannot be changed.
+We say that `&mut T` is *invariant* in `T`, which means any lifetimes in `T` cannot change
+(grow or shrink) at all. In the example, `T` is `&'long mut U`, and the `'long` cannot be changed.
 
 Why not?  Consider this:
 ```rust
@@ -27,10 +27,19 @@ It's just part of the Rust learning experience.
 Let's look at one more property of nested references you may run into:
 * You can get a `&'long U` from a `&'short &'long U`
    * Just copy it out!
-* You cannot get a `&'long mut U` from a `&'short mut &'long mut U`
+* But you cannot get a `&'long mut U` from a `&'short mut &'long mut U`
    * You can only reborrow a `&'short mut U`
 
-(The reason is again to prevent memory unsafety.)
+The reason is again to prevent memory unsafety.
 
+Additionally,
+* You cannot get a `&'long U` or *any* `&mut U` from a `&'short &'long mut U`
+  * You can only reborrow a `&'short U`
 
+Recall that once a shared reference exist, any number of copies of it could
+simultaneously exist.  Therefore, so long as the outer shared reference exists
+(and could be used to observe `U`), the inner `&mut` must not be usable in a
+mutable or otherwise exclusive fashion.
 
+And once the outer reference expires, the inner `&mut` is active and must
+again be exclusive, so it must not be possible to obtain a `&'long U` either.

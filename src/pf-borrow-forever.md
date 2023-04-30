@@ -29,7 +29,6 @@ fn main() {
     // You can do this once and it's ok...
     example_1(&mut node_a);
     
-    
     let mut node_b = Node(&local);
     // ...but then you can't use the node directly ever again
     example_1(&mut node_b);

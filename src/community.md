@@ -7,9 +7,9 @@ asking for help, is a part of the process of building up that intuition.
 
 I personally learned a great deal by participating on the
 [Rust user's forum, URLO.](https://users.rust-lang.org/)  Another way you can
-build experience and broaded your intuition is by reading other's lifetime
+build experience and broaden your intuition is by reading other's lifetime
 questions on that forum, reading the replies to those questions, and trying
-to solve their problems -- or even just experiemnt with them! -- yourself.
+to solve their problems -- or even just experiment with them! -- yourself.
 
 By being an active participant, you can not only learn more, but will eventually
 be able to help out other users.
@@ -20,7 +20,7 @@ be able to help out other users.
 
 
 Even after I got my sea-legs, some of the more advanced lifetime and borrow-checker skills
-'ve developed came from solving other people's problems on this forum. Once you can answer
-ther's questions, you may still learn things if someone else comes along and provides a
+I've developed came from solving other people's problems on this forum. Once you can answer
+their questions, you may still learn things if someone else comes along and provides a
 different or better solution.
 

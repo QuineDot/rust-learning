@@ -8,7 +8,7 @@ Often the error indicates that non-`'static` references/types aren't allowed in 
 but sometimes it means that you should add an explicit lifetime, like `Box<dyn Trait + 'a>` or `Box<dyn Trait + '_>`.
 
 The latter will act like "normal" lifetime elision; for example, it will introduce a new anonymous lifetime
-parameter in function signatures.
+parameter as a function input parameter, or use the `&self` lifetime in return position.
 
 The reason the lifetime exists is that coercing values to `dyn Trait` erases their base type, including any
 lifetimes that it may contain.  But those lifetimes have to be tracked by the compiler somehow to ensure
