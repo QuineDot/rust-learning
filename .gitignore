@@ -12,3 +12,4 @@ target/
 # mdbook repo
 *~
 book/
+build

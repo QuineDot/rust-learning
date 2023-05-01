@@ -25,7 +25,7 @@
   - [Bound-related lifetimes "infect" each other](m-infect.md)
   - [`&mut` inputs don't "downgrade" to `&`](m-no-downgrades.md)
 - [Understand function lifetime parameters](fn-parameters.md)
-- [Borrow errors within a function](lifetime-analysis.md)
+- [Understand borrows within a function](lifetime-analysis.md)
 - [Learn some pitfalls and antipatterns](pitfalls.md)
   - [`dyn Trait` lifetimes and `Box<dyn Trait>`](pf-dyn.md)
   - [Conditional return of a borrow](pf-nll3.md)
