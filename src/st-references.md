@@ -10,6 +10,6 @@ The property holds for values whose type is a reference, but it doesn't always h
 For example, we'll soon see that this property doesn't always hold for the lifetime of a reference
 nested within another reference.  When the property doesn't hold, it's usually due to *invariance*.
 
-Even if you never really think about covariance, you'll grow an intuition for it -- so much for so 
+Even if you never really think about covariance, you'll grow an intuition for it -- so much for so
 that you'll eventually be surprised when you encounter invariance and the property doesn't hold.
 We'll look at some cases soon.

@@ -39,7 +39,7 @@ one possibility and you will just need to make a trivial change:
 +    fn new(s: &str) -> Foo<'_> {
 ```
 But often, in my experience, one of the error sites will be part of the problem
-you're dealing with.  
+you're dealing with.
 
 
 

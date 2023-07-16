@@ -5,7 +5,7 @@ Here's a brief introduction to the lifetime bounds you may see on `fn` declarati
 ## Bounds between lifetimes
 
 A `'a: 'b` bound means, roughly speaking, `'long: 'short`.
-It's often read as "`'a` outlives `'b`" and it sometimes called an "outlives bound" or "outlives relation". 
+It's often read as "`'a` outlives `'b`" and it sometimes called an "outlives bound" or "outlives relation".
 
 I personally also like to read it as "`'a` is valid for (at least) `'b`".
 

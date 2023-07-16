@@ -28,12 +28,12 @@ fn main() {
     let mut node_a = Node(&local);
     // You can do this once and it's ok...
     example_1(&mut node_a);
-    
+
     let mut node_b = Node(&local);
     // ...but then you can't use the node directly ever again
     example_1(&mut node_b);
     println!("{node_b:?}");
-    
+
     let mut node_c = DroppingNode(&local);
     // And this doesn't work at all
     example_2(&mut node_c);

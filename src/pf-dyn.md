@@ -38,3 +38,6 @@ fn three<'a, T: Trait + 'a>(t: T) -> Box<dyn Trait + 'a> {
     Box::new(t)
 }
 ```
+
+For a more in-depth exploration,
+[see this section of the `dyn Trait` tour.](./dyn-elision.md)

@@ -11,5 +11,11 @@ the growing pains of learning Rust.
 
 ## [Practical suggestions for building intuition around borrow errors](lifetime-intuition.md)
 
-In this section we outlines the basics of understanding lifetimes and borrowing for
+In this section we outline the basics of understanding lifetimes and borrowing for
 those who are struggling with understanding borrow check errors.
+
+## [A tour of `dyn Trait`](./dyn-trait.md)
+
+In this section we explore what `dyn Trait` is and is not, go over its limitations
+and strengths, deep dive on how lifetimes work with `dyn Trait`, provide some
+common `dyn Trait` recipes, and more.

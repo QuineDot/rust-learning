@@ -22,7 +22,7 @@ references to the same value.
 # fn main() {
 let mut local = "Hello".to_string();
 
-// Creating a using a shared reference
+// Creating and using a shared reference
 let x = &local;
 println!("{x}");
 
@@ -41,11 +41,11 @@ any other existing references must cease to be valid.
 ### Borrows are often implicit
 
 Here's the example again, only slightly rewritten.
-```rust 
+```rust
 # fn main() {
 let mut local = "Hello".to_string();
 
-// Creating a using a shared reference
+// Creating and using a shared reference
 let x = &local;
 println!("{x}");
 
@@ -69,11 +69,11 @@ just uses that involve references or just uses that involve lifetimes.
 For example, moving a value invalidates any references to the
 value, as otherwise those references would dangle.
 
-```rust 
+```rust
 # fn main() {
 let local = "Hello".to_string();
 
-// Creating a using a shared reference 
+// Creating and using a shared reference
 let x = &local;
 println!("{x}");
 
@@ -89,7 +89,7 @@ println!("{x}");
 
 The effects of a value going out of scope are similar to moving the
 value: all references are invalidated.
-```rust 
+```rust
 # fn main() {
 let x;
 {
@@ -149,7 +149,7 @@ Rust tracks borrows of struct fields individually, so the borrows of
 #     left: String,
 #     right: String,
 # }
-# 
+#
 impl Pair {
     fn foo(&mut self) {
         let left = &mut self.left;
@@ -217,7 +217,7 @@ The examples are non-exhaustive 🙂.
 
 ### Reborrowing
 
-[As mentioned before,](./st-reborrow.html) reborrows are what make `&mut` reasonable to use.
+[As mentioned before,](./st-reborrow.md) reborrows are what make `&mut` reasonable to use.
 In fact, they have other special properties you can't emulate with a custom struct and
 trait implementations.  Consider this example:
 ```rust
@@ -259,13 +259,13 @@ impl Pair {
         let left = &mut self.left;
         let right = &self.right;
         left.push('x');
-        
+
         // Shared reborrow of all of `self`, which "covers" all fields
         let this = &*self;
-        
+
         // It invalidates any exclusive reborrows, so this will fail...
         // println!("{left}");
-        
+
         // But it does not invalidate shared reborrows!
         println!("{right}");
     }
@@ -292,14 +292,14 @@ This is the result of a feature called two-phase borrows, which is intended to m
 more ergonomic:
 ```rust
 # fn main() {
-let mut v = vec![0];      
+let mut v = vec![0];
 v.push(v.len());
 # }
 ```
 [In the olden days,](https://rust.godbolt.org/z/966j4Eh1f) you would have had to write it like so:
 ```rust
 # fn main() {
-let mut v = vec![0];  
+let mut v = vec![0];
 let len = v.len();
 v.push(len);
 # }

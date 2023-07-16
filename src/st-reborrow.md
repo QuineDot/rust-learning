@@ -14,7 +14,7 @@ fn foo<'v>(v: &'v mut Vec<i32>) {
 ```
 
 You're not moving `v: &mut Vec<i32>` when you pass it to `push` on line 1, or you couldn't print it on line 2.
-But you're not copying it either, because `&mut _` does not implement `Copy`. 
+But you're not copying it either, because `&mut _` does not implement `Copy`.
 Instead `*v` is reborrowed for some shorter lifetime than `'v`, which ends on line 1.
 
 An explicit reborrow would look like this:

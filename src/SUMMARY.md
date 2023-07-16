@@ -38,4 +38,28 @@
   - [Advice to add a static bound](c-static.md)
 - [Circle back](circle.md)
 
+---
 
+# A tour of `dyn Trait`
+
+- [Sectional introduction](dyn-trait.md)
+- [`dyn Trait` overview](dyn-trait-overview.md)
+- [`dyn Trait` implementations](dyn-trait-impls.md)
+- [`dyn Trait` coercions](dyn-trait-coercions.md)
+- [`dyn` safety (object safety)](dyn-safety.md)
+- [`dyn Trait` lifetimes](dyn-trait-lifetime.md)
+  - [Variance](dyn-covariance.md)
+  - [Elision rules](dyn-elision.md)
+    - [Basic guidelines](dyn-elision-basic.md)
+    - [Advanced guidelines](dyn-elision-advanced.md)
+    - [Trait bound interactions](dyn-elision-trait-bounds.md)
+    - [Citations](dyn-elision-citations.md)
+- [`dyn Trait` vs. alternatives](dyn-trait-vs.md)
+- [`dyn Trait` examples](dyn-trait-examples.md)
+  - [Combining traits](dyn-trait-combining.md)
+  - [`impl Trait for Box<dyn Trait>`](dyn-trait-box-impl.md)
+  - [Cloneable `Box<dyn Trait>`](dyn-trait-clone.md)
+  - [`dyn PartialEq`](dyn-trait-eq.md)
+  - [Generalizing borrows](dyn-trait-borrow.md)
+  - [Erased traits](dyn-trait-erased.md)
+- [`dyn Any`](dyn-any.md)
