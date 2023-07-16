@@ -29,8 +29,8 @@ There's generally no way to implement these traits if the type you want to
 return is not contained within `Self` (except for returning a reference to
 some static value or similar, which is rarely what you want).
 
-However, sometimes you have a custom borrowing type which is not actually
-contained your owning type:
+However, sometimes you have a custom borrowing type which is *not*
+actually contained within your owning type:
 ```rust
 // We wish we could implement `Borrow<DataRef<'?>>`, but we can't
 pub struct Data {
@@ -50,12 +50,12 @@ pub struct DataMut<'a> {
 ```
 
 This can be problematic when interacting with libraries and data structures
-such as [`std::collections::HashMap`,](https://doc.rust-lang.org/std/collections/struct.HashMap.html)
-which [rely on the `Borrow` trait](https://doc.rust-lang.org/std/collections/struct.HashMap.html#method.get)
+such as [`std::collections::HashSet`,](https://doc.rust-lang.org/std/collections/struct.HashSet.html)
+which [rely on the `Borrow` trait](https://doc.rust-lang.org/std/collections/struct.HashSet.html#method.contains)
 to be able to look up entries without taking ownership.
 
 One way around this problem is to use
-[a different library or type which is more flexible.](https://docs.rs/hashbrown/0.14.0/hashbrown/struct.HashMap.html#method.get)
+[a different library or type which is more flexible.](https://docs.rs/hashbrown/0.14.0/hashbrown/struct.HashSet.html#method.contains)
 However, it's also possible to tackle the problem with a bit of indirection and type erasure.
 
 ## Your types contain a borrower
@@ -135,10 +135,10 @@ impl<'a, 'b: 'a> Borrow<dyn Lend + 'a> for DataRef<'b> {
 ```
 
 This gives us a common `Borrow` type for both our owning and
-custom borrowing data structures.  To look up borrowed keys
-in a `HashMap`, for example, we can cast a `&DataRef<'_>` to
-a `&dyn Lend` and pass that to `map.get`; the `HashMap` can
-hash the `dyn Lend` and then borrow the `Data` keys as
+custom borrowing data structures.  To look up borrowed entries
+in a `HashSet`, for example, we can cast a `&DataRef<'_>` to
+a `&dyn Lend` and pass that to `set.contains`; the `HashSet` can
+hash the `dyn Lend` and then borrow the owned `Data` entries as
 `dyn Lend` as well, in order to do the necessary lookup
 comparisons.
 
@@ -153,7 +153,7 @@ to produce a concrete type that references our actual data.  We can
 use that to implement the functionality; there's no need for downcasting
 or any of that in order to implement the requisite traits for `dyn Lend`.
 We don't really *care* that `dyn Lend` will implement `PartialEq` and
-`Hash` per se, as that is just a means to an end: giving `HashMap` and
+`Hash` per se, as that is just a means to an end: giving `HashSet` and
 friends a way to compare our custom concrete borrowing types despite the
 `Borrow` trait bound.
 
@@ -237,8 +237,8 @@ impl std::hash::Hash for dyn Lend + '_ {
 ```
 
 Whew, that was a lot of boilerplate.  But we're finally at a
-place where we can store `Data` in a `HashMap` and look up
-keys when we only have a `DataRef`:
+place where we can store `Data` in a `HashSet` and look up
+entries when we only have a `DataRef`:
 ```rust,ignore
 use std::collections::HashSet;
 let set = [
