@@ -21,7 +21,7 @@ your typical covariant lifetime.
 
 ## Unsizing coercions in invariant context
 
-[Earlier we noted that](./dyn-trait-coercions.md#the-reflective-case)
+[Earlier we noted that](./dyn-trait-coercions.md#the-reflexive-case)
 you can cast a `dyn Trait + 'a` to a `dyn Trait + 'b`, where `'a: 'b`.
 Well, isn't that just covariance?  Not quite -- when we noted this before,
 we were talking about an *unsizing coercion* between two `dyn Trait + '_`.
@@ -103,4 +103,15 @@ fn baz(bx: &mut Box<dyn Trait /* + 'static */>) {
 Here we reborrow `**bx` as `&'a mut (dyn Trait + 'static)` for some
 short-lived `'a`, and then coerce that to a `&'a mut (dyn Trait + 'a)`.
 
+## Variance in nested context
 
+The supertype coercion of going from `dyn Trait + 'a` to `dyn Trait + 'b`
+when `'a: 'b` *can* happen in deeply nested contexts, provided the trait
+object is still in a covariant context.  So unlike the `*mut` version
+above, this version compiles:
+```rust
+# trait Trait {}
+fn foo<'l: 's, 's>(v: *const Box<dyn Trait + 'l>) -> *const Box<dyn Trait + 's> {
+    v
+}
+```

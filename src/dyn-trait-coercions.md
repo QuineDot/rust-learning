@@ -189,7 +189,7 @@ requires `dyn Trait + Send`).  The coercion is necessary as, again, these are
 Although no change to the vtable is required, this coercion can still
 [not happen in a nested context.](#no-nested-coercions)
 
-## The reflective case
+## The reflexive case
 
 You can cast `dyn Trait` to `dyn Trait`.
 
@@ -198,8 +198,11 @@ where `'a: 'b`.  This is important for
 [how borrowing works with `dyn Trait + '_`.](./dyn-covariance.md#unsizing-coercions-in-invariant-context)
 
 As lifetimes are erased during compilation, the vtable is the same regardless of the lifetime.
-Despite that, this coercion can still
-[not happen in a nested context.](#no-nested-coercions)
+Despite that, this unsizing coercion can still [not happen in a nested context.](#no-nested-coercions)
+
+However, [in a future section](http://127.0.0.1:3000/dyn-covariance.html) we'll see
+how variance can allow shortening the trait object lifetime even in nested context,
+provided that context is also covariant.
 
 ## Supertrait upcasting
 
