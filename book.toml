@@ -11,6 +11,6 @@ edition = "2021"
 
 [output.html]
 git-repository-url = "https://github.com/QuineDot/rust-learning"
-default-theme = "dark"
+default-theme = "navy"
 site-url = "/rust-learning/"
 fold.enable = true
