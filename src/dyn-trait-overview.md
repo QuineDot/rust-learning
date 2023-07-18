@@ -89,10 +89,13 @@ fn bar<T: Trait + ?Sized>(t: &T) {
 }
 ```
 
-
 ### `dyn Trait` is neither a generic nor dynamically typed
 
 Given a concrete lifetime `'a`, `dyn Trait + 'a` is a statically known type.
+The *erased base type* is not statically known, but don't let this confuse
+you: the `dyn Trait` itself is its own distinct type and that type is known
+at compile time.
+
 For example, consider these two function signatures:
 ```rust
 # trait Trait {}
@@ -146,6 +149,11 @@ implements `Display`.  Trait bounds are needed for generics, not concrete types.
 but deref coercion usually takes care of that case. For many `std` traits,
 the trait is explicitly implemented for `Box<dyn Trait>` as well;
 [we'll also explore what that can look like.](./dyn-trait-box-impl.md))
+
+As a concrete type, you can also implement methods on `dyn Trait`
+(provided `Trait` is local to your crate), and even implement *other*
+traits for `dyn Trait`
+(as we will see in [some of the examples](./dyn-trait-examples.md)).
 
 ### `dyn Trait` is not a supertype
 

@@ -277,6 +277,19 @@ something like the `non_dyn_dispatchable` override attempted above.
 See [issue 51402](https://github.com/rust-lang/rust/issues/51402) for more
 information.
 
+Implementing methods on `dyn Trait` that don't attempt to shadow the
+methods of `Trait` does work, however.
+```rust
+#trait Trait {}
+impl dyn Trait + '_ {
+    fn some_other_method(&self) {}
+}
+
+fn bar(d: &dyn Trait) {
+    d.some_other_method();
+}
+```
+
 ## A niche exception to `dyn Trait: Trait`
 
 Some bounds on traits aren't checked until you try to utilize the trait,
