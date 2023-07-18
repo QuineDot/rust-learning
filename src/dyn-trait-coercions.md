@@ -202,7 +202,9 @@ Despite that, this unsizing coercion can still [not happen in a nested context.]
 
 However, [in a future section](http://127.0.0.1:3000/dyn-covariance.html) we'll see
 how variance can allow shortening the trait object lifetime even in nested context,
-provided that context is also covariant.
+provided that context is also covariant.  [The section after that about higher-ranked
+types](./dyn-hr.md) explores another lifetime-related coercion which could also be
+considered reflexive.
 
 ## Supertrait upcasting
 

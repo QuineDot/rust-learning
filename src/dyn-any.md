@@ -52,7 +52,7 @@ not unimaginable that all vtables will gain some lifetime-erased version of
 `TypeId`, but [related to some discussion below,](#why-static) this may not
 be as straightforward as it may sound.
 
-## Dowcasting methods are not trait methods
+## Downcasting methods are not trait methods
 
 Note that the *only* method available in the `Any` trait is `type_id`.
 [All of the downcasting methods](https://doc.rust-lang.org/std/any/trait.Any.html#implementations)
@@ -303,9 +303,9 @@ but an in-depth exploration is out of scope for this guide.
 
 ## A potential footgun around subtypes (subtitle: why not `const`?)
 
-Let's take a minute to finally talk about types that *do* have a sub and supertype
-relationship in Rust!  Types which are higher-ranked have this relationship.  For
-example:
+Let's take a minute to talk about types that *do* have a sub and supertype
+relationship in Rust!  Types which are [higher-ranked](./dyn-hr.md) have this
+relationship.  For example:
 ```rust
 // More explicitly, this is a `for<'any> fn(&'any str)` function pointer.
 // The type is higher-ranked over the lifetime.
@@ -319,7 +319,7 @@ let fp: fn(&'static str) = fp;
 ```
 
 And as it turns out, it is possible for two Rust types which are more than
-superficially syntactically different to be subtypes of one another.  Some
+superficially syntactically different to be *subtypes of one another.*  Some
 parts of the language consider the existence of such a relationship to mean
 that the two types are equal.  Let's say they are semantically equal.
 
@@ -348,6 +348,40 @@ How the language will evolve around this is unclear.  People want the `const` fe
 bad enough that [some version with caveats about false negatives](https://github.com/rust-lang/libs-team/issues/231)
 may be pursued.  Personally I feel making the type system consistent would be the
 better solution and worth waiting for.
+
+## More considerations around higher-ranked types
+
+Even if the issue discussed above gets resolved and Rust becomes consistent about
+what types are equal, [higher-ranked types](./dyn-hr.md) introduce some nuance to
+be aware of.  For example, when considering these two types:
+```rust
+trait Look<'s> {}
+type HR = dyn for<'any> Look<'any> + 'static;
+type ST = dyn Look<'static> + 'static;
+```
+`HR` is a *subtype* of `ST`, but not *the same type*.
+However, they both satisfy a `'static` bound:
+```rust
+#trait Look<'s> {}
+#type HR = dyn for<'any> Look<'any> + 'static;
+#type ST = dyn Look<'static> + 'static;
+fn assert_static<T: ?Sized + 'static>() {}
+
+assert_static::<HR>();
+assert_static::<ST>();
+```
+As `'static` types, they have `TypeId`s.  As distinct types, their
+`TypeId`s are different, even though one is a subtype of the other.
+
+And this in turn means that you can't stop thinking about sub-and-super types
+by simply applying a `'static` bound.  If you need to "disable" sub/super type
+coercions in a generic context for soundness, you must make that context invariant
+or take other steps to avoid a soundness hole, even if you have a `'static` bound.
+
+[See this issue](https://github.com/rust-lang/rust/issues/85863) for a real-life
+example of such a soundness hole, and
+[this comment in particular](https://github.com/rust-lang/rust/issues/85863#issuecomment-872536139)
+exploring the sub/super type relationships of higher-ranked function pointers.
 
 ## The representation of `TypeId`
 

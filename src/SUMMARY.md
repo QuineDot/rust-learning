@@ -49,6 +49,7 @@
 - [`dyn` safety (object safety)](dyn-safety.md)
 - [`dyn Trait` lifetimes](dyn-trait-lifetime.md)
   - [Variance](dyn-covariance.md)
+  - [Higher-ranked types](dyn-hr.md)
   - [Elision rules](dyn-elision.md)
     - [Basic guidelines](dyn-elision-basic.md)
     - [Advanced guidelines](dyn-elision-advanced.md)

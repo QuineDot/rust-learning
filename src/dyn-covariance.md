@@ -3,18 +3,20 @@
 The `dyn Trait` lifetime is covariant, like the outer lifetime of a
 reference.  This means that whenever it is in a covariant type position,
 longer lifetimes can be coerced into shorter lifetimes.
-
 ```rust
 # trait Trait {}
 fn why_be_static<'a>(bx: Box<dyn Trait + 'static>) -> Box<dyn Trait + 'a> {
     bx
 }
 ```
+The trait object with the longer lifetime is a subtype of the trait object with
+the shorter lifetime, so this is a form of supertype coercion.  [In the next
+section,](./dyn-hr.md) we'll look at another form of trait object subtyping.
 
-The idea is that the lifetime represents the region where it is still valid
-to call methods on the trait object.  Since it's valid to call methods anywhere
-in that region, it's also valid to restrict the region to some subset of itself
--- i.e. to coerce the lifetime to be shorter.
+The idea behind *why* trait object lifetimes are covariant is that the lifetime
+represents the region where it is still valid to call methods on the trait object.
+Since it's valid to call methods anywhere in that region, it's also valid to restrict
+the region to some subset of itself -- i.e. to coerce the lifetime to be shorter.
 
 However, it turns out that the `dyn Trait` lifetime is even more flexible than
 your typical covariant lifetime.

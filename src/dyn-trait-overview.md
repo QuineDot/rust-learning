@@ -182,6 +182,8 @@ name, still do not define a sub/supertype relationship).
 The *only* subtypes in Rust involve lifetimes and types which are
 higher-ranked over lifetimes.
 
+<small>(Pedantic self-correction: trait objects have lifetimes and thus [are supertypes in that sense.](./dyn-covariance.md) However that's not the same concept that most Rust learners get confused about; there is no supertype relationship with the implementing types.)</small>
+
 ### `dyn Trait` is not universally applicable
 
 We'll look at the details in their own sections, but in short, you cannot

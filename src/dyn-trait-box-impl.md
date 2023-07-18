@@ -57,7 +57,7 @@ Oh yeah, that last one.  [Remember what we said before?](dyn-trait-impls.md#boxd
 The compiler isn't going to just guess what to do here (and couldn't if,
 say, we needed a return value).  We can't move the `dyn Trait` out of
 the `Box` because it's unsized.  And we can't
-[downcast from `dyn Trait`](./dyn-any.md#dowcasting-methods-are-not-trait-methods)
+[downcast from `dyn Trait`](./dyn-any.md#downcasting-methods-are-not-trait-methods)
 either; even if we could, it would rarely help here, as we'd have to both
 impose a `'static` constraint and also know every type that implements our
 trait to attempt downcasting on each one (or have some other clever scehme
