@@ -158,7 +158,7 @@ RPITs and `dyn Trait` returns share some benefits for the function writer:
 - It simplifies complicated types, such as long iterator combinator chains
 
 `dyn Trait` does have some limitations and downsides:
-- Only one non-auto-trait is supportable without [subtype boilerplate](./dyn-trait-combining.md)
+- Only one non-auto-trait is supportable without [subtrait boilerplate](./dyn-trait-combining.md)
   - In contrast, you can return `impl Trait1 + Trait2`
 - Only `dyn`-safe traits are supportable
   - In contrast, you can return `impl Clone`
