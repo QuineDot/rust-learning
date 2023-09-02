@@ -223,8 +223,17 @@ dt.hi();
 <dyn Trait as Trait>::hi(dt);
 ```
 
-[This applies no matter how complicated the implementations are,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=66a0de00d42d915134f206ee73291136)
+[This even applies with more complicated implementations,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=66a0de00d42d915134f206ee73291136)
 and applies to the supertrait implementations for `dyn Trait` as well.
+
+[We'll see that this can be useful later.](./dyn-trait-erased.md)  But
+unfortunately, [there are some compilier bugs around the compiler
+implementation taking precedence over your blanket implementations.](https://github.com/rust-lang/rust/issues/57893#issuecomment-510690333)
+How those bugs are dealt with is yet to be determined; it's possible
+that certain blanket implementations will be disallowed, or that
+some traits will no longer be `dyn`-safe.  (The *general* pattern,
+such as the simple example above, is almost surely too widespread
+to be deprecated.)
 
 ## The implementation cannot be indirectly bypassed
 
