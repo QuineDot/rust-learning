@@ -147,7 +147,9 @@ a wide pointer in order to perform dynamic dispatch.
 So for `dyn Trait` to non-naively support unsized types, it would need need
 to examine at run-time how to construct a pointer to the erased base type:
 one possibility for thin pointers, and an additional possibility for each type
-of wide pointer supported.
+of wide pointer supported.  Not only that, but the metadata required (such as
+the length of the `str`) has to be stored *somewhere*, and that can't be in
+static memory like the vtable is.
 
 Instead, unsized base types are simply not supported.
 
