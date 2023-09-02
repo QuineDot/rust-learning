@@ -477,8 +477,14 @@ const S_CH: PhantomData<Box<dyn Halfie<'static, 'static> + 'static>> = CH;
 const S_CD: PhantomData<Box<dyn Double<'static, 'static> + 'static>> = CD;
 ```
 
-In a context where non-`'static` lifetimes can be named, those lifetimes
-act like early-bound lifetimes in function signatures.
+However, from Rust 1.64 forward, associated `const`s were allowed to use general
+elided lifetimes and the wildcard lifetime (as opposed to only elided
+trait object lifetimes).  [This was an accidental stabilization which
+will probably be removed or modified.](https://github.com/rust-lang/rust/issues/115010)
+
+In the meanwhile, elided lifetimes act like independent lifetime
+variables on the `impl` block.  Those in turn act like early-bound
+lifetimes in function signatures.
 ```rust
 #use core::marker::PhantomData;
 #trait Single<'a>: 'a + Send + Sync {}
@@ -491,7 +497,8 @@ impl<'a, 'b> L<'a, 'b> {
     const S_CS: PhantomData<Box<dyn Single<'a> + 'a>> = Self::CS;
 }
 ```
-Elided lifetimes are still inferred to be `'static`...
+
+Elided lifetimes can be inferred to be `'static` elsewhere...
 ```rust
 #use core::marker::PhantomData;
 #trait Single<'a>: 'a + Send + Sync {}
@@ -504,9 +511,9 @@ impl<'a, 'b> L<'a, 'b> {
     const S_SCS: PhantomData<Box<dyn Single<'static> + 'static>> = Self::SCS;
 }
 ```
-*...however,* this inference only seems to take effect after the
-definition itself for elided trait object lifetimes, as demonstrated
-by cases such as this being ambiguous:
+
+*...however,* it's really a free variable.  Therefore, cases such
+as this are considered ambiguous:
 ```rust
 #use core::marker::PhantomData;
 #trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
@@ -515,9 +522,9 @@ impl<'a, 'b> L<'a, 'b> {
     const EBCD: PhantomData<Box<dyn Double<'a, '_>>> = PhantomData;
 }
 ```
-...and cases such this saying that the reference lifetime is longer
-than the trait object, even when they have the same anonymous
-lifetime:
+...and cases such this are considered to be a borrow check violation,
+as there are no outlives relationships between the anonymously
+introduced lifetime parameters:
 ```rust
 #use core::marker::PhantomData;
 #trait Single<'a>: 'a + Send + Sync {}
@@ -527,6 +534,8 @@ impl<'a, 'b, 'r> R<'a, 'b, 'r> where 'a: 'r, 'b: 'r {
     const RECS: PhantomData<&'r dyn Single<'_>> = PhantomData;
 }
 ```
+(There is no implicit bound due to nesting the lifetimes because
+the nesting occurs in the body of the `impl` block and not the header.)
 
 ### `impl` headers
 
