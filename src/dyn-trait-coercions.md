@@ -120,6 +120,33 @@ Internally, which coercions are possible are determined by the
 trait, and the (compiler-implemented) `Unsize` trait, as discussed in the
 documentation.
 
+### Except when you can
+
+There are some material and some apparent exceptions where unsizing coercion
+can occur in a nested context.
+
+If you follow the link above, you'll see that [some types such as `Cell`
+implement `CoerceUnsized` in a recursive manner.](https://doc.rust-lang.org/std/ops/trait.CoerceUnsized.html#impl-CoerceUnsized%3CCell%3CU%3E%3E-for-Cell%3CT%3E)
+The idea is that `Cell` and the others have the same layout as their
+generic type parameter.  As a result, outer layers of `Cell` don't count
+as "nesting".
+```rust
+# use std::cell::Cell;
+# trait Trait {}
+// Fails :-(
+//fn coerce_vec<'a, T: Trait + 'a>(v: Vec<Box<T>>) -> Vec<Box<dyn Trait + 'a>> {
+//    v
+//}
+
+// Works! :-)
+fn coerce_cell<'a, T: Trait + 'a>(c: Cell<Box<T>>) -> Cell<Box<dyn Trait + 'a>> {
+    c
+}
+```
+
+We'll cover the apparent exceptions (which are actually just supertype
+coercions) [in an upcoming section.](http://127.0.0.1:3000/dyn-covariance.html#variance-in-nested-context)
+
 ## The `Sized` limitation
 
 Base types must meet a `Sized` bound in order to be able to be coerced to

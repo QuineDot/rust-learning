@@ -47,8 +47,10 @@ fn invariant_coercion<'m, 'long: 'short, 'short>(
 But as there are [no nested unsizing coercions,](./dyn-trait-coercions.md#no-nested-coercions)
 this version does not compile:
 ```rust,compile_fail
+# use std::cell::Cell;
 # trait Trait {}
-fn foo<'l: 's, 's>(v: *mut Box<dyn Trait + 'l>) -> *mut Box<dyn Trait + 's> {
+// Fails: `Cell<T>` is invariant in `T` and the `dyn Trait` is nested
+fn foo<'l: 's, 's>(v: Cell<Box<Box<dyn Trait + 'l>>>) -> Cell<Box<Box<dyn Trait + 's>>> {
     v
 }
 ```
@@ -109,11 +111,11 @@ short-lived `'a`, and then coerce that to a `&'a mut (dyn Trait + 'a)`.
 
 The supertype coercion of going from `dyn Trait + 'a` to `dyn Trait + 'b`
 when `'a: 'b` *can* happen in deeply nested contexts, provided the trait
-object is still in a covariant context.  So unlike the `*mut` version
+object is still in a covariant context.  So unlike the `Cell` version
 above, this version compiles:
 ```rust
 # trait Trait {}
-fn foo<'l: 's, 's>(v: *const Box<dyn Trait + 'l>) -> *const Box<dyn Trait + 's> {
+fn foo<'l: 's, 's>(v: Vec<Box<Box<dyn Trait + 'l>>>) -> Vec<Box<Box<dyn Trait + 's>>> {
     v
 }
 ```
