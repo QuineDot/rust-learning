@@ -145,7 +145,7 @@ fn coerce_cell<'a, T: Trait + 'a>(c: Cell<Box<T>>) -> Cell<Box<dyn Trait + 'a>> 
 ```
 
 We'll cover the apparent exceptions (which are actually just supertype
-coercions) [in an upcoming section.](http://127.0.0.1:3000/dyn-covariance.html#variance-in-nested-context)
+coercions) [in an upcoming section.](./dyn-covariance.md#variance-in-nested-context)
 
 ## The `Sized` limitation
 
@@ -229,7 +229,7 @@ where `'a: 'b`.  This is important for
 As lifetimes are erased during compilation, the vtable is the same regardless of the lifetime.
 Despite that, this unsizing coercion can still [not happen in a nested context.](#no-nested-coercions)
 
-However, [in a future section](http://127.0.0.1:3000/dyn-covariance.html) we'll see
+However, [in a future section](./dyn-covariance.md) we'll see
 how variance can allow shortening the trait object lifetime even in nested context,
 provided that context is also covariant.  [The section after that about higher-ranked
 types](./dyn-hr.md) explores another lifetime-related coercion which could also be
