@@ -32,6 +32,7 @@
   - [Borrowing something forever](pf-borrow-forever.md)
   - [`&'a mut self` and `Self` aliasing more generally](pf-self.md)
   - [Avoid self-referential structs](pf-meta.md)
+  - [`&'a Struct<'a>` and covariance](pf-shared-nested.md)
 - [Scrutinize compiler advice](compiler.md)
   - [Advice to change function signature when aliases are involved](c-signatures.md)
   - [Advice to add bound which implies lifetime equality](c-equality.md)

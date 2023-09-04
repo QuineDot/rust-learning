@@ -39,3 +39,5 @@ fn main() {
     example_2(&mut node_c);
 }
 ```
+
+We look at the shared version of this pattern (`&'a Thing<'a>`) [a little later.](pf-shared-nested.md)
