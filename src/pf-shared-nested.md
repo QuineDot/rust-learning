@@ -50,7 +50,7 @@ fn example(stork: Stork) {
     for i in 0..10 {
         let person = stork.deliver(i);
         last = person.given();
-	// ...
+        // ...
     }
     println!("Last: {last}");
 }
