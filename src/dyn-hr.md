@@ -96,7 +96,10 @@ apply even in a covariant nested context,
 [just like non-higher-ranked supertype coercions:](./dyn-covariance.md#variance-in-nested-context)
 ```rust
 # trait Look<'s> {}
-fn foo<'l: 's, 's, 'p>(v: *const Box<dyn for<'any> Look<'any> + 'l>) -> *const Box<dyn Look<'p> + 's> {
+fn foo<'l: 's, 's, 'p>(
+    v: Vec<Box<dyn for<'any> Look<'any> + 'l>>
+) -> Vec<Box<dyn Look<'p> + 's>>
+{
     v
 }
 ```
