@@ -119,12 +119,12 @@ For example:
 ```rust
 # trait Trait {}
 trait Assoc {
-    type T;
+    type T: ?Sized;
 }
 
 impl Assoc for () {
-    // Box<dyn Trait + 'static>
-    type T = Box<dyn Trait>;
+    // dyn Trait + 'static
+    type T = dyn Trait;
 }
 
 impl<'a> Assoc for &'a str {
@@ -142,12 +142,14 @@ trait BoundedAssoc<'x> {
     type BA: 'x + ?Sized;
 }
 
-// Still `Box<dyn Trait + 'static>`
-impl<'x> BoundedAssoc<'x> for () { type BA = Box<dyn Trait>; }
+// Still `dyn Trait + 'static`
+impl<'x> BoundedAssoc<'x> for () {
+    type BA = dyn Trait;
+}
 
-// Fails
+// Fails as `'a` might not be `'static`
 fn bib<'a>(obj: Box<dyn Trait + 'a>) {
-    let obj: <() as BoundedAssoc<'a>>::BA = obj;
+    let obj: Box< <() as BoundedAssoc<'a>>::BA > = obj;
 }
 ```
 
