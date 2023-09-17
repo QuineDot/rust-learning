@@ -178,7 +178,7 @@ so now we're good to go!
 You may have noticed how we took care to avoid boxing the iterator when possible
 by being mindful of how we implemented some of the methods, for example not
 having a default body for `erased::Iterable::visit`, and then overriding the
-the default body of `useful::Iterable::visit`.  This can lead to better performance
+default body of `useful::Iterable::visit`.  This can lead to better performance
 but isn't necessarily critical, so long as you avoid things like accidental
 infinite recursion.
 

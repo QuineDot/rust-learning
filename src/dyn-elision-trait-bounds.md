@@ -375,7 +375,7 @@ late-bound lifetimes.
 
 As mentioned above, trait object bounds always apply in function bodies,
 similar to function signatures where every lifetime is early-bound.  This
-is true irregardless of whether the lifetimes are early or late bound in
+is true regardless of whether the lifetimes are early or late bound in
 the function signature.
 ```rust
 trait Single<'a>: 'a {}

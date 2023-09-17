@@ -30,7 +30,7 @@ However, now we have two wide pointers which may point to different
 base types.  In this particular application, we only really need to
 know if they have the same base type or not... though it would be
 nice to have some *safe* way to recover the erased type of non-receiver
-too, instead of whatever casting schenanigans might be necessary.
+too, instead of whatever casting shenanigans might be necessary.
 
 You might think you could somehow use the vtable pointers to see if
 the base types are the same.  But unfortunately, [we can't rely on the
@@ -39,7 +39,7 @@ vtable to compare their types at runtime.](https://doc.rust-lang.org/std/ptr/fn.
 > When comparing wide pointers, both the address and the metadata are
 tested for equality. However, note that comparing trait object pointers
 (`*const dyn Trait`) is unreliable: pointers to values of the same
-underlying type can compare inequal (because vtables are duplicated in
+underlying type can compare unequal (because vtables are duplicated in
 multiple codegen units), and pointers to values of different underlying
 type can compare equal (since identical vtables can be deduplicated
 within a codegen unit).

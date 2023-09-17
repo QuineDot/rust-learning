@@ -1,6 +1,6 @@
 # Keep at it and participate in the community
 
-Experience plays a very big role in undestanding borrow errors and being able
+Experience plays a very big role in understanding borrow errors and being able
 to figure out why some code is problematic in a reasonable amount of time.
 Running into borrow check errors and solving them, either on your own or by
 asking for help, is a part of the process of building up that intuition.

@@ -40,7 +40,7 @@ There may be more differences in the future, but for now at least,
 generics are the more flexible and thus superior form -- unless you
 have a burning hatred against the `<...>` syntax, anyway.
 
-At any rate, comparing `dyn Trait` against APIT is essencially the
+At any rate, comparing `dyn Trait` against APIT is essentially the
 same as comparing `dyn Trait` against a function with a generic type
 parameter.
 
@@ -227,7 +227,7 @@ where
 ```
 The pattern is to have a function which is parameterized by a generic type
 return a concrete (nominal) struct, also parameterized by the generic type.
-This is possible even if the paramter itself is unnameable -- for example,
+This is possible even if the parameter itself is unnameable -- for example,
 in the case of `map`, the `F: FnMut(Self::Item) -> B` parameter might well
 be an unnameable closure.
 
@@ -241,7 +241,7 @@ such.
 The upside is that you (and the consumers of your method) get many of the upsides of both RPIT and `dyn Trait`:
 - No dynamic dispatch penalty
 - No boxing penalty
-- No concrete-type specific optimzation loss
+- No concrete-type specific optimization loss
 - No single trait limitation
 - No `dyn`-safe limitation
 - Applicable in traits
@@ -278,7 +278,7 @@ erasure is a question of functionality, and not really much of a choice.
 However, you may also want to use type erasure in your data types in order
 to make your own struct non-generic.  When your data type is generic, after
 all, those who use your data type in such a way that the parameter takes on
-more than one type will have to propogate the use of generics themselves, or
+more than one type will have to propagate the use of generics themselves, or
 face the decision of type erasing your data type themselves.
 
 This can not only be a question of ergonomics, but also of compile time and
@@ -296,7 +296,7 @@ For example, the failure to devirtualize and inline a call to
 `<dyn Iterator>::next` in a tight loop may have a relatively large impact,
 whereas a dynamic callback that only fires occasionally (and then dispatches
 to the optimized, non-type-erased implementation) is not likely to be
-noticable at all.
+noticeable at all.
 
 ## `enum`s
 

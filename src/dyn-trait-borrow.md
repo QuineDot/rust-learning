@@ -198,7 +198,7 @@ or even just rearranging the field order.
 Instead, we implement the traits directly by deferring to the borrowed type:
 ```rust
 # struct Data; impl Data { fn lend(&self) {} }
-// Excercise for the reader: `PartialEq` across all of our
+// Exercise for the reader: `PartialEq` across all of our
 // owned and borrowed types :-)
 impl std::cmp::PartialEq for Data {
     fn eq(&self, other: &Self) -> bool {

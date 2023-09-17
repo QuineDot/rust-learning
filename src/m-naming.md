@@ -25,5 +25,5 @@ fn quz(&mut self) -> &str { todo!() }
 ```
 
 As covariance and function lifetime elision become more intuitive, you'll build a feel for when it's
-pointless to name lifetimes.  Adding surpuflous lifetimes like in the first example tends to make
+pointless to name lifetimes.  Adding superfluous lifetimes like in the first example tends to make
 understanding borrow errors harder, not easier.

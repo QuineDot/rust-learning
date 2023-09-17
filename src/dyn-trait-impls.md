@@ -110,7 +110,7 @@ impl Trait for dyn Trait + '_ {
 }
 ```
 
-In short, the compiler knows how to go from the type-earased form
+In short, the compiler knows how to go from the type-erased form
 (like `Box<Self>`) into something ABI compatible for the base type
 (`Box<BaseType>`) for every supported receiver type.
 
@@ -135,7 +135,7 @@ an implementation of `Trait`.
 
 ## `Box<dyn Trait>` and `&dyn Trait` do not automatically implement `Trait`
 
-It may come as a suprise that neither `Box<dyn Trait>` nor
+It may come as a surprise that neither `Box<dyn Trait>` nor
 `&dyn Trait` automatically implement `Trait`.  Why not?
 
 In short, because it's not always possible.
@@ -227,7 +227,7 @@ dt.hi();
 and applies to the supertrait implementations for `dyn Trait` as well.
 
 [We'll see that this can be useful later.](./dyn-trait-erased.md)  But
-unfortunately, [there are some compilier bugs around the compiler
+unfortunately, [there are some compiler bugs around the compiler
 implementation taking precedence over your blanket implementations.](https://github.com/rust-lang/rust/issues/57893#issuecomment-510690333)
 How those bugs are dealt with is yet to be determined; it's possible
 that certain blanket implementations will be disallowed, or that

@@ -2,7 +2,7 @@
 
 As a reminder, `dyn Trait` is a type constructor which is parameterized with a
 lifetime; a fully resolved type includes the lifetime, such as `dyn Trait + 'static`.
-The lifetime can be elided in many sitations, in which case the actual lifetime
+The lifetime can be elided in many situations, in which case the actual lifetime
 used may take on some default lifetime, or may be inferred.
 
 When talking about default trait object (`dyn Trait`) lifetimes, we're talking about

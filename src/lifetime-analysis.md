@@ -184,7 +184,7 @@ Usually in this case, one uses methods like [`split_at_mut`](https://doc.rust-la
 in order to split the borrows instead.
 
 Similarly to indexing, when you access something through "deref coercion", you're
-excercising [the `Deref` trait](https://doc.rust-lang.org/std/ops/trait.Deref.html)
+exercising [the `Deref` trait](https://doc.rust-lang.org/std/ops/trait.Deref.html)
 (or `DerefMut`), which borrow all of `self`.
 
 There are also some niche cases where the borrow checker is smarter, however.
