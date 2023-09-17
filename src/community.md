@@ -14,7 +14,7 @@ to solve their problems -- or even just experiment with them! -- yourself.
 By being an active participant, you can not only learn more, but will eventually
 be able to help out other users.
 * When you read a question and are lost: read the replies and see if you can understand them and learn more
-* When you have played with a question and got it to comple but aren't sure why: reply with something like
+* When you have played with a question and got it to compile but aren't sure why: reply with something like
   "I don't know if this fixes your use case, but this compiles for me: [Playground](https://play.rust-lang.org/)"
 * After you've got the hang of certain common problems: "It's because of XYZ.  You can do this instead: ..."
 
