@@ -110,7 +110,7 @@ impl Trait for dyn Trait + '_ {
 }
 ```
 
-In short, the compiler knows how to go from the type-earased form
+In short, the compiler knows how to go from the type-erased form
 (like `Box<Self>`) into something ABI compatible for the base type
 (`Box<BaseType>`) for every supported receiver type.
 
