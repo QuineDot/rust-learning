@@ -157,7 +157,7 @@ now it's a restricted set.
 In order to support type-generic methods, there would need to be
 a function pointer in the vtable for every possible type that the
 generic could take on.  Not only would this create vtables of
-unweildly size, it would also require some sort of global analysis.
+unwieldly size, it would also require some sort of global analysis.
 After all, every crate which uses your trait might define new types
 that meet the trait bounds in question, and they (or you) might also
 want to call the method using those types.

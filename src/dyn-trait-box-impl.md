@@ -60,7 +60,7 @@ the `Box` because it's unsized.  And we can't
 [downcast from `dyn Trait`](./dyn-any.md#downcasting-methods-are-not-trait-methods)
 either; even if we could, it would rarely help here, as we'd have to both
 impose a `'static` constraint and also know every type that implements our
-trait to attempt downcasting on each one (or have some other clever scehme
+trait to attempt downcasting on each one (or have some other clever scheme
 for more efficient downcasting).
 
 Ugh, no wonder `Box<dyn Trait>` doesn't implement `Trait` automatically.
@@ -97,7 +97,7 @@ impl Trait for Box<dyn Trait + '_> {
 ```
 
 By adding the supertrait bound, the compiler will supply an implementation of
-`BoxedBye for dyn Trait + '_`.  That implementation will call the implemenation
+`BoxedBye for dyn Trait + '_`.  That implementation will call the implementation
 of `BoxedBye` for `Box<Erased>`, where `Erased` is the erased base type.  That
 is our blanket implementation, which unboxes `Erased` and calls `Erased`'s
 `Trait::bye`.

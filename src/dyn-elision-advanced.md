@@ -78,7 +78,7 @@ fn example<'a, 'b>() {
 In this particular example, the lifetime will be inferred
 [analogously to the lifetime intersection mentioned previously.](dyn-trait-lifetime.md#when-multiple-lifetimes-are-involved))
 
-## Iteraction with type aliases
+## Interaction with type aliases
 
 When you use a type alias, the bounds between lifetime parameters and type
 parameters *on the `type` alias* determine how `dyn Trait` lifetime elision

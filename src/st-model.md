@@ -4,7 +4,7 @@ Some find it helpful to think of shared (`&T`) and exclusive (`&mut T`) referenc
 
 * `&T` is a compiler-checked `RwLockReadGuard`
   * You can have as many of these at one time as you want
-* `&mut T` is an compiler-checked `RwLockWriteGuard`
+* `&mut T` is a compiler-checked `RwLockWriteGuard`
   * You can only have one of these at one time, and when you do, you can have no `RwLockReadGuard`
 
 The exclusivity is key.

@@ -8,8 +8,8 @@ Advice for learning Rust
 I'm mainly active in the Rust community via [URLO.](https://users.rust-lang.org/)
 The first version of this guide has its roots in a post on the forum where someone
 asked for general advice for understanding and fixing borrow-check errors.  They
-subseqently [asked if it could be made easier to find,](https://users.rust-lang.org/t/practical-suggestions-for-fixing-lifetime-errors/92634/17)
-and I created this guide respository as a result.
+subsequently [asked if it could be made easier to find,](https://users.rust-lang.org/t/practical-suggestions-for-fixing-lifetime-errors/92634/17)
+and I created this guide repository as a result.
 
 Corrections and suggested additions are welcome, but be fore-warned that I
 can be very slow and sporadic to respond on GitHub.

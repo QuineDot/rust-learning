@@ -141,7 +141,7 @@ We'll explore more details on the interaction of generics and `dyn Trait`
 You may wonder why you can use the methods of `Trait` on a `&dyn Trait` or
 `Box<dyn Trait>`, etc., despite not declaring any such bound.  The reason is
 analogous to why you can use `Display` methods on a `String` without declaring
-that bound, say: the type is staically known, and the compiler recognizes that
+that bound, say: the type is statically known, and the compiler recognizes that
 `dyn Trait` implements `Trait`, just like it recognizes that `String`
 implements `Display`.  Trait bounds are needed for generics, not concrete types.
 

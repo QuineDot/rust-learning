@@ -26,12 +26,12 @@ In particular, as of this writing, the official documentation states that
 
 Some differences from the reference which we have covered are that
 - [inferring bounds in expressions applies to `&T` types unless annotated with a named lifetime](./dyn-elision-advanced.md#an-exception-to-inference-in-function-bodies)
-- [inferring bounds in expressions applies to ambigous types](./dyn-elision-advanced.md#ambiguous-bounds)
+- [inferring bounds in expressions applies to ambiguous types](./dyn-elision-advanced.md#ambiguous-bounds)
 - [when trait bounds apply, they override struct bounds, not the other way around](./dyn-elision-trait-bounds.md#when-they-apply-trait-lifetime-bounds-override-struct-bounds)
 - [a `'static` trait bound always applies](./dyn-elision-trait-bounds.md#the-static-case)
 - [otherwise, whether trait bounds apply or not depends on complicated contextual rules](./dyn-elision-trait-bounds.md#when-and-how-to-trait-lifetime-bounds-apply)
   - they always apply in `impl` headers, associated types, and function bodies
-  - and technically in `static` contexts, with some odd cavaets
+  - and technically in `static` contexts, with some odd caveats
   - whether they apply in function signatures depends on the bounding parameters being late or early bound
     - a single parameter can apply to a trait bounds with multiple bounds in this context, introducing new implied lifetime bounds
 - [trait bounds override `'_` in function bodies](./dyn-elision-trait-bounds.md#function-bodies)
@@ -52,7 +52,7 @@ Trait objects used to be just "spelled" as `Trait` in type position, instead of 
 - [RFC 0192](https://rust-lang.github.io/rfcs/0192-bounds-on-object-and-generic-types.html#lifetime-bounds-on-object-types) first introduced the trait object lifetime
   - [including the "intersection lifetime" consideration](https://rust-lang.github.io/rfcs/0192-bounds-on-object-and-generic-types.html#appendix-b-why-object-types-must-have-exactly-one-bound)
 - [RFC 0599](https://rust-lang.github.io/rfcs/0599-default-object-bound.html) first introduced *default* trait object lifetimes (`dyn Trait` lifetime elision)
-- [RFC 1156](https://rust-lang.github.io/rfcs/1156-adjust-default-object-bounds.html) superceded RFC 0599 (`dyn Trait` lifetime elision)
+- [RFC 1156](https://rust-lang.github.io/rfcs/1156-adjust-default-object-bounds.html) superseded RFC 0599 (`dyn Trait` lifetime elision)
 - [PR 39305](https://github.com/rust-lang/rust/pull/39305) modified RFC 1156 (unofficially) to [allow more inference in function bodies](dyn-elision-advanced.md#an-exception-to-inference-in-function-bodies)
 - [RFC 2093](https://rust-lang.github.io/rfcs/2093-infer-outlives.html#trait-object-lifetime-defaults) defined [how `struct` bounds interact with `dyn Trait` lifetime elision](dyn-elision-advanced.md#guiding-behavior-of-your-own-types)
 - [Issue 100270](https://github.com/rust-lang/rust/issues/100270) notes that type aliases take precedent in terms of RFC 2093 `dyn Trait` lifetime elision rules

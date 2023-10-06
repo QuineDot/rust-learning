@@ -2,7 +2,7 @@
 
 Let's open with a question: is `&str` a type?
 
-When not being pendantic or formal, pretty much everyone will say yes, `&str` is a type.
+When not being pedantic or formal, pretty much everyone will say yes, `&str` is a type.
 However, it is technically a *type constructor* which is parameterized with a generic
 lifetime parameter.  So `&str` isn't technically a type, `&'a str` for some concrete
 lifetime is a type.
@@ -10,7 +10,7 @@ lifetime is a type.
 Similarly, `Vec<T>` for a generic `T` is a type constructor, but `Vec<i32>` is a type.
 
 By "concrete lifetime", I mean some compile-time determined lifetime.  The exact
-definition of "lifetime" is suprisingly complicated and beyond the scope of this
+definition of "lifetime" is surprisingly complicated and beyond the scope of this
 guide, but here are a few examples of `&str`s and their concrete types.
 
 ```rust

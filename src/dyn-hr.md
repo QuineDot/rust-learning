@@ -223,7 +223,7 @@ let _: Box<dyn Fn(&_: &i32)> = Box::new(|_| {});
 ```
 
 Why the differences? One reason is that
-[patterns are gramatically incompatible with anonymous arguments,
+[patterns are grammatically incompatible with anonymous arguments,
 apparently.](https://github.com/rust-lang/rust/issues/41686#issuecomment-366611096)
 I'm uncertain as to why identifiers are accepted on function pointers,
 however, or more generally why the `Fn` sugar is inconsistent with

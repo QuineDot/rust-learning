@@ -10,9 +10,9 @@ If you get a lifetime error involving elided lifetimes, try giving all the lifet
 the compiler errors; if nothing else, you won't have to work so hard to mentally track the numbers used in
 errors for illustration, or what "anonymous lifetime" is being talked about.
 
-Take care to refer to the elision rules when naming all the lifetimes, or you may inadverently change the
+Take care to refer to the elision rules when naming all the lifetimes, or you may inadvertently change the
 meaning of the signature.  If the error changes *drastically,* you've probably changed the meaning of the
-siguature.
+signature.
 
 Once you have a good feel for the function lifetime elision rules, you'll start developing intuition for
 when you need to name your lifetimes instead.

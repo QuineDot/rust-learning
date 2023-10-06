@@ -24,7 +24,7 @@ impl<'a> Snek<'a> {
 }
 ```
 
-[And as was covered before,](pf-borrow-forever.md) that's an anti-pattern because you cannot use the self-referencial struct directly ever again.
+[And as was covered before,](pf-borrow-forever.md) that's an anti-pattern because you cannot use the self-referential struct directly ever again.
 The only way to use it at all is via a (reborrowed) return value from the method call that required `&'a mut self`.
 
 So it's technically possible, but so restrictive it's pretty much always useless.

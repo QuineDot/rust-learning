@@ -40,7 +40,7 @@ So what should the associated types be in the implementation of `Trait` for
 There is no single answer; they would need to vary based on the erased base types.
 
 However, `dyn Trait` for traits with associated types is just too useful to
-make traits with associated types inelligible for `dyn Trait`.  Instead, associated
+make traits with associated types ineligible for `dyn Trait`.  Instead, associated
 types in the trait become, in essence, named *type parameters* of the `dyn Trait`
 type constructor. (Recall it's already a type constructor due to the trait object lifetime.)
 
@@ -84,7 +84,7 @@ trait AssocAndParams<T, U> { type Assoc1; type Assoc2; }
 
 // The trait's ordered type parameters must be in declaration order
 // (here, `String` then `usize`).  After that come the named associated
-// type paramters, which can be reordered arbitrary amongst themselves.
+// type parameters, which can be reordered arbitrary amongst themselves.
 fn foo(d: Box<dyn AssocAndParams<String, usize, Assoc1 = i32, Assoc2 = u32>>)
 ->
     Box<dyn AssocAndParams<String, usize, Assoc2 = u32, Assoc1 = i32>>
@@ -171,7 +171,7 @@ erased `str`, you've lost the information that `&str` is also a wide pointer,
 and how to create that wide pointer.  However, the code would need to recreate
 a wide pointer in order to perform dynamic dispatch.
 
-So for `dyn Trait` to non-naively support unsized types, it would need need
+So for `dyn Trait` to non-naively support unsized types, it would need
 to examine at run-time how to construct a pointer to the erased base type:
 one possibility for thin pointers, and an additional possibility for each type
 of wide pointer supported.  Not only that, but the metadata required (such as

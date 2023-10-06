@@ -41,5 +41,5 @@ the value's "lifetime".  Although there is a connection between the liveness sco
 and lifetimes of references you take to it, conflating the two concepts can lead to confusion.
 
 That said, not everyone follows this convention, so you may see the liveness scope of a value
-refered to as the values "lifetime".  So the distinction is something to just generally be
+referred to as the values "lifetime".  So the distinction is something to just generally be
 aware of.
