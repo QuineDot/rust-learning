@@ -25,10 +25,14 @@ It's just part of the Rust learning experience.
 ---
 
 Let's look at one more property of nested references you may run into:
-* You can get a `&'long U` from a `&'short &'long U`
-   * Just copy it out!
-* But you cannot get a `&'long mut U` from a `&'short mut &'long mut U`
-   * You can only reborrow a `&'short mut U`
+* You can get a `&'long U` from a `&'short &'long U`:
+  * Just copy it out!
+* But you cannot get a `&'long mut U` through dereferencing a `&'short mut &'long mut U`.
+  * You can only reborrow a `&'short mut U`.
+  * Obtaining a `&'long mut U` is sometimes possible by swapping or
+    temporarily moving out of the inner reference, for example with [`mem::swap`](https://doc.rust-lang.org/stable/std/mem/fn.swap.html),
+    [`mem::replace`](https://doc.rust-lang.org/stable/std/mem/fn.replace.html),
+    or [`replace_with`](https://docs.rs/replace_with/). See the [mutable slice iterator example](./lt-ex-mut-slice.md).
 
 The reason is again to prevent memory unsafety.
 
