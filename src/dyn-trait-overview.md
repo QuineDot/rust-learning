@@ -83,7 +83,7 @@ fn foo<T: Trait>(_: &T) {}
 // This function takes any `T: Trait`, even if `T` is not
 // `Sized`.
 fn bar<T: Trait + ?Sized>(t: &T) {
-    // Demonstration that `foo` cannot except non-`Sized`
+    // Demonstration that `foo` cannot accept non-`Sized`
     // types:
     foo(t);
 }
