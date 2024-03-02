@@ -38,6 +38,8 @@
   - [Advice to add bound which implies lifetime equality](c-equality.md)
   - [Advice to add a static bound](c-static.md)
 - [Circle back](circle.md)
+- [Illustrative examples](lt-examples.md)
+  - [Mutable slice iterator](lt-ex-mut-slice.md)
 
 ---
 
