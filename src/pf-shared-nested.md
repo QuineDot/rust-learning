@@ -34,6 +34,11 @@ a `&'short Person<'short>`.  As a result, calling `Person::given`
 doesn't have to borrow the `person` forever -- it only has to borrow
 `person` for as long as the return value is used.
 
+Note that the covariance is required!  A shared nested borrow where
+the inner lifetime is invariant is still almost as bad as the
+"borrowed forever" `&mut` case.  Most of this page talks about the
+covariant case; we'll consider the invariant case [at the end.](#the-invariant-case)
+
 ## This is still a yellow flag
 
 Even though it's not as problematic as the `&mut` case, there is
@@ -78,14 +83,14 @@ fn example(stork: Stork) {
         let person = stork.deliver(i);
         last = person.given();
         // ...
-    }   
+    }
     println!("Last: {last}");
-}   
+}
 ```
 Then the borrow of `person` can end immediately after the call, even
 while the return value remains usable.  This is possible because we're
 just copying the reference out.  Or if you prefer to think of it another
-way, we're handing out a reborrow of an existing borrow we were holding 
+way, we're handing out a reborrow of an existing borrow we were holding
 on to, and not borrowing something we owned ourselves.
 
 So now the `stork` still has to be around for as long as `last` is used,
@@ -142,3 +147,74 @@ struct Cradle<'a> {
 Instead of something with two lifetimes.
 
 (That said, an even better approach is to not have complicated nested-borrow-holding data structures at all.)
+
+## The invariant case
+
+Finally, let's look at a case where it's generally not okay:
+A shared nested borrow where the inner borrow is invariant.
+
+Perhaps the most likely reason this comes up is due to *shared mutability:* the ability
+to mutate things that are behind a shared reference (`&`).  Some examples from the
+standard library include [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html),
+[`RefCell`](https://doc.rust-lang.org/std/cell/struct.RefCell.html), and
+[`Mutex`](https://doc.rust-lang.org/std/sync/struct.Mutex.html).  These types have to be
+invariant over their generic parameter reasons similar to `&mut`.
+
+Let's see an example, [similar to one we've seen before](./pf-meta.md):
+```rust
+# use std::cell::Cell;
+#[derive(Debug)]
+struct ShareableSnek<'a> {
+   owned: String,
+   borrowed: Cell<&'a str>,
+}
+
+impl<'a> ShareableSnek<'a> {
+    fn bite(&'a self) {
+        self.borrowed.set(&self.owned);
+    }
+}
+
+let snek = ShareableSnek {
+    owned: "🐍".to_string(),
+    borrowed: Cell::new(""),
+};
+
+snek.bite();
+
+// Unlike the `&mut` case, we can still use `snek`!  It's borrowed forever,
+// but it's "only" *shared*-borrowed forever.
+println!("{snek:?}");
+```
+
+That doesn't seem so bad though, right?  Well, it's quite as bad as the `&mut`
+case, but it's still usually too restrictive to be useful.
+```rust,compile_fail
+# use std::cell::Cell;
+# #[derive(Debug)]
+# struct ShareableSnek<'a> {
+#    owned: String,
+#    borrowed: Cell<&'a str>,
+# }
+#
+# impl<'a> ShareableSnek<'a> {
+#     fn bite(&'a self) {
+#         self.borrowed.set(&self.owned);
+#     }
+# }
+#
+# let snek = ShareableSnek {
+#     owned: "🐍".to_string(),
+#     borrowed: Cell::new(""),
+# };
+#
+snek.bite();
+let _mutable_stuff = &mut snek;
+let _move = snek;
+
+// Having a non-trivial destructor would also cause a failure
+```
+Once it's borrowed forever, the `snek` can only be used in a "shared" way.
+It can only be mutated using shared mutability, and it can't be moved --
+it's pinned in place forever.
+
