@@ -74,8 +74,9 @@ Here's what it looks like with everything being explicit:
 And remember that in `MyIterMut<'a, T>`, `slice` is a `&'a mut [T]`.
 
 Ah, yes.  [We have a nested exclusive borrow](./st-invariance.md) here.
-> You cannot get a `&'long mut U` from a `&'short mut &'long mut U`
-> - you can only reborrow a `&'short mut U`
+
+> You cannot get a `&'long mut U` through dereferencing a `&'short mut &'long mut U`.
+> - You can only reborrow a `&'short mut U`.
 
 There is no safe way to go *through* the `&'s mut self` and pull out a `&'a mut T`.
 

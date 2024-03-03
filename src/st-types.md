@@ -5,9 +5,10 @@ Let's open with a question: is `&str` a type?
 When not being pedantic or formal, pretty much everyone will say yes, `&str` is a type.
 However, it is technically a *type constructor* which is parameterized with a generic
 lifetime parameter.  So `&str` isn't technically a type, `&'a str` for some concrete
-lifetime is a type.
+lifetime is a type.  `&'a str` and `&'b str` are not the same type, unless `'a == 'b`.
 
 Similarly, `Vec<T>` for a generic `T` is a type constructor, but `Vec<i32>` is a type.
+`Vec<T>` and `Vec<U>` are not the same type, unless `T == U`.
 
 By "concrete lifetime", I mean some compile-time determined lifetime.  The exact
 definition of "lifetime" is surprisingly complicated and beyond the scope of this

@@ -23,6 +23,7 @@ An explicit reborrow would look like this:
 ```
 
 `v` can't be used while the reborrow `&mut *v` exists, but after it "expires", you can use `v` again.
+In this way, both `&mut` are still *exclusive* borrows.
 
 Though tragically underdocumented, reborrowing is what makes `&mut` usable; there's a lot of implicit reborrowing in Rust.
 Reborrowing makes `&mut T` act like the `Copy`-able `&T` in some ways. But the necessity that `&mut T` is exclusive while
