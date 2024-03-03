@@ -24,6 +24,7 @@
   - [When not to name lifetimes](m-naming.md)
   - [Bound-related lifetimes "infect" each other](m-infect.md)
   - [`&mut` inputs don't "downgrade" to `&`](m-no-downgrades.md)
+  - [`async` and returning `impl Trait`](m-rpitit-alikes.md)
 - [Understand function lifetime parameters](fn-parameters.md)
 - [Understand borrows within a function](lifetime-analysis.md)
 - [Learn some pitfalls and antipatterns](pitfalls.md)
@@ -37,9 +38,10 @@
   - [Advice to change function signature when aliases are involved](c-signatures.md)
   - [Advice to add bound which implies lifetime equality](c-equality.md)
   - [Advice to add a static bound](c-static.md)
-- [Circle back](circle.md)
 - [Illustrative examples](lt-examples.md)
   - [Mutable slice iterator](lt-ex-mut-slice.md)
+- [Circle back](circle.md)
+
 
 ---
 
