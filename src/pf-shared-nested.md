@@ -155,10 +155,11 @@ A shared nested borrow where the inner borrow is invariant.
 
 Perhaps the most likely reason this comes up is due to *shared mutability:* the ability
 to mutate things that are behind a shared reference (`&`).  Some examples from the
-standard library include [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html),
-[`RefCell`](https://doc.rust-lang.org/std/cell/struct.RefCell.html), and
-[`Mutex`](https://doc.rust-lang.org/std/sync/struct.Mutex.html).  These types have to be
-invariant over their generic parameter reasons similar to `&mut`.
+standard library include [`Cell<T>`](https://doc.rust-lang.org/std/cell/struct.Cell.html),
+[`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html), and
+[`Mutex<T>`](https://doc.rust-lang.org/std/sync/struct.Mutex.html).  These
+shared mutability types have to be invariant over their generic parameter `T`,
+just like how `&mut T` is invariant over `T`.
 
 Let's see an example, [similar to one we've seen before](./pf-meta.md):
 ```rust
