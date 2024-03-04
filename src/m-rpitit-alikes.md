@@ -55,7 +55,7 @@ fn check() {
 // return a reborrow of `*s`, but that requires capturing the lifetime
 fn no_capture(s: &str) -> impl Display {
     s
-}   
+}
 ```
 
 ```rust
@@ -66,7 +66,7 @@ fn no_capture(s: &str) -> impl Display {
 //
 //                                     vvvv
 fn no_capture(s: &str) -> impl Display + '_ {
-    s            
+    s
 }
 ```
 

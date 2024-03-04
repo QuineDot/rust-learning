@@ -80,7 +80,7 @@ impl Trait for Box<dyn Trait + '_> {}
 
 impl Clone for Box<dyn Trait + '_> {
     fn clone(&self) -> Self {
-    	// Important! "recursive trait implementation" style
+        // Important! "recursive trait implementation" style
         (**self).dyn_clone()
     }
 }

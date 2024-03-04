@@ -50,7 +50,7 @@ impl Look<'static> for i32 {
     fn method(&self, s: &'static str) {
         println!("Hi there, {s}!");
     }
-}   
+}
 
 fn main() {
     let _bx: Box<dyn for<'any> Look<'any>> = Box::new(0);
@@ -86,7 +86,7 @@ to `dyn Look<'w>`:
 ```rust
 # trait Look<'s> { fn method(&self, s: &'s str); }
 # fn as_static(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'static>> { bx }
-fn as_whatever<'w>(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'w>> {     
+fn as_whatever<'w>(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'w>> {
     as_static(bx)
 }
 ```
