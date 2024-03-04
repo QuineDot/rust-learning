@@ -68,4 +68,5 @@
   - [`dyn PartialEq`](dyn-trait-eq.md)
   - [Generalizing borrows](dyn-trait-borrow.md)
   - [Erased traits](dyn-trait-erased.md)
+  - [Hashable `Box<dyn Trait>`](dyn-trait-hash.md)
 - [`dyn Any`](dyn-any.md)
