@@ -73,6 +73,9 @@ downcast.  Once we have [built-in supertrait upcasting,](dyn-trait-coercions.md#
 the process will involve much less boilerplate when an `Any` suptertrait
 bound is acceptable.
 
+But note that a supertrait `Any` bound is not the only solution for custom downcasting!
+[We explore another approach below.](#custom-downcasting)
+
 ## Some brief examples
 
 [In our other example,](dyn-trait-eq.md#downcasting-with-dyn-any-to-emulate-dynamic-typing)
@@ -259,6 +262,101 @@ of [erasing a trait.](./dyn-trait-erased.md)
 
 For whatever reason you might want to map by types, this is
 [an existing pattern in the ecosystem.](https://lib.rs/keywords/typemap)
+
+### Custom downcasting
+
+In this example, we explore how you can add (emulated) downcasting to your own
+traits, without an `Any` supertrait bound and without a `'static` bound on your
+entire *trait,* either.  The implementation does still depend on the `TypeId`,
+so the actual downcasting is still limited to types which satisfy a `'static` bound.
+
+The approach is to make implementing [the general idea](#the-general-idea) possible
+by having a method in our trait that returns the `TypeId` of the implementing type.
+```rust
+# use core::any::TypeId;
+pub trait Trait {
+    // Heads up: We'll need to revisit this definition in just a bit
+    fn type_id(&self) -> TypeId
+    where
+        Self: 'static
+    {
+        TypeId::of::<Self>()
+    }
+}
+```
+Recall that the compiler's implementation of `Trait for dyn Trait` will implicitly
+downcast the receiver and call this method.  Therefore, we now have a way to get
+the `TypeId` of the base type out of `dyn Trait`.
+
+Then we can implement our own downcast methods:
+```rust
+# use core::any::TypeId;
+# pub trait Trait { fn type_id(&self) -> TypeId where Self: 'static { TypeId::of::<Self>() } }
+// n.b. this is `dyn Trait + 'static` :-)
+impl dyn Trait {
+    pub fn is<T: 'static>(&self) -> bool {
+        TypeId::of::<T>() == self.type_id()
+    }
+
+    pub fn downcast<T: 'static>(self: Box<Self>) -> Result<Box<T>, Box<Self>> {
+        if (*self).is::<T>() {
+            let ptr = Box::into_raw(self) as *mut T;
+            // SAFETY: Keep reading :-)
+            unsafe { Ok(Box::from_raw(ptr)) }
+        } else {
+            Err(self)
+        }
+    }
+}
+```
+...and similarly for `downcast_ref`, `downcast_mut`, and more implementations for
+`dyn Trait + Send`, `dyn Trait + Send + Sync`, and so on.  (Yes, it can be a lot
+of boilerplate.)
+
+However, there's a large soundness hole in this example.  Implementors of `Trait`
+can supply their own implementation of the `type_id` method!  They can override
+the default body and return a `TypeId` that is not the implementing type.  That
+makes our `unsafe` produce UB; since `type_id` isn't an `unsafe` method, our
+implementation is to blame.
+
+We could make the method `unsafe`.  In this example, we will instead make it
+impossible to override the default body.  To do this, we need that method
+to be `final`.  Well, Rust doesn't have `final` yet.  However, we can
+[*seal*](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
+the method by giving it a parameter which can only be named within our module.
+
+```rust
+// A private module (no `pub`)
+mod private {
+    // Containing a `pub` type (to avoid errors on our public trait method)
+    pub struct Seal;
+}
+```
+```diff
+ pub trait Trait {
+-    fn type_id(&self) -> TypeId
++    #[doc(hidden)]
++    fn type_id(&self, _: private::Seal) {
+     where
+         Self: 'static
+     {
+         TypeId::of::<Self>()
+     }
+ }
+
+ impl dyn Trait {
+     pub fn is<T: 'static>(&self) -> bool {
+-        TypeId::of::<T>() == self.type_id()
++        TypeId::of::<T>() == self.type_id(private::Seal)
+     }
+```
+
+Now if an implementor tries to write out the signature of the `type_id` method,
+they'll get a privacy error.
+
+[Here's a playground with a couple more methods.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=af12a6896f44c7843dd331904c5b6bce)
+This example is based on [`std::error::Error`](https://doc.rust-lang.org/std/error/trait.Error.html)
+and its own custom downcasting implementation.
 
 ## Why `'static`?
 

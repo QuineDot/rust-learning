@@ -69,4 +69,5 @@
   - [Generalizing borrows](dyn-trait-borrow.md)
   - [Erased traits](dyn-trait-erased.md)
   - [Hashable `Box<dyn Trait>`](dyn-trait-hash.md)
+  - [`dyn Any` examples](dyn-any-examples.md)
 - [`dyn Any`](dyn-any.md)
