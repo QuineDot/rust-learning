@@ -11,12 +11,23 @@ The future returned by the `async fn` implicitly reborrows the `v` input, and
 "carries" the same lifetime, just like the other examples we saw.
 
 The same is true when you use `return`-position `impl Trait` (RPIT) in traits (RPITIT):
-```rust
+```rust,compile_fail
 # struct MyStruct {}
-impl MyStruct {
+trait StringIter {
+	fn iter(&self) -> impl Iterator<Item = String>;
+}
+
+impl StringIter for MyStruct {
     fn iter(&self) -> impl Iterator<Item = String> {
         ["Hi :-)"].into_iter().map(ToString::to_string)
     }
+}
+
+// Fails to compile as `iter` borrows `my`
+fn example(my: MyStruct) {
+    let iter = my.iter();
+    let _move_my = my;
+    for _ in iter {}
 }
 ```
 
