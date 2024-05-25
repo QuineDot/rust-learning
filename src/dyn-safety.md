@@ -213,9 +213,8 @@ you can opt out of GATs being `dyn`-usable, and thus out of the
 necessity of naming the GAT as a parameter, by adding a
 `Self: Sized` bound.
 
-This is similar to, but still more limited than,
-[the same ability on non-generic associated types.](dyn-trait-coercions.md#opting-out-of-dyn-usability)
-Interestingly, it allows specifying some *specific* GAT equalities...
+This is similar to [the same ability on non-generic associated types.](dyn-trait-coercions.md#opting-out-of-dyn-usability)
+Interestingly, it allows specifying not only *specific* GAT equalities...
 ```rust
 trait Trait {
     type Gat<'a> where Self: Sized;
@@ -227,16 +226,23 @@ impl Trait for () {
 
 let _: &dyn Trait<Gat<'static> = &'static str> = &();
 ```
-...but there is still no support for higher-ranked GAT equality.
-```rust,compile_fail
+...but also higher-ranked GAT equality:
+```rust
 #trait Trait {
 #    type Gat<'a> where Self: Sized;
 #}
 #impl Trait for () {
 #    type Gat<'a> = &'a str;
 #}
-let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
+// This syntax is still not supported
+// let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
+
+// However, with `dyn Trait`, you can move the binder to outside the `Trait`:
+let _: &dyn for<'a> Trait<Gat<'a> = &'a str> = &();
 ```
+However, as with the non-generic associated type case, making any use of the
+equality would have to be done indirectly, as the `dyn Trait` itself cannot
+define a GAT in its own implementation.
 
 ## Associated constant limitations
 
