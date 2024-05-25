@@ -10,6 +10,11 @@ Instead of repeating all the rules here,
 [I'll just link to the reference.](https://doc.rust-lang.org/reference/items/traits.html#object-safety)
 You should go read that first.
 
+Note that as of this writing, the reference hasn't been updated to document that you
+can opt to make associated types and <abbr title="generic associated types">GATs</abbr>
+unavailable to trait objects by adding a `where Self: Sized` bound.  For now I'll
+refer to this as opting the GAT (or associated type) out of being "`dyn`-usable".
+
 What may not be immediately apparent is *why* these limitations exists.
 The rest of this page explores some of the reasons.
 
@@ -20,6 +25,7 @@ Before we get into the restrictions, let's have an aside about how the
 
 Rust uses `Sized` to indicate that
 - A trait is not `dyn` safe
+- An associated type or <abbr title="generic associated type">GAT</abbr> is not `dyn`-usable
 - A method is not `dyn`-dispatchable
 - An associated function is not callable for `dyn Trait`
   - Even though it never can be (so far), you have to declare this for the sake of being explicit and for potential forwards compatibility
@@ -202,10 +208,55 @@ GATs are too new to support type erasing as-of-yet.  We'll need
 some way to embed the GAT into the `dyn Trait` as a parameter,
 [similar to how is done for non-generic associated types.](./dyn-trait-coercions.md#associated-types)
 
+[As of Rust 1.72,](https://github.com/rust-lang/rust/pull/112319/)
+you can opt out of GATs being `dyn`-usable, and thus out of the
+necessity of naming the GAT as a parameter, by adding a
+`Self: Sized` bound.
+
+This is similar to, but still more limited than,
+[the same ability on non-generic associated types.](dyn-trait-coercions.md#opting-out-of-dyn-usability)
+Interestingly, it allows specifying some *specific* GAT equalities...
+```rust
+trait Trait {
+    type Gat<'a> where Self: Sized;
+}
+
+impl Trait for () {
+    type Gat<'a> = &'a str;
+}
+
+let _: &dyn Trait<Gat<'static> = &'static str> = &();
+```
+...but there is still no support for higher-ranked GAT equality.
+```rust,compile_fail
+#trait Trait {
+#    type Gat<'a> where Self: Sized;
+#}
+#impl Trait for () {
+#    type Gat<'a> = &'a str;
+#}
+let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
+```
+
 ## Associated constant limitations
 
 Similarly, supporting associated constants will require at least
 [support for associated constant equality.](https://github.com/rust-lang/rust/issues/92827)
+
+## Return position `impl Trait` limitations
+
+Trait methods utilizing
+[<abbr title="return position impl traits">RPITs</abbr>](dyn-trait-vs.md#return-position-impl-trait-and-tait)
+are, notionally at least, sugar for declaring an opaque associated
+type or generic associated type.  Additionally, even if the RPIT
+captures no generic parameters and thus corresponds to returning
+an associated type, there is currently no way to name that associated
+type.
+
+Similar to [generic methods,](#generic-method-limitations) you can
+sometimes work around this limitation by type erasing the return
+type.  (Note that there are some trade-offs, but a discussion of
+such is more suited to a dedicated guide about RPITs.)
 
 ## History
 

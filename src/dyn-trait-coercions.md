@@ -93,6 +93,95 @@ fn foo(d: Box<dyn AssocAndParams<String, usize, Assoc1 = i32, Assoc2 = u32>>)
 }
 ```
 
+### Opting out of `dyn`-usability
+
+[As of Rust 1.72,](https://github.com/rust-lang/rust/pull/112319/) if you add
+a `where Self: Sized` bound to an associated type, it is considered
+[non-`dyn`-usable.](dyn-safety.md#the-sized-constraints)  The associated type
+becomes unusable by `dyn Trait`, and you no longer need to constrain the
+associated type with the named parameter.
+```rust
+trait Trait {
+    type Foo where Self: Sized;
+    fn foo(&self) -> Self::Foo where Self: Sized;
+    fn bar(&self) {}
+}
+
+impl Trait for i32 {
+    type Foo = ();
+    fn foo(&self) -> Self::Foo {}
+}
+
+impl Trait for u64 {
+    type Foo = f32;
+    fn foo(&self) -> Self::Foo { 0.0 }
+}
+
+// No need for `dyn Trait<Foo = ()>`!
+let mut a: &dyn Trait = &0_i32;
+
+// No need for associated type equality between base types!
+a = &0_u64;
+
+// This fails because the type is not defined (`dyn Trait` is not `Sized`)
+// let _: <dyn Trait as Trait>::Foo = todo!();
+```
+
+Although it produces is awarning, you can still *optionally* specify the
+associated type, even though it's not usable by the `dyn Trait` itself.
+Note also that this does result in incompatible types and limits the
+possible coercions:
+```rust,compile_fail
+#trait Trait {
+#    type Foo where Self: Sized;
+#    fn foo(&self) -> Self::Foo where Self: Sized;
+#    fn bar(&self) {}
+#}
+#impl Trait for i32 {
+#    type Foo = ();
+#    fn foo(&self) -> Self::Foo {}
+#}
+#impl Trait for u64 {
+#    type Foo = f32;
+#    fn foo(&self) -> Self::Foo { 0.0 }
+#}
+let mut a: &dyn Trait<Foo = ()> = &0_i32;
+
+// Fails!
+a = &0_u64;
+```
+
+The fact that it's a warning is somewhat surprising.  On the one hand, I
+could see this just being a straight-up error.  That would have been the
+conservative approach to introducing this feature.
+
+On the other hand, it introduces some interesting possibilities around
+[implementing `trait` for `Box<dyn Trait>`:](dyn-trait-box-impl.md)
+```rust
+#trait Trait {
+#    type Foo where Self: Sized;
+#    fn foo(&self) -> Self::Foo where Self: Sized;
+#    fn bar(&self) {}
+#}
+#impl Trait for i32 {
+#    type Foo = ();
+#    fn foo(&self) -> Self::Foo {}
+#}
+#impl Trait for u64 {
+#    type Foo = f32;
+#    fn foo(&self) -> Self::Foo { 0.0 }
+#}
+impl<T: Default> Trait for Box<dyn Trait<Foo = T>> {
+    type Foo = T;
+    fn foo(&self) -> Self::Foo {
+        T::default()
+    }
+}
+```
+The warning currently says "while the associated type can be specified, it cannot
+be used in any way," but this example shows that is not technically true.  Thus it
+would be a breaking change to make the warning an error, and one could argue that
+the warning should go away (or at least be reworded and renamed).
 
 ## No nested coercions
 
