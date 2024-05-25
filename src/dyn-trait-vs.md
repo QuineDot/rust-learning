@@ -99,18 +99,19 @@ fn foo<T>(v: Vec<T>) -> impl Iterator<Item = T> {
 }
 ```
 
-Unlike APIT, RPITs are not the same as a generic type parameter.  They
-are instead opaque type aliases or opaque type alias constructors.  In
-the above example, the RPIT is an opaque type alias constructor which
-depends on the input type parameter of the function (`T`).  For every
-concrete `T`, the RPIT is also an alias of a ***singular*** concrete
-type.
+Unlike <abbr title="argument position impl trait">APIT</abbr>,
+RPITs are not the same as a generic type parameter.  They are instead
+opaque type aliases or opaque type alias constructors.  In the above
+example, the RPIT is an opaque type alias constructor which depends
+on the input type parameter of the function (`T`).  For every concrete
+`T`, the RPIT is also an alias of a ***singular*** concrete type.
 
 The function body and the compiler still know what the concrete type is,
 but that is opaque to the caller and other code.  Instead, the only ways
 you can use the type are those which are compatible with the trait or
 traits in the `impl Trait`, plus any auto traits which the concrete type
-happens to implement.
+happens to implement.  (Or things provable from such properties, such
+as blanket trait implementations.)
 
 The singular part is key: the following code does not compile because
 it is trying to return two distinct types.  Rust is strictly and
@@ -125,9 +126,9 @@ fn foo(b: bool) -> impl Display {
 
 `type` alias `impl Trait`, or TAIT, is a generalization of RPIT which
 [is not yet stable,](https://github.com/rust-lang/rust/issues/63063)
-but may become stable before *too* much longer.  TAIT allows one to
-define aliases for opaque types, which allows them to be named and
-to be used in more than one location.
+but will probably become stable before *too* much longer.  TAIT allows
+one to define aliases for opaque types, which allows them to be named
+and to be used in more than one location.
 ```rust,nightly
 #![feature(type_alias_impl_trait)]
 type MyDisplay = impl std::fmt::Display;
@@ -150,6 +151,12 @@ fn foo2() -> __Unnameable_Tait { "hi" }
 
 TAITs must still be an alias of a singular, concrete type.
 
+Other downsides of opaque types generally from the perspective of the caller include
+- Opaque types are invariant on all parameters, whereas nominal structs need not be
+- No traits, including local traits, can be implemented on opaque types
+- All of a nominal structs trait implementations, public fields, and public inherent
+methods are available, while opaque types reveal much less
+
 ### Tradeoffs between RPIT and `dyn Trait`
 
 RPITs and `dyn Trait` returns share some benefits for the function writer:
@@ -159,40 +166,41 @@ RPITs and `dyn Trait` returns share some benefits for the function writer:
 
 `dyn Trait` does have some limitations and downsides:
 - Only one non-auto-trait is supportable without [subtrait boilerplate](./dyn-trait-combining.md)
-  - In contrast, you can return `impl Trait1 + Trait2`
+  - In contrast, with RPIT you can return `impl Trait1 + Trait2`
 - Only `dyn`-safe traits are supportable
-  - In contrast, you can return `impl Clone`
-- Boxing is required to returned owned types
+  - In contrast, with RPIT you can return `impl Clone`
+- Boxing in some form is required to returned owned types
 - You pay the typical optimization penalties of not knowing the base type and performing dynamic dispatch
 
 However, RPITs also have their downsides:
 - As an opaque alias, you can only return one actual, concrete type
 - For now, the return type is unnameable, which can be awkward for consumers
-  - e.g. you can't store the result as a field in your struct
+  - e.g. you can't store the result as a non-generic field in your struct
   - ...unless the opaque type bounds are `dyn`-safe and you can type erase it yourself
-- Auto-traits are leaky, so it's easy for the function writer to accidentally break semver
+- Auto-traits are leaky, so it's easy for the function writer to accidentally break SemVer
   - Whereas auto-traits are explicit with `dyn Trait`
-- RPIT is not yet supported in traits
-  - It is planned ("RPITIT" (ugh)), but it is uncertain how far away the functionality is
+- RPIT methods in traits (stabilized in Rust 1.75) are [not `dyn`-dispatchable](dyn-safety.md)
+- Every RPIT is a distinct opaque type (note that TAIT works around this restriction)
 
 RPITs also have some rather tricky behavior around type parameter and lifetime capture.
 The planned `impl Trait` functionalities deserve their own exploration independent of
 `dyn Trait`, so I'll only mention them in brief:
 - RPIT captures all type parameters ([and their implied lifetimes](https://github.com/rust-lang/rust/issues/42940))
+  - And also lifetime parameters, in traits and [in edition 2024](https://github.com/rust-lang/rust/issues/117587)
 - RPIT captures specific lifetimes and not [the intersection of all lifetimes](./dyn-trait-lifetime.md#when-multiple-lifetimes-are-involved)
   - And thus it is [tedious to capture an intersection of input lifetimes](https://github.com/danielhenrymantilla/fix_hidden_lifetime_bug.rs) instead of a union
+  - (The situation will be improved by [precise capturing](https://github.com/rust-lang/rust/issues/123432))
 
 Despite all these downsides, I would say that RPIT has a *slight* edge over `dyn Trait`
 in return position *when applicable,* especially for owned types.  The advantage between
 `dyn Trait` and a (named) TAIT will be even greater, once that is available:
-- You can give the return type a name
-- You can be explicit about what type parameters are captured
-- You can be more explicit about lifetime capture as well
-  - Though without a syntax for lifetime intersection, it will probably still be a pain to do so
+- You can give the return type a name and reuse it in multiple places
+- TAIT inherently has precise capturing
+  - I.e. you have control over, and are explicit about, which lifetime and type parameters are captured
 
-But `dyn Trait` is still sometimes the better option:
-- where RPIT is not supported, like in traits (so far)
+But `dyn Trait` will still sometimes the better option, e.g.:
 - when you need to type erase and return distinct types
+- when you need trait object safety
 
 However, there is often a third possibility available, which we explore below:
 return a generic struct.
