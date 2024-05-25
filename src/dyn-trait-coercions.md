@@ -151,11 +151,7 @@ let mut a: &dyn Trait<Foo = ()> = &0_i32;
 a = &0_u64;
 ```
 
-The fact that it's a warning is somewhat surprising.  On the one hand, I
-could see this just being a straight-up error.  That would have been the
-conservative approach to introducing this feature.
-
-On the other hand, it introduces some interesting possibilities around
+This introduces some interesting possibilities around
 [implementing `trait` for `Box<dyn Trait>`:](dyn-trait-box-impl.md)
 ```rust
 #trait Trait {
@@ -178,10 +174,18 @@ impl<T: Default> Trait for Box<dyn Trait<Foo = T>> {
     }
 }
 ```
+
 The warning currently says "while the associated type can be specified, it cannot
-be used in any way," but this example shows that is not technically true.  Thus it
-would be a breaking change to make the warning an error, and one could argue that
-the warning should go away (or at least be reworded and renamed).
+be used in any way," but this example shows that is not technically true.  I think
+this sort of usage was just not anticipated.
+
+The reason it's not an error to specify non-`dyn`-usable associated types in this
+manner is that there was a period where you could add `Self: Sized` bounds to
+associated types, but were still *required* to name the associated type in
+`dyn Trait<..>`.  Thus it would be a breaking change to make the warning an error.
+
+Given the potential utility, I would argue that the warning should at a minimum
+be reworded, and perhaps renamed.
 
 ## No nested coercions
 

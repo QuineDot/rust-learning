@@ -57,12 +57,13 @@ even when elided.
 
 ### Associated Types
 
-If a trait has non-generic associated types, those associated types become
+If a trait has non-generic associated types, those associated types usually become
 named parameters of `dyn Trait`:
 ```rust
 let _: Box<dyn Iterator<Item = i32>> = Box::new([1, 2, 3].into_iter());
 ```
-We explore this some more [in a later section.](./dyn-trait-coercions.md#associated-types)
+We explore associated types in `dyn Trait` more
+[in a later section.](./dyn-trait-coercions.md#associated-types)
 
 ## What `dyn Trait` is *not*
 
