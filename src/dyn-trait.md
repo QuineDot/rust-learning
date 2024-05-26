@@ -1,4 +1,4 @@
-# Sectional introduction
+# A tour of `dyn Trait`
 
 Rust's type-erasing `dyn Trait` offers a way to treat different implementors
 of a trait in a homogenous fashion while remaining strictly and statically
