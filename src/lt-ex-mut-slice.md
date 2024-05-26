@@ -193,7 +193,7 @@ for x in iter {
 }
 ```
 
-Finally, a working version!  `split_first_mut` is a form of [borrow splitting,](http://localhost:3000/lifetime-analysis.html#independently-borrowing-fields)
+Finally, a working version!  `split_first_mut` is a form of [borrow splitting,](./lifetime-analysis.md#independently-borrowing-fields)
 which we briefly mentioned before.
 
 And for the sake of completion, here's the pattern based approach to borrow splitting:

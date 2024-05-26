@@ -14,6 +14,10 @@ the growing pains of learning Rust.
 In this section we outline the basics of understanding lifetimes and borrowing for
 those who are struggling with understanding borrow check errors.
 
+## [Miscellanea](./miscellanea.md)
+
+This section collects relatively small and self-contained tutorials and other tidbits.
+
 ## [A tour of `dyn Trait`](./dyn-trait.md)
 
 In this section we explore what `dyn Trait` is and is not, go over its limitations

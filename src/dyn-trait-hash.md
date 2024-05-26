@@ -179,7 +179,7 @@ impl Hash for dyn Trait {
 
 ## Closing remarks
 
-[Borrowing a concrete type](dyn-trait-borrow.html) is probably a better approach if it applies
+[Borrowing a concrete type](./dyn-trait-borrow.md) is probably a better approach if it applies
 to your use case, since it doesn't require `Any + 'static`.
 
 Although terribly inefficient, an implementation of `Hash` that returns the hash for everything
@@ -197,6 +197,6 @@ impl<T: Hash> DynHash for T {
 The reason I went with the less general implementation is two-fold:
 - It wasn't needed for the example
 - Prudency: because we `impl Hash for dyn DynHash`, it technically overlaps with the compiler's implementation of `DynHash for dyn DynHash`.
-[See the final paragraph of this subsection.](http://localhost:3000/dyn-trait-impls.html#the-implementation-cannot-be-directly-overrode)
+[See the final paragraph of this subsection.](./dyn-trait-impls.md#the-implementation-cannot-be-directly-overrode)
 
 
