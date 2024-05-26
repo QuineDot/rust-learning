@@ -42,6 +42,12 @@
   - [Mutable slice iterator](lt-ex-mut-slice.md)
 - [Circle back](circle.md)
 
+---
+
+# Miscellanea
+
+- [Sectional introduction](miscellanea.md)
+- [Slice layout](misc-slice.md)
 
 ---
 
