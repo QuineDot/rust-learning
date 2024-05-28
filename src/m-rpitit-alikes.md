@@ -14,7 +14,7 @@ The same is true when you use `return`-position `impl Trait` (RPIT) in traits (R
 ```rust,compile_fail
 # struct MyStruct {}
 trait StringIter {
-	fn iter(&self) -> impl Iterator<Item = String>;
+    fn iter(&self) -> impl Iterator<Item = String>;
 }
 
 impl StringIter for MyStruct {
