@@ -48,6 +48,7 @@
 
 - [Sectional introduction](miscellanea.md)
 - [Slice layout](misc-slice.md)
+- [Default parameter mechanics](misc-default-param.md)
 
 ---
 
