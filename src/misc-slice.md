@@ -67,7 +67,7 @@ shared or exclusive slice.
 ## Other types
 
 A [`String`](https://doc.rust-lang.org/std/string/struct.String.html) is, under the hood,
-like a `Vec<u8>` which has additional guarantees -- namely, that the bytes are valid UTF8. 
+like a `Vec<u8>` which has additional guarantees -- namely, that the bytes are valid UTF8.
 A [`&str`](https://doc.rust-lang.org/std/primitive.str.html) is like a `&[u8]` that has the
 same guarantee.  You can index into a `String` with a range and get back a `&str`
 (or `&mut str`). Like `[u8]`, a `str` is unsized, which is why you're almost always working
@@ -107,7 +107,7 @@ Technically, just a single `T` is like a `[T; 1]` (it has the same layout in mem
 So if you squint just right, every owned `T` is also a form of owned slice, but with
 a compile-time known length of 1.  And indeed, you can create
 [`&[T]`](https://doc.rust-lang.org/std/slice/fn.from_ref.html)
-and [`&mut [T]`](https://doc.rust-lang.org/std/slice/fn.from_mut.html) 
+and [`&mut [T]`](https://doc.rust-lang.org/std/slice/fn.from_mut.html)
 ([and array versions too](https://doc.rust-lang.org/std/array/index.html#functions))
 from `&T` and `&mut T`.
 
@@ -124,7 +124,7 @@ Here's a graphical representation of the layout of slices, shared slices,
   V
 +---+---+---+---+---+---+---+---+
 | D | A | T | A | . | . | . | ......    [T] (or str, Path, ...)
-+---+---+---+---+---+---+---+---+   
++---+---+---+---+---+---+---+---+
   ^
   |
 +---+---+---+---+---+---+---+---+---+---+---+---+
@@ -165,7 +165,7 @@ The layout of an array is the same as a slice, except the length is known.
   V
 +---+---+---+---+---+---+---+
 | D | A | T | A | . | . | . | [T; N] (or str, Path, ...)
-+---+---+---+---+---+---+---+   
++---+---+---+---+---+---+---+
   ^
   |
 +---+---+---+---+
