@@ -1,0 +1,603 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn PartialEq - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Practical suggestions for building intuition around borrow errors</li><li class="chapter-item "><a href="lifetime-intuition.html"><strong aria-hidden="true">1.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="community.html"><strong aria-hidden="true">2.</strong> Keep at it and participate in the community</a></li><li class="chapter-item "><a href="have-no-life.html"><strong aria-hidden="true">3.</strong> Prefer ownership over long-lived references</a></li><li class="chapter-item "><a href="dont-hide.html"><strong aria-hidden="true">4.</strong> Don't hide lifetimes</a></li><li class="chapter-item "><a href="elision.html"><strong aria-hidden="true">5.</strong> Understand elision and get a feel for when to name lifetimes</a></li><li class="chapter-item "><a href="subtypes.html"><strong aria-hidden="true">6.</strong> Get a feel for variance, references, and reborrows</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="st-model.html"><strong aria-hidden="true">6.1.</strong> The seed of a mental model</a></li><li class="chapter-item "><a href="st-types.html"><strong aria-hidden="true">6.2.</strong> Reference types</a></li><li class="chapter-item "><a href="st-bounds.html"><strong aria-hidden="true">6.3.</strong> Lifetime bounds</a></li><li class="chapter-item "><a href="st-references.html"><strong aria-hidden="true">6.4.</strong> Reference lifetimes</a></li><li class="chapter-item "><a href="st-reborrow.html"><strong aria-hidden="true">6.5.</strong> Copy and reborrows</a></li><li class="chapter-item "><a href="st-invariance.html"><strong aria-hidden="true">6.6.</strong> Nested borrows and invariance</a></li><li class="chapter-item "><a href="st-more-invariance.html"><strong aria-hidden="true">6.7.</strong> Invariance elsewhere</a></li><li class="chapter-item "><a href="st-non-references.html"><strong aria-hidden="true">6.8.</strong> Non-references</a></li></ol></li><li class="chapter-item "><a href="methods.html"><strong aria-hidden="true">7.</strong> Get a feel for borrow-returning methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="m-naming.html"><strong aria-hidden="true">7.1.</strong> When not to name lifetimes</a></li><li class="chapter-item "><a href="m-infect.html"><strong aria-hidden="true">7.2.</strong> Bound-related lifetimes "infect" each other</a></li><li class="chapter-item "><a href="m-no-downgrades.html"><strong aria-hidden="true">7.3.</strong> &mut inputs don't "downgrade" to &</a></li><li class="chapter-item "><a href="m-rpitit-alikes.html"><strong aria-hidden="true">7.4.</strong> async and returning impl Trait</a></li></ol></li><li class="chapter-item "><a href="fn-parameters.html"><strong aria-hidden="true">8.</strong> Understand function lifetime parameters</a></li><li class="chapter-item "><a href="lifetime-analysis.html"><strong aria-hidden="true">9.</strong> Understand borrows within a function</a></li><li class="chapter-item "><a href="pitfalls.html"><strong aria-hidden="true">10.</strong> Learn some pitfalls and antipatterns</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="pf-dyn.html"><strong aria-hidden="true">10.1.</strong> dyn Trait lifetimes and Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="pf-nll3.html"><strong aria-hidden="true">10.2.</strong> Conditional return of a borrow</a></li><li class="chapter-item "><a href="pf-borrow-forever.html"><strong aria-hidden="true">10.3.</strong> Borrowing something forever</a></li><li class="chapter-item "><a href="pf-self.html"><strong aria-hidden="true">10.4.</strong> &'a mut self and Self aliasing more generally</a></li><li class="chapter-item "><a href="pf-meta.html"><strong aria-hidden="true">10.5.</strong> Avoid self-referential structs</a></li><li class="chapter-item "><a href="pf-shared-nested.html"><strong aria-hidden="true">10.6.</strong> &'a Struct&lt;'a&gt; and covariance</a></li></ol></li><li class="chapter-item "><a href="compiler.html"><strong aria-hidden="true">11.</strong> Scrutinize compiler advice</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="c-signatures.html"><strong aria-hidden="true">11.1.</strong> Advice to change function signature when aliases are involved</a></li><li class="chapter-item "><a href="c-equality.html"><strong aria-hidden="true">11.2.</strong> Advice to add bound which implies lifetime equality</a></li><li class="chapter-item "><a href="c-static.html"><strong aria-hidden="true">11.3.</strong> Advice to add a static bound</a></li></ol></li><li class="chapter-item "><a href="lt-examples.html"><strong aria-hidden="true">12.</strong> Illustrative examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="lt-ex-mut-slice.html"><strong aria-hidden="true">12.1.</strong> Mutable slice iterator</a></li></ol></li><li class="chapter-item "><a href="circle.html"><strong aria-hidden="true">13.</strong> Circle back</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Miscellanea</li><li class="chapter-item "><a href="miscellanea.html"><strong aria-hidden="true">14.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="misc-slice.html"><strong aria-hidden="true">15.</strong> Slice layout</a></li><li class="chapter-item "><a href="misc-default-param.html"><strong aria-hidden="true">16.</strong> Default parameter mechanics</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">A tour of dyn Trait</li><li class="chapter-item "><a href="dyn-trait.html"><strong aria-hidden="true">17.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="dyn-trait-overview.html"><strong aria-hidden="true">18.</strong> dyn Trait overview</a></li><li class="chapter-item "><a href="dyn-trait-impls.html"><strong aria-hidden="true">19.</strong> dyn Trait implementations</a></li><li class="chapter-item "><a href="dyn-trait-coercions.html"><strong aria-hidden="true">20.</strong> dyn Trait coercions</a></li><li class="chapter-item "><a href="dyn-safety.html"><strong aria-hidden="true">21.</strong> dyn safety (object safety)</a></li><li class="chapter-item "><a href="dyn-trait-lifetime.html"><strong aria-hidden="true">22.</strong> dyn Trait lifetimes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-covariance.html"><strong aria-hidden="true">22.1.</strong> Variance</a></li><li class="chapter-item "><a href="dyn-hr.html"><strong aria-hidden="true">22.2.</strong> Higher-ranked types</a></li><li class="chapter-item "><a href="dyn-elision.html"><strong aria-hidden="true">22.3.</strong> Elision rules</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-elision-basic.html"><strong aria-hidden="true">22.3.1.</strong> Basic guidelines</a></li><li class="chapter-item "><a href="dyn-elision-advanced.html"><strong aria-hidden="true">22.3.2.</strong> Advanced guidelines</a></li><li class="chapter-item "><a href="dyn-elision-trait-bounds.html"><strong aria-hidden="true">22.3.3.</strong> Trait bound interactions</a></li><li class="chapter-item "><a href="dyn-elision-citations.html"><strong aria-hidden="true">22.3.4.</strong> Citations</a></li></ol></li></ol></li><li class="chapter-item "><a href="dyn-trait-vs.html"><strong aria-hidden="true">23.</strong> dyn Trait vs. alternatives</a></li><li class="chapter-item expanded "><a href="dyn-trait-examples.html"><strong aria-hidden="true">24.</strong> dyn Trait examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-trait-combining.html"><strong aria-hidden="true">24.1.</strong> Combining traits</a></li><li class="chapter-item "><a href="dyn-trait-box-impl.html"><strong aria-hidden="true">24.2.</strong> impl Trait for Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-clone.html"><strong aria-hidden="true">24.3.</strong> Cloneable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item expanded "><a href="dyn-trait-eq.html" class="active"><strong aria-hidden="true">24.4.</strong> dyn PartialEq</a></li><li class="chapter-item "><a href="dyn-trait-borrow.html"><strong aria-hidden="true">24.5.</strong> Generalizing borrows</a></li><li class="chapter-item "><a href="dyn-trait-erased.html"><strong aria-hidden="true">24.6.</strong> Erased traits</a></li><li class="chapter-item "><a href="dyn-trait-hash.html"><strong aria-hidden="true">24.7.</strong> Hashable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-any-examples.html"><strong aria-hidden="true">24.8.</strong> dyn Any examples</a></li></ol></li><li class="chapter-item "><a href="dyn-any.html"><strong aria-hidden="true">25.</strong> dyn Any</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="downcasting-self-parameters"><a class="header" href="#downcasting-self-parameters">Downcasting <code>Self</code> parameters</a></h1>
+<p>Now let's move on to something a little more complicated.  We
+<a href="./dyn-safety.html#use-of-self-limitations">mentioned before</a> that
+<code>Self</code> is not accepted outside of the receiver, such as when it's
+another parameter, as there is no guarantee that the other
+parameter has the same base type as the receiver (and if they
+are not the same base type, there is no actual implementation to
+call).</p>
+<p>Let's see how we can work around this to implement
+<a href="https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html"><code>PartialOrd</code></a>
+for <code>dyn Trait</code>, despite the <code>&amp;Self</code> parameter.  The trait is a good
+fit in the face of type erasure, as we can just return <code>None</code> when
+the types don't match, indicating that comparison is not possible.</p>
+<p><code>PartialOrd</code> requires <code>PartialEq</code>, so we'll tackle that as well.</p>
+<h2 id="downcasting-with-dyn-any-to-emulate-dynamic-typing"><a class="header" href="#downcasting-with-dyn-any-to-emulate-dynamic-typing">Downcasting with <code>dyn Any</code> to emulate dynamic typing</a></h2>
+<p>We haven't had to use <code>dyn Any</code> in the previous examples, because
+we've been able to maneuver our implementations in such a way that
+dynamic dispatch implicitly "downcasted" our erased types to their
+concrete base types for us.  It's able to do this because the pointer
+to the base type is coupled with a vtable that only accepts said base
+type, and there is no need for actual dynamic typing or comparing types
+at runtime.  The conversion is infallible for those cases.</p>
+<p>However, now we have two wide pointers which may point to different
+base types.  In this particular application, we only really need to
+know if they have the same base type or not... though it would be
+nice to have some <em>safe</em> way to recover the erased type of non-receiver
+too, instead of whatever casting shenanigans might be necessary.</p>
+<p>You might think you could somehow use the vtable pointers to see if
+the base types are the same.  But unfortunately, <a href="https://doc.rust-lang.org/std/ptr/fn.eq.html">we can't rely on the
+vtable to compare their types at runtime.</a></p>
+<blockquote>
+<p>When comparing wide pointers, both the address and the metadata are
+tested for equality. However, note that comparing trait object pointers
+(<code>*const dyn Trait</code>) is unreliable: pointers to values of the same
+underlying type can compare unequal (because vtables are duplicated in
+multiple codegen units), and pointers to values of different underlying
+type can compare equal (since identical vtables can be deduplicated
+within a codegen unit).</p>
+</blockquote>
+<p>That's right, false negatives <em>and</em> false positives.  Fun!</p>
+<p>So we need a different mechanism to compare types and know when we
+have two wide pointers to the same base type, and that's where <code>dyn Any</code>
+comes in.  <a href="https://doc.rust-lang.org/std/any/trait.Any.html"><code>Any</code></a> is
+the trait to emulate dynamic typing, and
+<a href="https://doc.rust-lang.org/std/any/trait.Any.html#implementations">many fallible downcasting methods</a>
+are supplied for the type-erased forms of <code>dyn Any</code>, <code>Box&lt;dyn Any + Send&gt;</code>,
+et cetera.  This will allow us to not just compare for base type equality,
+but also to safely recover the erased base type ("downcast").</p>
+<p>The <code>Any</code> trait comes with a <code>'static</code> constraint for soundness reasons,
+so note that our base types are going to be more limited for this example.</p>
+<p>Additionally, the <a href="dyn-trait-coercions.html#supertrait-upcasting">lack of supertrait upcasting</a>
+is going to make things less ergonomic than they will be once that feature is
+available.</p>
+<p>One last side note, <a href="./dyn-any.html">we look at <code>dyn Any</code> in a bit more detail later.</a></p>
+<p>Well enough meta, let's dive in!</p>
+<h2 id="partialeq"><a class="header" href="#partialeq"><code>PartialEq</code></a></h2>
+<p>The general idea is that we're going to have a comparison trait, <code>DynCompare</code>,
+and then implement <code>PartialEq</code> for <code>dyn DynCompare</code> in a universal manner.
+Then our actual trait (<code>Trait</code>) can have <code>DynCompare</code> as a supertrait, and
+implement <code>PartialEq</code> for <code>dyn Trait</code> by upcasting to <code>dyn DynCompare</code>.</p>
+<p>In the implementation for <code>dyn DynCompare</code>, we're going to have to (attempt to)
+downcast to the erased base type.  For that to be available we will need to
+first be able to upcast from <code>dyn DynCompare</code> to <code>dyn Any</code>.</p>
+<p>As the first step, we're going to use the "supertrait we can blanket implement"
+pattern yet again to make a trait that can handle all of our supertrait upcasting needs.</p>
+<p>Here it is, <a href="dyn-trait-combining.html#manual-supertrait-upcasting">similar to how we've done it before:</a></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::any::Any;
+
+trait AsDynCompare: Any {
+    fn as_any(&amp;self) -&gt; &amp;dyn Any;
+    fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare;
+}
+
+// Sized types only
+impl&lt;T: Any + DynCompare&gt; AsDynCompare for T {
+    fn as_any(&amp;self) -&gt; &amp;dyn Any {
+        self
+    }
+    fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare {
+        self
+    }
+}
+
+trait DynCompare: AsDynCompare {
+    fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>There's an <code>Any: 'static</code> bound which applies to <code>dyn Any + '_</code>, so
+<a href="dyn-elision-trait-bounds.html#the-static-case">all of those <code>&amp;dyn Any</code> are actually <code>&amp;dyn Any + 'static</code>.</a>
+I have also included an <code>Any</code> supertrait to <code>AsDynCompare</code>, so the
+"always <code>'static</code>" property holds for <code>&amp;dyn DynCompare</code> as well, even
+though it isn't strictly necessary.  This way, we don't have to worry
+about being flexible with the trait object lifetime at all -- it is
+just always <code>'static</code>.</p>
+<p>The downside is that only base types that satisfy the <code>'static</code> bound
+can be supported, so there may be niche circumstances where you don't
+want to include the supertrait bound.  However, given that we need to
+upcast to <code>dyn Any</code>, this must mean you're pretending to be another
+type, which seems quite niche indeed.  If you do try the non-<code>'static</code>
+route for your own use case, note that some of the implementations in
+this example could be made more general.</p>
+<p>Anyway, let's move on to performing cross-type equality checking:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">
+</span><span class="boring">trait AsDynCompare: Any {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any;
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;T: Any + DynCompare&gt; AsDynCompare for T {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait DynCompare: AsDynCompare {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
+</span><span class="boring">}
+</span>impl&lt;T: Any + PartialEq&gt; DynCompare for T {
+    fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+        if let Some(other) = other.as_any().downcast_ref::&lt;Self&gt;() {
+            self == other
+        } else {
+            false
+        }
+    }
+}
+
+// n.b. this could be implemented in a more general way when
+// the trait object lifetime is not constrained to `'static`
+impl PartialEq&lt;dyn DynCompare&gt; for dyn DynCompare {
+    fn eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+        self.dyn_eq(other)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Here we've utilized our <code>dyn Any</code> upcasting to try and recover a
+parameter of our own base type, and if successful, do the actual
+(partial) comparison.  Otherwise we say they're not equal.</p>
+<p>This allows us to implement <code>PartialEq</code> for <code>dyn Compare</code>.</p>
+<p>Then we want to wire this functionality up to our actual trait:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">
+</span><span class="boring">trait AsDynCompare: Any {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any;
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;T: Any + DynCompare&gt; AsDynCompare for T {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait DynCompare: AsDynCompare {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
+</span><span class="boring">}
+</span><span class="boring">impl&lt;T: Any + PartialEq&gt; DynCompare for T {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       if let Some(other) = other.as_any().downcast_ref::&lt;Self&gt;() {
+</span><span class="boring">           self == other
+</span><span class="boring">       } else {
+</span><span class="boring">           false
+</span><span class="boring">       }
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl PartialEq&lt;dyn DynCompare&gt; for dyn DynCompare {
+</span><span class="boring">   fn eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       self.dyn_eq(other)
+</span><span class="boring">   }
+</span><span class="boring">}
+</span>trait Trait: DynCompare {}
+impl Trait for i32 {}
+impl Trait for bool {}
+
+impl PartialEq&lt;dyn Trait&gt; for dyn Trait {
+    fn eq(&amp;self, other: &amp;dyn Trait) -&gt; bool {
+        self.as_dyn_compare() == other.as_dyn_compare()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The supertrait bound does most of the work, and we just use
+upcasting again -- to <code>dyn DynCompare</code> this time -- to be
+able to perform <code>PartialEq</code> on our <code>dyn Trait</code>.</p>
+<p><a href="https://doc.rust-lang.org/std/cmp/trait.PartialEq.html#impl-PartialEq%3CBox%3CT,+A%3E%3E-for-Box%3CT,+A%3E">A blanket implementation in <code>std</code></a>
+gives us <code>PartialEq</code> for <code>Box&lt;dyn Trait&gt;</code> automatically.</p>
+<p>Now let's try it out:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">use std::any::Any;
+</span><span class="boring">
+</span><span class="boring">trait AsDynCompare: Any {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any;
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;T: Any + DynCompare&gt; AsDynCompare for T {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait DynCompare: AsDynCompare {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;T: Any + PartialEq&gt; DynCompare for T {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       if let Some(other) = other.as_any().downcast_ref::&lt;Self&gt;() {
+</span><span class="boring">           self == other
+</span><span class="boring">       } else {
+</span><span class="boring">           false
+</span><span class="boring">       }
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl PartialEq&lt;dyn DynCompare&gt; for dyn DynCompare {
+</span><span class="boring">   fn eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       self.dyn_eq(other)
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait Trait: DynCompare {}
+</span><span class="boring">impl Trait for i32 {}
+</span><span class="boring">impl Trait for bool {}
+</span><span class="boring">
+</span><span class="boring">impl PartialEq&lt;dyn Trait&gt; for dyn Trait {
+</span><span class="boring">   fn eq(&amp;self, other: &amp;dyn Trait) -&gt; bool {
+</span><span class="boring">       self.as_dyn_compare() == other.as_dyn_compare()
+</span><span class="boring">   }
+</span><span class="boring">}
+</span>fn main() {
+    let bx1a: Box&lt;dyn Trait&gt; = Box::new(1);
+    let bx1b: Box&lt;dyn Trait&gt; = Box::new(1);
+    let bx2: Box&lt;dyn Trait&gt; = Box::new(2);
+    let bx3: Box&lt;dyn Trait&gt; = Box::new(true);
+
+    println!("{}", bx1a == bx1a);
+    println!("{}", bx1a == bx1b);
+    println!("{}", bx1a == bx2);
+    println!("{}", bx1a == bx3);
+}</code></pre></pre>
+<p>Uh... it didn't work, but for weird reasons.  Why is it trying to move out of the
+<code>Box</code> for a comparison?  As it turns out, this is <a href="https://github.com/rust-lang/rust/issues/31740">a longstanding bug in the
+language.</a> Fortunately that issue
+also offers a workaround that's ergonomic at the use site: implement <code>PartialEq&lt;&amp;Self&gt;</code>
+too.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">use std::any::Any;
+</span><span class="boring">
+</span><span class="boring">trait AsDynCompare: Any {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any;
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">// Sized types only
+</span><span class="boring">impl&lt;T: Any + DynCompare&gt; AsDynCompare for T {
+</span><span class="boring">   fn as_any(&amp;self) -&gt; &amp;dyn Any {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">   fn as_dyn_compare(&amp;self) -&gt; &amp;dyn DynCompare {
+</span><span class="boring">       self
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait DynCompare: AsDynCompare {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;T: Any + PartialEq&gt; DynCompare for T {
+</span><span class="boring">   fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       if let Some(other) = other.as_any().downcast_ref::&lt;Self&gt;() {
+</span><span class="boring">           self == other
+</span><span class="boring">       } else {
+</span><span class="boring">           false
+</span><span class="boring">       }
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl PartialEq&lt;dyn DynCompare&gt; for dyn DynCompare {
+</span><span class="boring">   fn eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+</span><span class="boring">       self.dyn_eq(other)
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">trait Trait: DynCompare {}
+</span><span class="boring">impl Trait for i32 {}
+</span><span class="boring">impl Trait for bool {}
+</span><span class="boring">
+</span><span class="boring">impl PartialEq&lt;dyn Trait&gt; for dyn Trait {
+</span><span class="boring">   fn eq(&amp;self, other: &amp;dyn Trait) -&gt; bool {
+</span><span class="boring">       self.as_dyn_compare() == other.as_dyn_compare()
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">
+</span>// New
+impl PartialEq&lt;&amp;Self&gt; for Box&lt;dyn Trait&gt; {
+    fn eq(&amp;self, other: &amp;&amp;Self) -&gt; bool {
+        &lt;Self as PartialEq&gt;::eq(self, *other)
+    }
+}
+
+fn main() {
+    let bx1a: Box&lt;dyn Trait&gt; = Box::new(1);
+    let bx1b: Box&lt;dyn Trait&gt; = Box::new(1);
+    let bx2: Box&lt;dyn Trait&gt; = Box::new(2);
+    let bx3: Box&lt;dyn Trait&gt; = Box::new(true);
+
+    println!("{}", bx1a == bx1a);
+    println!("{}", bx1a == bx1b);
+    println!("{}", bx1a == bx2);
+    println!("{}", bx1a == bx3);
+}</code></pre></pre>
+<p>Ok, now it works.  Phew!</p>
+<h2 id="partialord"><a class="header" href="#partialord"><code>PartialOrd</code></a></h2>
+<p>From here it's mostly mechanical to add <code>PartialOrd</code> support:</p>
+<pre><code class="language-diff">+use core::cmp::Ordering;
+
+ trait DynCompare: AsDynCompare {
+     fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool;
++    fn dyn_partial_cmp(&amp;self, other: &amp;dyn DynCompare) -&gt; Option&lt;Ordering&gt;;
+ }
+
+-impl&lt;T: Any + PartialEq&gt; DynCompare for T {
++impl&lt;T: Any + PartialOrd&gt; DynCompare for T {
+     fn dyn_eq(&amp;self, other: &amp;dyn DynCompare) -&gt; bool {
+         if let Some(other) = other.as_any().downcast_ref::&lt;Self&gt;() {
+             self == other
+         } else {
+             false
+         }
+     }
++
++    fn dyn_partial_cmp(&amp;self, other: &amp;dyn DynCompare) -&gt; Option&lt;Ordering&gt; {
++        other
++            .as_any()
++            .downcast_ref::&lt;Self&gt;()
++            .and_then(|other| self.partial_cmp(other))
++    }
+ }
+
++impl PartialOrd&lt;dyn DynCompare&gt; for dyn DynCompare {
++    fn partial_cmp(&amp;self, other: &amp;dyn DynCompare) -&gt; Option&lt;Ordering&gt; {
++        self.dyn_partial_cmp(other)
++    }
++}
+
++impl PartialOrd&lt;dyn Trait&gt; for dyn Trait {
++    fn partial_cmp(&amp;self, other: &amp;dyn Trait) -&gt; Option&lt;Ordering&gt; {
++        self.as_dyn_compare().partial_cmp(other.as_dyn_compare())
++    }
++}
+
++impl PartialOrd&lt;&amp;Self&gt; for Box&lt;dyn Trait&gt; {
++    fn partial_cmp(&amp;self, other: &amp;&amp;Self) -&gt; Option&lt;Ordering&gt; {
++        &lt;Self as PartialOrd&gt;::partial_cmp(self, *other)
++    }
++}
+</code></pre>
+<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=8142d76abd2b2a4ef75950029e035371">Here's the final playground.</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-trait-clone.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-trait-borrow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-trait-clone.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-trait-borrow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

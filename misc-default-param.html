@@ -1,0 +1,716 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Default parameter mechanics - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Practical suggestions for building intuition around borrow errors</li><li class="chapter-item "><a href="lifetime-intuition.html"><strong aria-hidden="true">1.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="community.html"><strong aria-hidden="true">2.</strong> Keep at it and participate in the community</a></li><li class="chapter-item "><a href="have-no-life.html"><strong aria-hidden="true">3.</strong> Prefer ownership over long-lived references</a></li><li class="chapter-item "><a href="dont-hide.html"><strong aria-hidden="true">4.</strong> Don't hide lifetimes</a></li><li class="chapter-item "><a href="elision.html"><strong aria-hidden="true">5.</strong> Understand elision and get a feel for when to name lifetimes</a></li><li class="chapter-item "><a href="subtypes.html"><strong aria-hidden="true">6.</strong> Get a feel for variance, references, and reborrows</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="st-model.html"><strong aria-hidden="true">6.1.</strong> The seed of a mental model</a></li><li class="chapter-item "><a href="st-types.html"><strong aria-hidden="true">6.2.</strong> Reference types</a></li><li class="chapter-item "><a href="st-bounds.html"><strong aria-hidden="true">6.3.</strong> Lifetime bounds</a></li><li class="chapter-item "><a href="st-references.html"><strong aria-hidden="true">6.4.</strong> Reference lifetimes</a></li><li class="chapter-item "><a href="st-reborrow.html"><strong aria-hidden="true">6.5.</strong> Copy and reborrows</a></li><li class="chapter-item "><a href="st-invariance.html"><strong aria-hidden="true">6.6.</strong> Nested borrows and invariance</a></li><li class="chapter-item "><a href="st-more-invariance.html"><strong aria-hidden="true">6.7.</strong> Invariance elsewhere</a></li><li class="chapter-item "><a href="st-non-references.html"><strong aria-hidden="true">6.8.</strong> Non-references</a></li></ol></li><li class="chapter-item "><a href="methods.html"><strong aria-hidden="true">7.</strong> Get a feel for borrow-returning methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="m-naming.html"><strong aria-hidden="true">7.1.</strong> When not to name lifetimes</a></li><li class="chapter-item "><a href="m-infect.html"><strong aria-hidden="true">7.2.</strong> Bound-related lifetimes "infect" each other</a></li><li class="chapter-item "><a href="m-no-downgrades.html"><strong aria-hidden="true">7.3.</strong> &mut inputs don't "downgrade" to &</a></li><li class="chapter-item "><a href="m-rpitit-alikes.html"><strong aria-hidden="true">7.4.</strong> async and returning impl Trait</a></li></ol></li><li class="chapter-item "><a href="fn-parameters.html"><strong aria-hidden="true">8.</strong> Understand function lifetime parameters</a></li><li class="chapter-item "><a href="lifetime-analysis.html"><strong aria-hidden="true">9.</strong> Understand borrows within a function</a></li><li class="chapter-item "><a href="pitfalls.html"><strong aria-hidden="true">10.</strong> Learn some pitfalls and antipatterns</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="pf-dyn.html"><strong aria-hidden="true">10.1.</strong> dyn Trait lifetimes and Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="pf-nll3.html"><strong aria-hidden="true">10.2.</strong> Conditional return of a borrow</a></li><li class="chapter-item "><a href="pf-borrow-forever.html"><strong aria-hidden="true">10.3.</strong> Borrowing something forever</a></li><li class="chapter-item "><a href="pf-self.html"><strong aria-hidden="true">10.4.</strong> &'a mut self and Self aliasing more generally</a></li><li class="chapter-item "><a href="pf-meta.html"><strong aria-hidden="true">10.5.</strong> Avoid self-referential structs</a></li><li class="chapter-item "><a href="pf-shared-nested.html"><strong aria-hidden="true">10.6.</strong> &'a Struct&lt;'a&gt; and covariance</a></li></ol></li><li class="chapter-item "><a href="compiler.html"><strong aria-hidden="true">11.</strong> Scrutinize compiler advice</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="c-signatures.html"><strong aria-hidden="true">11.1.</strong> Advice to change function signature when aliases are involved</a></li><li class="chapter-item "><a href="c-equality.html"><strong aria-hidden="true">11.2.</strong> Advice to add bound which implies lifetime equality</a></li><li class="chapter-item "><a href="c-static.html"><strong aria-hidden="true">11.3.</strong> Advice to add a static bound</a></li></ol></li><li class="chapter-item "><a href="lt-examples.html"><strong aria-hidden="true">12.</strong> Illustrative examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="lt-ex-mut-slice.html"><strong aria-hidden="true">12.1.</strong> Mutable slice iterator</a></li></ol></li><li class="chapter-item "><a href="circle.html"><strong aria-hidden="true">13.</strong> Circle back</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Miscellanea</li><li class="chapter-item "><a href="miscellanea.html"><strong aria-hidden="true">14.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="misc-slice.html"><strong aria-hidden="true">15.</strong> Slice layout</a></li><li class="chapter-item expanded "><a href="misc-default-param.html" class="active"><strong aria-hidden="true">16.</strong> Default parameter mechanics</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">A tour of dyn Trait</li><li class="chapter-item "><a href="dyn-trait.html"><strong aria-hidden="true">17.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="dyn-trait-overview.html"><strong aria-hidden="true">18.</strong> dyn Trait overview</a></li><li class="chapter-item "><a href="dyn-trait-impls.html"><strong aria-hidden="true">19.</strong> dyn Trait implementations</a></li><li class="chapter-item "><a href="dyn-trait-coercions.html"><strong aria-hidden="true">20.</strong> dyn Trait coercions</a></li><li class="chapter-item "><a href="dyn-safety.html"><strong aria-hidden="true">21.</strong> dyn safety (object safety)</a></li><li class="chapter-item "><a href="dyn-trait-lifetime.html"><strong aria-hidden="true">22.</strong> dyn Trait lifetimes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-covariance.html"><strong aria-hidden="true">22.1.</strong> Variance</a></li><li class="chapter-item "><a href="dyn-hr.html"><strong aria-hidden="true">22.2.</strong> Higher-ranked types</a></li><li class="chapter-item "><a href="dyn-elision.html"><strong aria-hidden="true">22.3.</strong> Elision rules</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-elision-basic.html"><strong aria-hidden="true">22.3.1.</strong> Basic guidelines</a></li><li class="chapter-item "><a href="dyn-elision-advanced.html"><strong aria-hidden="true">22.3.2.</strong> Advanced guidelines</a></li><li class="chapter-item "><a href="dyn-elision-trait-bounds.html"><strong aria-hidden="true">22.3.3.</strong> Trait bound interactions</a></li><li class="chapter-item "><a href="dyn-elision-citations.html"><strong aria-hidden="true">22.3.4.</strong> Citations</a></li></ol></li></ol></li><li class="chapter-item "><a href="dyn-trait-vs.html"><strong aria-hidden="true">23.</strong> dyn Trait vs. alternatives</a></li><li class="chapter-item "><a href="dyn-trait-examples.html"><strong aria-hidden="true">24.</strong> dyn Trait examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-trait-combining.html"><strong aria-hidden="true">24.1.</strong> Combining traits</a></li><li class="chapter-item "><a href="dyn-trait-box-impl.html"><strong aria-hidden="true">24.2.</strong> impl Trait for Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-clone.html"><strong aria-hidden="true">24.3.</strong> Cloneable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-eq.html"><strong aria-hidden="true">24.4.</strong> dyn PartialEq</a></li><li class="chapter-item "><a href="dyn-trait-borrow.html"><strong aria-hidden="true">24.5.</strong> Generalizing borrows</a></li><li class="chapter-item "><a href="dyn-trait-erased.html"><strong aria-hidden="true">24.6.</strong> Erased traits</a></li><li class="chapter-item "><a href="dyn-trait-hash.html"><strong aria-hidden="true">24.7.</strong> Hashable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-any-examples.html"><strong aria-hidden="true">24.8.</strong> dyn Any examples</a></li></ol></li><li class="chapter-item "><a href="dyn-any.html"><strong aria-hidden="true">25.</strong> dyn Any</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="default-parameter-mechanics"><a class="header" href="#default-parameter-mechanics">Default parameter mechanics</a></h1>
+<p>Default parameters in Rust are not as convenient as one might wish.
+<a href="https://rust-lang.github.io/rfcs/0213-defaulted-type-params.html">The RFC for default type parameters</a>
+was never fully completed; in particular, the "inference falls back to defaults"
+parts have been delayed indefinitely.  As a result, there are times where default
+parameters don't kick in, and you have to either be explicit or use other
+workarounds.  It can also be unclear why the workarounds act differently.</p>
+<p><a href="https://github.com/rust-lang/reference/issues/24">Default parameters are also not in the reference yet.</a></p>
+<p>This page exists to explain the mechanics behind default parameters as they
+exist today, and to clear up exactly what the workarounds mean.  For an exploration
+on how the interaction between inference and default parameters could be defined
+in the future, I recommend
+<a href="https://faultlore.com/blah/defaults-affect-inference/">this wonderful blog post by Gankra.</a></p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>The most likely reason you'll run into default parameters not "working" is because
+some expression desugars to replacing all type (and <code>const</code>) parameters with inference
+variables, in combination with the fact that inference variables do not fall back to the
+defaults.</p>
+<p>What are inference variables?  For types, an inference variable is the same as the
+"wildcard type" <code>_</code>, which tells the compiler to infer the type for you.
+<a href="https://github.com/rust-lang/rust/issues/85077"><code>_</code> cannot be used for <code>const</code> parameters as of yet,</a>
+but they can still be inferred implicitly.</p>
+<p>(For most of this guide, we'll be focused on types;
+<a href="#const-parameters">there's a subsection about <code>const</code> parameters specifically later.</a>)</p>
+<p>Let's see some examples of compilation failures involving defaulted parameters:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// `HashSet` will be our running example for a type with both required
+// (non-defaulted, non-lifetime) and defaulted parameters
+// struct HashSet&lt;Key, S = RandomState&gt; { .. }
+
+// The `insert` is enough for the compiler to infer the `Key` parameter, but
+// not the `S` parameter
+let mut hs = HashSet::default();
+hs.insert(String::new());
+
+// This means the same thing: *all* type (and const) parameters became
+// inference variables
+let mut hs = HashSet::&lt;_, _&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<p>This can be confusing because similar code just works:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// This compiles, but the compiler can figure `Key` out on its own, so why?
+let mut hs = HashSet::&lt;String&gt;::default();
+hs.insert(String::new());
+
+// And in fact... this compiles too!
+let mut hs = HashSet::&lt;_&gt;::default();
+hs.insert(String::new());
+
+// `new` doesn't have this problem, which may also be confusing
+let mut hs = HashSet::new();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<p>The errors can also arise when the type has defaults for of all the type (and <code>const</code>) parameters:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This will be our running example for a type where all non-lifetime
+// parameters have defaults
+pub enum Foo&lt;T = String&gt; {
+    Bar(T),
+    Baz,
+}
+
+// This fails because the elided parameter desugars to an inference variable
+let foo = Foo::Baz;
+
+// So this means the exact same thing
+let foo = Foo::&lt;_&gt;::Baz;
+<span class="boring">}</span></code></pre></pre>
+<p>And some of the workarounds may be even more confusing:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>// This works!
+let foo = &lt;Foo&gt;::Baz;
+<span class="boring">}</span></code></pre></pre>
+<p>We want to explain exactly which expressions end up being problematic, and why
+the workarounds solve the problem.</p>
+<h2 id="the-explanations-in-brief"><a class="header" href="#the-explanations-in-brief">The explanations in brief</a></h2>
+<p>First let's tackle why just wrapping the type in <code>&lt;&gt;</code> worked for that last example.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>let foo = &lt;Foo&gt;::Baz;
+<span class="boring">}</span></code></pre></pre>
+<p>The leading <code>&lt;Foo&gt;::</code> notation is called a
+"<a href="#more-about-qualified-path-expressions">qualified path type</a>".
+And the short answer to why it works is that, with respect to elided default
+parameters, types in <code>&lt;&gt;</code>s act the same as type ascription:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>// Also works
+let foo: Foo = Foo::Baz;
+<span class="boring">}</span></code></pre></pre>
+<p>Type ascription uses default parameters in a way that's probably closer to your intuition.
+(<a href="#type-position-mechanics-in-more-detail">We explore the details below.</a>)
+Note that types act like type ascription in <code>&lt;&gt;</code> elsewhere too, such as
+within a turbofish, not just as a qualified path type.</p>
+<p>As for the difference here:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// This fails if we change `HashSet::new()` to `HashSet::default()`
+let mut hs = HashSet::new();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<p>The example only works because <a href="https://doc.rust-lang.org/std/collections/struct.HashSet.html#implementations">HashSet::new</a>
+(and a number of other methods) is only defined for <code>HashSet&lt;_, RandomState&gt;</code>.
+In contrast, <code>Default</code> is implemented for all possible <code>HashSet&lt;_, _&gt;</code>.  So
+in a sense, this is a workaround on the side of the <code>HashSet</code> implementation!
+<a href="https://faultlore.com/blah/defaults-affect-inference/">If inference and default parameters worked together,</a>
+<code>new</code> would presumably be defined for all possible hashers, too.</p>
+<p>Finally, let's look at this workaround:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// Remember, `HashSet::default()` fails
+let mut hs = HashSet::&lt;_&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<p>The key difference here is that <em>if no required parameters are specified,</em>
+then <em>all</em> the type (and <code>const</code>) parameters -- <em>including defaulted parameters</em>
+-- are filled in with inference variables.  But if one or more non-lifetime
+parameter is specified, it desugars to a qualified type path -- where default
+parameters act the same as they do in type ascription.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// These are all the same and fail
+// let mut hs = HashSet::default();
+// let mut hs = HashSet::&lt;&gt;::default();
+// let mut hs = HashSet::&lt;_, _&gt;::default();
+let mut hs = &lt;HashSet::&lt;_, _&gt;&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// These are the same and succeed.
+// let mut hs = HashSet::&lt;_&gt;::default();
+let mut hs = &lt;HashSet&lt;_&gt;&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre></pre>
+<p>As is clear from the example, using <code>_</code> explicitly counts as specifying a type
+parameter.  Also note that the desugaring to "all parameters are inference
+variables" only happens when the type is not inside <code>&lt;&gt;</code>s.</p>
+<h2 id="type-position-mechanics-in-more-detail"><a class="header" href="#type-position-mechanics-in-more-detail">Type position mechanics in more detail</a></h2>
+<p>By "type position", we mean contexts where the language expects a type specifically.
+This includes variable type ascription, implementation headers, type parameter
+fields themselves, and qualified path types.</p>
+<p>In type position, you can only elide default parameters.  Elided default parameters are
+replaced by their default types (or <code>const</code> values) specifically (i.e. not inference variables).</p>
+<p>Let's see some examples:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span><span class="boring">use std::hash::RandomState;
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// These ascriptions mean the same thing
+//     vvvvvvvvvvv
+let e: Foo         = Foo::Baz;
+let e: Foo&lt;&gt;       = Foo::Baz;
+let e: Foo&lt;String&gt; = Foo::Baz;
+
+// These ascriptions mean the same thing
+//      vvvvvvvvvvvvvvvvvvvvvvvvvvvv
+let hs: HashSet&lt;String&gt;              = Default::default();
+let hs: HashSet&lt;String, RandomState&gt; = Default::default();
+<span class="boring">}</span></code></pre></pre>
+<p>The following errors demonstrate that elided parameters aren't inference variables,
+and that inference variables don't fall back to the defaults.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// Fails due to ambiguity
+let e: Foo&lt;_&gt; = Foo::Baz;
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span><span class="boring">use std::hash::RandomState;
+</span>// Fails due to ambiguity
+let hs: HashSet&lt;String, _&gt; = Default::default();
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// Fails because the elided type is exactly the default type (`String`)
+let e: Foo = Foo::Bar(0);
+<span class="boring">}</span></code></pre></pre>
+<p>The final example is the opposite situation from most of the examples we've seen:
+it's a case where you want inference to override defaults.  If you made the ascription
+<code>Foo&lt;_&gt;</code> it will compile (but a more trivial fix for this particular example is to
+just remove the redundant ascription).</p>
+<h2 id="more-about-qualified-path-expressions"><a class="header" href="#more-about-qualified-path-expressions">More about qualified path expressions</a></h2>
+<p>Types inside of <code>&lt;&gt;</code>s are in type position, and that includes qualified path expressions.</p>
+<p>A <a href="https://doc.rust-lang.org/reference/paths.html#qualified-paths">qualified path expressions</a>
+is when you have some path expression that starts with a segment contained in
+<code>&lt;&gt;</code>.  They were defined in <a href="https://rust-lang.github.io/rfcs/0132-ufcs.html">RFC 0132</a>
+and they come in two different forms:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>//      vvvvvvvv `&lt;T&gt;` where `T` is a type
+let s = &lt;String&gt;::default();
+
+//      vvvvvvvvvvvvvvvvvvv `&lt;T as Tr&gt;` where `T` is a type and `Tr` is a trait
+let s = &lt;String as Default&gt;::default();
+<span class="boring">}</span></code></pre></pre>
+<p>The first form can resolve to inherent functions or trait methods, whereas
+the second form can only resolve to the named trait's methods.  Rust doesn't
+have "trait inference variables", so the trait must be named; you can't use
+<code>_</code> in place of the trait, for example.  (You can still use it in place of
+the trait's type parameters.)</p>
+<h2 id="traits"><a class="header" href="#traits">Traits</a></h2>
+<p>Default parameters for traits work the same as default parameters for types,
+both inside and outside of "type position".  When thinking of traits in paths
+as sugar for qualified paths, the desugaring is like so:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait&lt;One, Two = String&gt;: Sized {
+    fn foo(self) -&gt; (Self, One, Two) where One: Default, Two: Default {
+        (self, One::default(), Two::default())
+    }
+}
+
+impl&lt;T, U&gt; Trait&lt;T, U&gt; for i32 {}
+impl&lt;T, U&gt; Trait&lt;T, U&gt; for f64 {}
+
+// Failing versions
+//let _: (i32, (), _) = Trait::foo(0);
+//let _: (i32, (), _) = Trait::&lt;_, _&gt;::foo(0);
+let _: (i32, (), _) = &lt;_ as Trait&lt;_, _&gt;&gt;::foo(0);
+//                    ^^^^^^^^^^^^^^^^^^
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait&lt;One, Two = String&gt;: Sized {
+</span><span class="boring">   fn foo(self) -&gt; (Self, One, Two) where One: Default, Two: Default {
+</span><span class="boring">       (self, One::default(), Two::default())
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">impl&lt;T, U&gt; Trait&lt;T, U&gt; for i32 {}
+</span><span class="boring">impl&lt;T, U&gt; Trait&lt;T, U&gt; for f64 {}
+</span>// Working versions
+let _: (i32, (), _) = Trait::&lt;_&gt;::foo(0);
+let _: (i32, (), _) = &lt;_ as Trait&lt;_&gt;&gt;::foo(0);
+//                    ^^^^^^^^^^^^^^^
+<span class="boring">}</span></code></pre></pre>
+<p>The only new thing of note is that the implementing type is an inference variable
+in this case.</p>
+<h3 id="mostly-historical-side-note"><a class="header" href="#mostly-historical-side-note">Mostly historical side note</a></h3>
+<p>Before edition 2021, it's possible to leave the <code>dyn</code> off of <code>dyn Trait</code> types
+(although it does fire a lint).  This means that the same name can refer to either
+a trait, or a type (the trait object type).  Which one is used depends on the
+context.</p>
+<p>For example:</p>
+<pre><code class="language-rust ignore">let _: i32 = Trait::name(0.0);
+
+// If `Trait` has a method called `name`, that is is
+let _: i32 = &lt;_ as Trait&gt;::name(0.0);
+
+// But if it does not, and `dyn Trait` has a method called `name`, this is
+let _: i32 = &lt;dyn Trait&gt;::name(0.0)
+
+// And the following line is always referring to `dyn Trait`
+let _: i32 = &lt;Trait&gt;::name(0.0);</code></pre>
+<h2 id="more-about-types-in-expressions"><a class="header" href="#more-about-types-in-expressions">More about types in expressions</a></h2>
+<p>In this section, "types in expressions" refers to types which are in expressions
+but not within <code>&lt;&gt;</code> (e.g. not a qualified path type or a type parameter).  These
+are the positions where it is <em>required</em> to use turbofish (e.g. <code>Vec::&lt;String&gt;</code>)
+instead of just appending the parameter list (e.g. <code>Vec&lt;String&gt;</code>).</p>
+<p>In these positions, it is always allowed to elide all the type and <code>const</code>
+parameters, even if there are required (i.e. non-defaulted, non-lifetime)
+parameters.  When you do so -- even if all the type and <code>const</code> parameters
+have defaults -- the behavior is the same as using type inference variables
+(<code>_</code>) for <em>all</em> the parameters.</p>
+<p>If you do not elide all non-lifetime parameters -- that is, if you specify one or
+more type parameter or <code>const</code> parameter -- then you must specify all required
+parameters. Or in other words: if you specify at least one type or <code>const</code>
+parameter, you can only elide defaulted parameters (and lifetimes).</p>
+<p>The behavior of elided defaulted parameters is as follows:</p>
+<ul>
+<li>If you specify zero non-lifetime parameters
+<ul>
+<li>Inference variables are used for <em>all</em> type and <code>const</code> parameters</li>
+</ul>
+</li>
+<li>If you specify one or more non-lifetime parameters
+<ul>
+<li>Defaults are used for elided type and <code>const</code> parameters</li>
+</ul>
+</li>
+</ul>
+<p>Above, we phrased the different default parameter behavior for types in expressions in
+terms of desugaring to <a href="#more-about-qualified-path-expressions">qualified type paths.</a>
+However, the behavior applies in other contexts too, such as <code>struct</code> expression syntax:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Two&lt;T, U = String&gt; { t: T, u: U }
+
+// This is ambiguous
+let _ = Two { t: (), u: Default::default() };
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Two&lt;T, U = String&gt; { t: T, u: U }
+</span>// But this works
+let _ = Two::&lt;_&gt; { t: (), u: Default::default() };
+<span class="boring">}</span></code></pre></pre>
+<p>Qualified path types are not allowed in this postion, so not all of the
+workarounds we discussed for paths are applicable.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct One&lt;T = String&gt; { t: T }
+
+// Ambiguous
+let _ = One { t: Default::default() };
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct One&lt;T = String&gt; { t: T }
+</span>// Not accepted grammatically
+let _ = &lt;One&gt; { t: Default::default() };
+<span class="boring">}</span></code></pre></pre>
+<p>Finally, there is no way to syntactically represent inferred but
+non-defaulted <code>const</code> parameters in qualified path types (or any
+other type-annotation-like position).</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Pixel&lt;const N: usize&gt;([u8; N]);
+impl&lt;const N: usize&gt; Default for Pixel&lt;N&gt; {
+    fn default() -&gt; Self {
+        Self([0; N])
+    }
+}
+
+// Works
+let pixel = Pixel::default();
+
+// These fail because `_` cannot be used for const parameters yet
+// let pixel = &lt;Pixel&lt;_&gt;&gt;::default();
+// let pixel: Pixel&lt;_&gt; = Default::default();
+
+drive_inference(pixel);
+fn drive_inference(_: Pixel&lt;3&gt;) {}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="non-type-generic-parameters"><a class="header" href="#non-type-generic-parameters">Non-type generic parameters</a></h2>
+<p>This guide has mostly concentrated on type parameters.  We've tried to
+be careful with our wording throughout the guide, but let's take a moment
+to talk specifically at how non-type parameters work with regards to
+defaults.</p>
+<h3 id="lifetime-parameters"><a class="header" href="#lifetime-parameters">Lifetime parameters</a></h3>
+<p>Lifetime paramters can not be given defaults, and do not change any of the
+default parameter behavior we've discussed.</p>
+<p>I've tried to take care to use phrases like "specify one or mmore non-lifetime
+parameter" instead of phrase like "empty parameter list".  But just to make
+things more explicit: the inclusion or elision of lifetime parameters doesn't
+change how parameter defaults work.</p>
+<p>For example, the below are still cases of specifying no required parameters,
+and thus uses an inference variable (which then fails as ambiguous).</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum Foo2&lt;'a, T = String&gt; {
+    Bar(&amp;'a T),
+    Baz,
+}
+
+let foo = Foo2::&lt;'_&gt;::Bar;
+let foo = Foo2::&lt;'static&gt;::Bar;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="const-parameters"><a class="header" href="#const-parameters"><code>const</code> parameters</a></h3>
+<p><a href="https://github.com/rust-lang/rust/pull/90207"><code>const</code> parameters defaults were stabilized in 1.59,</a>
+along with the ability to intermix <code>const</code> and type parameters
+in the parameter list (as otherwise the presence of a defaulted
+type parameter would force all <code>const</code> parameters to also have
+defaults, for example).</p>
+<p>Generally speaking, defaulted <code>const</code> parameters act just like defaulted
+type parameters.  However, one important difference is that
+<a href="https://github.com/rust-lang/rust/issues/85077"><code>_</code> cannot be used for <code>const</code> parameters as of yet.</a></p>
+<p>This does mean that some of the workarounds we've seen cannot be applied:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// We'll use this analogously to our `HashSet` examples
+struct MyArray&lt;const N: usize, T = String&gt;([T; N]);
+
+impl&lt;T: Default, const N: usize&gt; Default for MyArray&lt;N, T&gt; {
+    fn default() -&gt; Self {
+        Self(std::array::from_fn(|_| T::default()))
+    }
+}
+
+// Ambiguous for the usual reasons
+// let arr = MyArray::default();
+
+// Here's what we did when `HashSet` had this problem.
+// But it fails because we can't use `_` for the `const` parameter!
+let arr = MyArray::&lt;_&gt;::default();
+
+// Explicitness it is then
+// let arr = MyArray::&lt;16&gt;::default();
+
+// (These parts are just here to make everything above work like
+// our `HashSet` examples worked.)
+drive_inference_of_length(&amp;arr);
+fn drive_inference_of_length&lt;T&gt;(_: &amp;MyArray&lt;16, T&gt;) {}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="a-warning-about-implementations-and-function-arguments"><a class="header" href="#a-warning-about-implementations-and-function-arguments">A warning about implementations and function arguments</a></h2>
+<p>Default type parameters work the same in implementation headers and
+function argument lists as they do in other
+"<a href="#type-position-mechanics-in-more-detail">type positions</a>".  This
+may be surprising with compared to elided lifetime parameters.</p>
+<p>In implementations and function argument lists, eliding a lifetime
+parameter introduces a new, independent generic lifetime parameter.
+But eliding a type parameter <em>never</em> means "introduce a new generic".
+Elided type parameters always resolve to a single type (or error),
+whether that type comes from inference or a default type.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+
+// This is an implementation for `Foo&lt;String&gt;` only
+impl Foo {
+    fn papers_please(&amp;self) {}
+}
+
+// This is an implemenetation for all (`Sized`) `T`
+impl&lt;T&gt; Foo&lt;T&gt; {
+    fn welcome(&amp;self) {}
+}
+
+let foo = Foo::Bar(0);
+
+// Works
+foo.welcome();
+
+// Fails
+foo.papers_please();
+<span class="boring">}</span></code></pre></pre>
+<p>(Eliding lifetimes in other positions sometimes means <code>'static</code> and
+sometimes means "infer this for me", but that's a topic for another
+day.  Lifetime <em>parameters</em> cannot have defaults.)</p>
+<h2 id="default-type-parameters-elsewhere"><a class="header" href="#default-type-parameters-elsewhere">Default type parameters elsewhere</a></h2>
+<p>Declaring default parameters that are not on types, traits, or trait
+aliases either results in an error, or fires a deny-by-default lint stating that
+<a href="https://github.com/rust-lang/rust/issues/36887">support will be removed.</a></p>
+<p>Despite the lint, default parameters on functions work the same as default
+parameters on type declarations.  However, every function has a unique type
+(a "function item type") which cannot be named.  Because the function item
+type cannot be named, most of the workarounds we've talked about cannot be
+applied.</p>
+<p>That being said, the case where you use a turbofish with one or more
+non-elided type parameter still works:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[allow(invalid_type_param_default)]
+fn example&lt;X, Y: Default = String&gt;() -&gt; Y {
+    Y::default()
+}
+
+let s = example::&lt;()&gt;();
+println!("{}", std::any::type_name_of_val(&amp;s));
+<span class="boring">}</span></code></pre></pre>
+<p>Default parameters on <code>impl</code> headers do not serve any purpose as far as I'm
+aware.  Implementations don't have names at all (which is why the parameters
+are on the <code>impl</code> keyword).</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct MyStruct;
+</span><span class="boring">trait WhyThough&lt;T, U&gt; { }
+</span>#[allow(invalid_type_param_default)]
+impl&lt;T = String&gt; WhyThough&lt;i32, T&gt; for MyStruct {}
+<span class="boring">}</span></code></pre></pre>
+<p>Default parameters on GATs are currently just denied, even if the lint is allowed.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span>#![allow(invalid_type_param_default)]
+<span class="boring">fn main() {
+</span>trait MyTrait {
+    type Gat&lt;T = String&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="misc-slice.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-trait.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="misc-slice.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-trait.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

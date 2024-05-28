@@ -1,0 +1,841 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Trait bound interactions - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Practical suggestions for building intuition around borrow errors</li><li class="chapter-item "><a href="lifetime-intuition.html"><strong aria-hidden="true">1.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="community.html"><strong aria-hidden="true">2.</strong> Keep at it and participate in the community</a></li><li class="chapter-item "><a href="have-no-life.html"><strong aria-hidden="true">3.</strong> Prefer ownership over long-lived references</a></li><li class="chapter-item "><a href="dont-hide.html"><strong aria-hidden="true">4.</strong> Don't hide lifetimes</a></li><li class="chapter-item "><a href="elision.html"><strong aria-hidden="true">5.</strong> Understand elision and get a feel for when to name lifetimes</a></li><li class="chapter-item "><a href="subtypes.html"><strong aria-hidden="true">6.</strong> Get a feel for variance, references, and reborrows</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="st-model.html"><strong aria-hidden="true">6.1.</strong> The seed of a mental model</a></li><li class="chapter-item "><a href="st-types.html"><strong aria-hidden="true">6.2.</strong> Reference types</a></li><li class="chapter-item "><a href="st-bounds.html"><strong aria-hidden="true">6.3.</strong> Lifetime bounds</a></li><li class="chapter-item "><a href="st-references.html"><strong aria-hidden="true">6.4.</strong> Reference lifetimes</a></li><li class="chapter-item "><a href="st-reborrow.html"><strong aria-hidden="true">6.5.</strong> Copy and reborrows</a></li><li class="chapter-item "><a href="st-invariance.html"><strong aria-hidden="true">6.6.</strong> Nested borrows and invariance</a></li><li class="chapter-item "><a href="st-more-invariance.html"><strong aria-hidden="true">6.7.</strong> Invariance elsewhere</a></li><li class="chapter-item "><a href="st-non-references.html"><strong aria-hidden="true">6.8.</strong> Non-references</a></li></ol></li><li class="chapter-item "><a href="methods.html"><strong aria-hidden="true">7.</strong> Get a feel for borrow-returning methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="m-naming.html"><strong aria-hidden="true">7.1.</strong> When not to name lifetimes</a></li><li class="chapter-item "><a href="m-infect.html"><strong aria-hidden="true">7.2.</strong> Bound-related lifetimes "infect" each other</a></li><li class="chapter-item "><a href="m-no-downgrades.html"><strong aria-hidden="true">7.3.</strong> &mut inputs don't "downgrade" to &</a></li><li class="chapter-item "><a href="m-rpitit-alikes.html"><strong aria-hidden="true">7.4.</strong> async and returning impl Trait</a></li></ol></li><li class="chapter-item "><a href="fn-parameters.html"><strong aria-hidden="true">8.</strong> Understand function lifetime parameters</a></li><li class="chapter-item "><a href="lifetime-analysis.html"><strong aria-hidden="true">9.</strong> Understand borrows within a function</a></li><li class="chapter-item "><a href="pitfalls.html"><strong aria-hidden="true">10.</strong> Learn some pitfalls and antipatterns</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="pf-dyn.html"><strong aria-hidden="true">10.1.</strong> dyn Trait lifetimes and Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="pf-nll3.html"><strong aria-hidden="true">10.2.</strong> Conditional return of a borrow</a></li><li class="chapter-item "><a href="pf-borrow-forever.html"><strong aria-hidden="true">10.3.</strong> Borrowing something forever</a></li><li class="chapter-item "><a href="pf-self.html"><strong aria-hidden="true">10.4.</strong> &'a mut self and Self aliasing more generally</a></li><li class="chapter-item "><a href="pf-meta.html"><strong aria-hidden="true">10.5.</strong> Avoid self-referential structs</a></li><li class="chapter-item "><a href="pf-shared-nested.html"><strong aria-hidden="true">10.6.</strong> &'a Struct&lt;'a&gt; and covariance</a></li></ol></li><li class="chapter-item "><a href="compiler.html"><strong aria-hidden="true">11.</strong> Scrutinize compiler advice</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="c-signatures.html"><strong aria-hidden="true">11.1.</strong> Advice to change function signature when aliases are involved</a></li><li class="chapter-item "><a href="c-equality.html"><strong aria-hidden="true">11.2.</strong> Advice to add bound which implies lifetime equality</a></li><li class="chapter-item "><a href="c-static.html"><strong aria-hidden="true">11.3.</strong> Advice to add a static bound</a></li></ol></li><li class="chapter-item "><a href="lt-examples.html"><strong aria-hidden="true">12.</strong> Illustrative examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="lt-ex-mut-slice.html"><strong aria-hidden="true">12.1.</strong> Mutable slice iterator</a></li></ol></li><li class="chapter-item "><a href="circle.html"><strong aria-hidden="true">13.</strong> Circle back</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Miscellanea</li><li class="chapter-item "><a href="miscellanea.html"><strong aria-hidden="true">14.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="misc-slice.html"><strong aria-hidden="true">15.</strong> Slice layout</a></li><li class="chapter-item "><a href="misc-default-param.html"><strong aria-hidden="true">16.</strong> Default parameter mechanics</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">A tour of dyn Trait</li><li class="chapter-item "><a href="dyn-trait.html"><strong aria-hidden="true">17.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="dyn-trait-overview.html"><strong aria-hidden="true">18.</strong> dyn Trait overview</a></li><li class="chapter-item "><a href="dyn-trait-impls.html"><strong aria-hidden="true">19.</strong> dyn Trait implementations</a></li><li class="chapter-item "><a href="dyn-trait-coercions.html"><strong aria-hidden="true">20.</strong> dyn Trait coercions</a></li><li class="chapter-item "><a href="dyn-safety.html"><strong aria-hidden="true">21.</strong> dyn safety (object safety)</a></li><li class="chapter-item expanded "><a href="dyn-trait-lifetime.html"><strong aria-hidden="true">22.</strong> dyn Trait lifetimes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-covariance.html"><strong aria-hidden="true">22.1.</strong> Variance</a></li><li class="chapter-item "><a href="dyn-hr.html"><strong aria-hidden="true">22.2.</strong> Higher-ranked types</a></li><li class="chapter-item expanded "><a href="dyn-elision.html"><strong aria-hidden="true">22.3.</strong> Elision rules</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-elision-basic.html"><strong aria-hidden="true">22.3.1.</strong> Basic guidelines</a></li><li class="chapter-item "><a href="dyn-elision-advanced.html"><strong aria-hidden="true">22.3.2.</strong> Advanced guidelines</a></li><li class="chapter-item expanded "><a href="dyn-elision-trait-bounds.html" class="active"><strong aria-hidden="true">22.3.3.</strong> Trait bound interactions</a></li><li class="chapter-item "><a href="dyn-elision-citations.html"><strong aria-hidden="true">22.3.4.</strong> Citations</a></li></ol></li></ol></li><li class="chapter-item "><a href="dyn-trait-vs.html"><strong aria-hidden="true">23.</strong> dyn Trait vs. alternatives</a></li><li class="chapter-item "><a href="dyn-trait-examples.html"><strong aria-hidden="true">24.</strong> dyn Trait examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-trait-combining.html"><strong aria-hidden="true">24.1.</strong> Combining traits</a></li><li class="chapter-item "><a href="dyn-trait-box-impl.html"><strong aria-hidden="true">24.2.</strong> impl Trait for Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-clone.html"><strong aria-hidden="true">24.3.</strong> Cloneable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-eq.html"><strong aria-hidden="true">24.4.</strong> dyn PartialEq</a></li><li class="chapter-item "><a href="dyn-trait-borrow.html"><strong aria-hidden="true">24.5.</strong> Generalizing borrows</a></li><li class="chapter-item "><a href="dyn-trait-erased.html"><strong aria-hidden="true">24.6.</strong> Erased traits</a></li><li class="chapter-item "><a href="dyn-trait-hash.html"><strong aria-hidden="true">24.7.</strong> Hashable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-any-examples.html"><strong aria-hidden="true">24.8.</strong> dyn Any examples</a></li></ol></li><li class="chapter-item "><a href="dyn-any.html"><strong aria-hidden="true">25.</strong> dyn Any</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="influences-from-trait-lifetime-bounds"><a class="header" href="#influences-from-trait-lifetime-bounds">Influences from trait lifetime bounds</a></h1>
+<p>When the trait itself has lifetime bounds, those bounds may influence the
+behavior of <code>dyn Trait</code> lifetime elision.  Where and how the influence does
+or does not take place is not properly documented, but we'll cover some
+cases here.</p>
+<p>The way trait object lifetime defaults behave in these scenarios is not
+intuitive, and perhaps even arbitrary.  But to be clear, you will probably
+never need to actually know the exact rules.  Traits with exotic lifetime
+bounds are rare, and should you actually encounter one, you can usually
+choose to be explicit instead of trying to figure out what lifetime is
+the default when elided.</p>
+<p>Which is to say, this subsection is more of an exploration of the
+compiler's current behavior than something useful to learn.  If you're
+trying to learn practical Rust, you should probably just skip it.</p>
+<p>A very high level summary is:</p>
+<ul>
+<li>Trait bounds introduce implied bounds on the trait object lifetimes</li>
+<li>Elision in the presence of non-<code>'static</code> trait lifetime bounds is arbitrary, so prefer to be explicit</li>
+<li>Prefer not to add non-<code>'static</code> lifetime bounds to your own object safe traits
+<ul>
+<li>Avoid multiple lifetime bounds in particular</li>
+</ul>
+</li>
+</ul>
+<p>This section is also non-exhaustive.  Given how many exceptions I have ran across,
+take my assertive statements in this section with a grain of salt.</p>
+<h2 id="trait-lifetime-bounds-create-an-implied-bound"><a class="header" href="#trait-lifetime-bounds-create-an-implied-bound">Trait lifetime bounds create an implied bound</a></h2>
+<p>The trait bound creates an implied bound on the <code>dyn Trait</code> lifetime:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait LifetimeTrait&lt;'a, 'b&gt;: 'a {}
+
+pub fn f&lt;'b&gt;(_: Box&lt;dyn LifetimeTrait&lt;'_, 'b&gt; + 'b&gt;) {}
+
+fn fp&lt;'a, 'b, 'c&gt;(t: Box&lt;dyn LifetimeTrait&lt;'a, 'b&gt; + 'c&gt;) {
+    // This compiles which indicates an implied `'c: 'a` bound
+    let c: &amp;'c [()] = &amp;[];
+    let _: &amp;'a [()] = c;
+
+    // This does not, demonstrating that `'c: 'b` is not implied
+    // (i.e. the implied bound is on the trait object lifetime only, and
+    // not on the other parameters.)
+    //let _: &amp;'b [()] = c;
+
+    // This does not as it requires `'c: 'b` and `'b: 'a`
+    //f(t);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is similar to how <code>&amp;'b &amp;'a _</code> creates an implied <code>'a: 'b</code> bound.
+It only applies to the trait object lifetime, and not the entirety
+of the <code>dyn Trait</code> (e.g. it does not apply to trait parameters).</p>
+<h2 id="the-static-case"><a class="header" href="#the-static-case">The <code>'static</code> case</a></h2>
+<p>We've already summarized the behavior of trait object lifetime elision when
+the trait itself has a <code>'static</code> bound as part of our basic guidelines: the
+lifetime in this case is always <code>'static</code>.</p>
+<p>This applies even to</p>
+<ul>
+<li>types with ambiguous (more than one) lifetime bounds</li>
+<li>types with a single lifetime bound like <code>&amp;_</code>
+<ul>
+<li>i.e. the trait object lifetime (which is <code>'static</code>) becomes independent of the outer lifetime</li>
+</ul>
+</li>
+<li>situations where a non-<code>'static</code> bound does <em>not</em> override the <code>&amp;_</code> trait object lifetime default, as in some of the examples further below</li>
+</ul>
+<p>This case applies even if there are multiple bounds and only one of them is
+<code>'static</code>, in contrast with
+<a href="./dyn-elision-advanced.html#ambiguous-bounds">bounds considered ambiguous from the struct definition.</a></p>
+<h2 id="a-single-trait-lifetime-bound-does-not-always-apply"><a class="header" href="#a-single-trait-lifetime-bound-does-not-always-apply">A single trait lifetime bound does not always apply</a></h2>
+<p>According to the reference, the default trait object lifetime for a trait
+with a single lifetime bound in the context of a generic struct with no
+lifetime bounds is always the lifetime in the trait's bound.</p>
+<p>That's a mouthful, but the implication is that here:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+<span class="boring">}</span></code></pre></pre>
+<p>The elided lifetime of <code>Box&lt;dyn Single&lt;'a&gt;&gt;</code> is always <code>'a</code>.</p>
+<p>However, this is not actually the case:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>// The elided lifetime was `'static`, not `'a`, so this compiles
+fn foo&lt;'a&gt;(s: Box&lt;dyn Single&lt;'a&gt;&gt;) {
+    let s: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = s;
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>// In this case it *is* `'a`, so compilation fails
+fn bar&lt;'a: 'a&gt;(s: Box&lt;dyn Single&lt;'a&gt;&gt;) {
+    let s: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = s;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="when-they-apply-trait-lifetime-bounds-override-struct-bounds"><a class="header" href="#when-they-apply-trait-lifetime-bounds-override-struct-bounds">When they apply, trait lifetime bounds override struct bounds</a></h2>
+<p>According to the reference, bounds on the trait never override bounds on
+the struct.  But based on my testing, the opposite is true: <em>when</em> bounds
+on the trait apply, they <em>always</em> override the bounds on the struct.</p>
+<p>The complicated part is figuring out when they apply.</p>
+<p>For example, the following compiles, but according to the reference it
+should be ambiguous due to the multiple lifetime bounds on the struct.
+It does not compile without the lifetime bound on the trait; the bound
+on the trait is overriding the ambiguous bounds on the struct.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use core::marker::PhantomData;
+
+// Remove `: 'a` to see the compile error
+pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+
+pub struct Over&lt;'a, T: 'a + 'static + ?Sized&gt;(&amp;'a T);
+
+pub struct Invariant&lt;T: ?Sized&gt;(*mut PhantomData&lt;T&gt;);
+unsafe impl&lt;T: ?Sized&gt; Sync for Invariant&lt;T&gt; {}
+
+pub static OS: Invariant&lt;Over&lt;'_, dyn LifetimeTrait&gt;&gt; = Invariant(std::ptr::null_mut());
+<span class="boring">}</span></code></pre></pre>
+<p>Further below are some examples where the trait bound overrides the
+<code>&amp;_</code> bounds as well, so it is not just ambiguous struct bounds which can
+be overridden by trait bounds.</p>
+<h2 id="multiple-trait-bounds-can-be-ambiguous-or-can-apply"><a class="header" href="#multiple-trait-bounds-can-be-ambiguous-or-can-apply">Multiple trait bounds can be ambiguous or can apply</a></h2>
+<p>The following is considered ambiguous due to the multiple lifetime bounds
+on the trait.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+fn f&lt;'a, 'b, T: Double&lt;'a, 'b&gt; + 'static&gt;(t: T) {
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt; = Box::new(t);
+
+    // This version works:
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = Box::new(t);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The current documentation is silent on this point, but a multiple-bound
+trait can still apply in such a way that it provides the default trait
+object lifetime.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+fn x1&lt;'a: 'a, 'b&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;) {
+    // This fails (the lifetime is not `'static`)
+    //let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = bx;
+
+    // This also fails (the lifetime is not `'b` nor `'a + 'b`)
+    //let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'b&gt; = bx;
+
+    // But this succeeds and we can conclude the lifetime is `'a`
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'a&gt; = bx;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>There's a subtle point here: the elided trait object lifetime is <code>'a</code>,
+but there's an implied <code>: 'a + 'b</code> bound on the trait object lifetime
+due to the trait bounds.  Therefore the function signature has an
+implied <code>'a: 'b</code> bound, similar to when you have a <code>&amp;'b &amp;'a _</code>
+argument.</p>
+<h2 id="trait-bounds-always-apply-in-function-bodies"><a class="header" href="#trait-bounds-always-apply-in-function-bodies">Trait bounds <em>always</em> apply in function bodies</a></h2>
+<p>Based on my testing, the default trait object lifetime for annotations
+of <code>dyn Trait</code> in function bodies is <em>always</em> the trait bound.  And in
+fact, this bound <em>even overrides the wildcard <code>'_</code> lifetime annotation</em>.</p>
+<p>This is a surprising exception to the <code>'_</code> annotation restoring "normal"
+lifetime elision behavior.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+
+fn baz&lt;'long: 'a, 'a, T: 'long + Single&lt;'a&gt;&gt;(s: T) {
+    // This compiles with the assignment at the end:
+    //let s: Box&lt;dyn Single&lt;'a&gt; + 'long&gt; = Box::new(s);
+
+    // But none of these compile because `'a: 'long` does not hold:
+    //let s: Box&lt;dyn Single&lt;'a&gt;&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'_&gt;&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'a&gt; + '_&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'_&gt; + '_&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single + '_&gt; = Box::new(s);
+    let s: Box&lt;dyn Single&gt; = Box::new(s);
+
+    let s: Box&lt;dyn Single&lt;'_&gt; + 'long&gt; = s;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="when-and-how-to-trait-lifetime-bounds-apply"><a class="header" href="#when-and-how-to-trait-lifetime-bounds-apply">When and how to trait lifetime bounds apply?</a></h2>
+<p>Now that we've seen a number of examples, we can theorize when and how
+trait lifetime bounds apply.  As the examples have already illustrated,
+there are very different rules for different contexts.</p>
+<h3 id="in-function-signatures"><a class="header" href="#in-function-signatures">In function signatures</a></h3>
+<p>This appears to be the most complex and arbitrary context for trait object lifetime elision.</p>
+<p>If you were paying close attention, you may have noticed that we occasionally had
+trivial bounds like <code>'a: 'a</code> in the examples above, and that affected whether the
+trait bounds applied or not.  A lifetime parameter of a function with no
+<em>explicit</em> bounds is known as a late-bound parameter, and
+<a href="https://github.com/rust-lang/rust/issues/47078">whether or not a lifetime is late-bound influences when the trait bounds apply
+in function signatures.</a>
+Parameters which are not late-bound are early-bound.</p>
+<p>Let us call a lifetime parameter of a trait which is also a bound of the trait
+a "bounding parameter".  My hypothesis on the behavior is as follows:</p>
+<ul>
+<li>if any trait bound is <code>'static</code>, the default lifetime is <code>'static</code></li>
+<li>if any bounding parameter is explicitly <code>'static</code>, the default lifetime is <code>'static</code></li>
+<li>if exactly one bounding parameter is early-bound, the default lifetime is that lifetime
+<ul>
+<li>including if it is in multiple positions, such as <code>dyn Double&lt;'a, 'a&gt;</code></li>
+</ul>
+</li>
+<li>if more than one bounding parameter is early-bound, the default lifetime is ambiguous</li>
+<li>if no bounding parameters are early-bound, the default lifetime depends on the <code>struct</code>
+bounds (the same as they do for a trait without bounds)</li>
+</ul>
+<p>Note that in any case, the implied bounds on the trait object lifetime
+that exist due to the trait bounds are still in effect.</p>
+<p>The requirement that exactly one of the bounding parameters is early-bound
+or that any of them are <code>'static</code> are syntactical requirements, rather than
+semantic ones.  For example:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+// Semantically, `'a` and `'b` must be `'static`.  However the
+// parameters were not explicitly `'static` and thus this
+// trait object lifetime is considered ambiguous (even though,
+// due to the implied bounds, it must be `'static` too).
+fn foo&lt;'a: 'static, 'b: 'static&gt;(d: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;) {}
+
+// Semantically, `'a` and `'b` must be the same.  They are also
+// early-bound parameters due to the bounds.  However the parameters
+// are not syntatically the same lifetime and thus this trait
+// object lifetime is considered ambiguous.
+fn bar&lt;'a: 'b, 'b: 'a&gt;(d: &amp;dyn Double&lt;'a, 'b&gt;) {}
+<span class="boring">}</span></code></pre></pre>
+<p>But if you change either example to <code>Double&lt;'a, 'a&gt;</code>, then
+exactly one of the bounding parameters is early-bound, and they
+will compile:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+</span>fn foo&lt;'a: 'static, 'b: 'static&gt;(d: Box&lt;dyn Double&lt;'a, 'a&gt;&gt;) {}
+fn bar&lt;'a: 'b, 'b: 'a&gt;(d: &amp;dyn Double&lt;'a, 'a&gt;) {}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="implicit-bounds-do-not-negate-being-late-bound"><a class="header" href="#implicit-bounds-do-not-negate-being-late-bound">Implicit bounds do not negate being late-bound</a></h4>
+<p>Note that when considering <code>&amp;dyn Trait</code> there is always an <em>implied</em> bound between the
+outer reference's lifetime and the <code>dyn Trait</code> (in addition to the implied bound from
+the trait itself).  However, these implied bounds are not enough to make the trait
+bound apply on their own.  A lifetime can be late-bound even when there are implied bounds.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+impl LifetimeTrait&lt;'_&gt; for () {}
+
+// All of these compile with the `fp` function below, indicating that
+// the trait bound does in fact apply and results in a trait object
+// lifetime independent of the reference lifetime
+pub fn f&lt;'a: 'a&gt;(_: &amp;dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'a: 'a&gt;(_: &amp;'_ dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a: 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a: 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a: 'r + 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a: 'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+
+// However none of these compile with `fp`, indicating that the elided trait
+// object lifetime is defaulting to the reference lifetime "per normal".
+//pub fn f(_: &amp;dyn LifetimeTrait) {}
+//pub fn f(_: &amp;'_ dyn LifetimeTrait) {}
+//pub fn f&lt;'r&gt;(_: &amp;'r dyn LifetimeTrait) {}
+//pub fn f&lt;'r: 'r&gt;(_: &amp;'r dyn LifetimeTrait) {}
+
+//pub fn f(_: &amp;dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f(_: &amp;'_ dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f&lt;'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f&lt;'r: 'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'_&gt;) {}
+
+//pub fn f&lt;'a&gt;(_: &amp;dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'a&gt;(_: &amp;'_ dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+
+// n.b. `'a` is invariant due to being a trait parameter
+fn fp&lt;'a&gt;(t: &amp;(dyn LifetimeTrait&lt;'a&gt; + 'a)) {
+    f(t);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The above examples also demonstrate that when trait bounds apply,
+they do override non-ambiguous struct bounds (such as those of <code>&amp;_</code>).</p>
+<h4 id="implied-bounds-and-default-object-bounds-interact"><a class="header" href="#implied-bounds-and-default-object-bounds-interact">Implied bounds and default object bounds interact</a></h4>
+<p>The interaction between what the default object lifetime is for a given
+signature can interact in potentially surprising ways.  Consider this example:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+</span>// The implied bounds in `&amp;'outer (dyn Lifetime&lt;'param&gt; + 'trait)` are:
+// - `'param: 'outer` (validity of the reference)
+// - `'trait: 'outer` (validity of the reference)
+// - `'trait: 'param` (from the trait bound)
+//
+// And as the trait bound does not apply to the elided parameter in this
+// case, we also have `'outer = 'trait` due to the "normal" default
+// lifetime behavior of `&amp;_`.  Adding that equality to the above bounds
+// results in a requirement that *all three lifetimes are the same*.
+//
+// And thus this compiles:
+pub fn g&lt;'r, 'a&gt;(d: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {
+    let r: [&amp;'r (); 1] = [&amp;()];
+    let a: [&amp;'a (); 1] = [&amp;()];
+    let _: [&amp;'a (); 1] = r;
+    let _: [&amp;'r (); 1] = a;
+    let _: &amp;'r (dyn LifetimeTrait&lt;'r&gt; + 'r) = d;
+    let _: &amp;'a (dyn LifetimeTrait&lt;'a&gt; + 'a) = d;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The results can be even more surprising with more complex bounds:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+fn h&lt;'a, 'b, T&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;, t: &amp;'a T)
+where
+    &amp;'a T: Send, // this makes `'a` early-bound
+{
+    // `bx` is `Box&lt;dyn Double&lt;'a, 'b&gt; + 'a&gt;` as per the rules above,
+    // so this does not compile:
+    //let _: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = bx;
+
+    // However, the implied bounds still apply, which means:
+    // - `'a: 'a + 'b`
+    // - So `'a: 'b`
+    //
+    // Which is why this can compile even though that bound
+    // is not declared anywhere!
+    let t: &amp;'b T = t;
+
+    // The lifetimes are still not the same, so this fails
+    let _: &amp;'a T = t;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The only reason that <code>'a: 'b</code> is an implied bound in the above example
+is the interaction between</p>
+<ul>
+<li>the implied <code>: 'a + 'b</code> bound on the trait object lifetime</li>
+<li>the default trait object lifetime being <code>'a</code>
+<ul>
+<li>due to <code>'a</code> being early-bound and <code>'b</code> being late-bound</li>
+</ul>
+</li>
+</ul>
+<p>If <code>'b</code> was also early-bound, the default trait object lifetime would
+be ambiguous.  If <code>'a</code> wasn't early-bound, the default trait object
+lifetime would be <code>'static</code> and there would be no implied <code>'a: 'b</code>
+bound.</p>
+<h4 id="the-wildcard-lifetime-still-introduces-a-fresh-inference-lifetime"><a class="header" href="#the-wildcard-lifetime-still-introduces-a-fresh-inference-lifetime">The wildcard lifetime still introduces a fresh inference lifetime</a></h4>
+<p>Based on my testing, using <code>'_</code> will behave like typical lifetime elision,
+introducing a fresh inference lifetime in input position, and following
+the function signature elision rules in output position.</p>
+<h4 id="higher-ranked-lifetimes-are-late-bound"><a class="header" href="#higher-ranked-lifetimes-are-late-bound">Higher-ranked lifetimes are late-bound</a></h4>
+<p>Based on my testing, <code>for&lt;'a&gt; dyn Trait...</code> lifetimes act the same as
+late-bound lifetimes.</p>
+<h3 id="function-bodies"><a class="header" href="#function-bodies">Function bodies</a></h3>
+<p>As mentioned above, trait object bounds always apply in function bodies,
+similar to function signatures where every lifetime is early-bound.  This
+is true regardless of whether the lifetimes are early or late bound in
+the function signature.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+
+fn foo&lt;'r, 'a&gt;(bx: Box&lt;dyn Single&lt;'a&gt; + 'static&gt;, rf: &amp;'r (dyn Single&lt;'a&gt; + 'static)) {
+    // Here it is `'a`, and not `'static` nor inferred
+    let bx: Box&lt;dyn Single&lt;'a&gt;&gt; = bx;
+    // So this fails
+    //let _: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = bx;
+
+    // Here it is `'a`, and not the same as the reference lifetime nor inferred
+    let a: &amp;dyn Single&lt;'a&gt; = rf;
+    // So this succeeds
+    let _: &amp;(dyn Single&lt;'a&gt; + 'a) = a;
+    // And this fails
+    //let _: &amp;(dyn Single&lt;'a&gt; + 'static) = a;
+
+    // Same behavior when the reference lifetime is explicit
+    let a: &amp;'r dyn Single&lt;'a&gt; = rf;
+    let _: &amp;'r (dyn Single&lt;'a&gt; + 'a) = a;
+    //let _: &amp;'r (dyn Single&lt;'a&gt; + 'static) = a;
+
+    // This also fails, demonstrating that `'r` is not `'a`
+    //let _: &amp;'a &amp;'r () = &amp;&amp;();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>And unlike elsewhere, using <code>'_</code> in place of complete trait object
+lifetime elision in the function body does not restore the normal
+lifetime elision behavior (which would be inferring the lifetime).
+All three of the examples above behave identically if <code>'_</code> is used.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>fn foo&lt;'r, 'a&gt;(bx: Box&lt;dyn Single&lt;'a&gt; + 'static&gt;, rf: &amp;'r (dyn Single&lt;'a&gt; + 'static)) {
+    let bx: Box&lt;dyn Single&lt;'a&gt; + '_&gt; = bx;
+    // Fails
+    //let _: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = bx;
+
+    let a: &amp;(dyn Single&lt;'a&gt; + '_) = rf;
+    let _: &amp;(dyn Single&lt;'a&gt; + 'a) = a;
+    // Fails
+    //let _: &amp;(dyn Single&lt;'a&gt; + 'static) = a;
+
+    let a: &amp;'r (dyn Single&lt;'a&gt; + '_) = rf;
+    let _: &amp;'r (dyn Single&lt;'a&gt; + 'a) = a;
+    // Fails
+    //let _: &amp;'r (dyn Single&lt;'a&gt; + 'static) = a;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In combination with the behavior of function signatures, this can
+lead to some awkward situations.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+// Here in the signature, `'_` acts like "normal" and creates an
+// independent lifetime for the trait object lifetime; let us call
+// it `'c`.  Though independent, it is related due to the implied
+// bounds: `'c: 'a + 'b`
+fn foo&lt;'a, 'b&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt;) {
+    // Here in the body, the default trait object lifetime is
+    // considered ambiguous, and `'_` does not override this.
+    //
+    // Moreover, there is no way to name `'c` since it was
+    // elided in the signature.  We could annotate this as
+    // either `'a` or `'b`, but cannot "preserve" the full
+    // lifetime unless we change the function signature to
+    // give the lifetime a name.
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt; = bx;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="static-contexts"><a class="header" href="#static-contexts">Static contexts</a></h3>
+<p>In most static contexts, any elided lifetimes (not just trait object
+lifetimes) default to the <code>'static</code> lifetime.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span>trait Single&lt;'a&gt;: 'a + Send + Sync {}
+trait Halfie&lt;'a, 'b&gt;: 'a + Send + Sync {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b + Send + Sync {}
+
+static BS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+static BH: PhantomData&lt;Box&lt;dyn Halfie&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+static BD: PhantomData&lt;Box&lt;dyn Double&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+
+static S_BS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = BS;
+static S_BH: PhantomData&lt;Box&lt;dyn Halfie&lt;'static, 'static&gt; + 'static&gt;&gt; = BH;
+static S_BD: PhantomData&lt;Box&lt;dyn Double&lt;'static, 'static&gt; + 'static&gt;&gt; = BD;
+
+const CS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+const CH: PhantomData&lt;Box&lt;dyn Halfie&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+const CD: PhantomData&lt;Box&lt;dyn Double&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+
+const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = CS;
+const S_CH: PhantomData&lt;Box&lt;dyn Halfie&lt;'static, 'static&gt; + 'static&gt;&gt; = CH;
+const S_CD: PhantomData&lt;Box&lt;dyn Double&lt;'static, 'static&gt; + 'static&gt;&gt; = CD;
+<span class="boring">}</span></code></pre></pre>
+<p>However, from Rust 1.64 forward, associated <code>const</code>s were allowed to use general
+elided lifetimes and the wildcard lifetime (as opposed to only elided
+trait object lifetimes).  <a href="https://github.com/rust-lang/rust/issues/115010">This was an accidental stabilization which
+will probably be removed or modified.</a></p>
+<p>In the meanwhile, elided lifetimes act like independent lifetime
+variables on the <code>impl</code> block.  Those in turn act like early-bound
+lifetimes in function signatures.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span>struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt; = PhantomData;
+
+    // Fails
+    //const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'static&gt;&gt; = Self::CS;
+    const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt; = Self::CS;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Elided lifetimes can be inferred to be <code>'static</code> elsewhere...</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span><span class="boring">struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+</span>impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const ECS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+    const SCS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt;&gt;&gt; = PhantomData;
+
+    const S_ECS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = Self::ECS;
+    const S_SCS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = Self::SCS;
+}
+<span class="boring">}</span></code></pre></pre>
+<p><em>...however,</em> it's really a free variable.  Therefore, cases such
+as this are considered ambiguous:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Double&lt;'a, 'b&gt;: 'a + 'b + Send + Sync {}
+</span><span class="boring">struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+</span>impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const EBCD: PhantomData&lt;Box&lt;dyn Double&lt;'a, '_&gt;&gt;&gt; = PhantomData;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>...and cases such this are considered to be a borrow check violation,
+as there are no outlives relationships between the anonymously
+introduced lifetime parameters:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span>struct R&lt;'l, 'm, 'r&gt;(&amp;'l str, &amp;'m str, &amp;'r ());
+impl&lt;'a, 'b, 'r&gt; R&lt;'a, 'b, 'r&gt; where 'a: 'r, 'b: 'r {
+    const ECS: PhantomData&lt;&amp;dyn Single&lt;'_&gt;&gt; = PhantomData;
+    const RECS: PhantomData&lt;&amp;'r dyn Single&lt;'_&gt;&gt; = PhantomData;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>(There is no implicit bound due to nesting the lifetimes because
+the nesting occurs in the body of the <code>impl</code> block and not the header.)</p>
+<h3 id="impl-headers"><a class="header" href="#impl-headers"><code>impl</code> headers</a></h3>
+<p>Trait bounds always apply in <code>impl</code> headers.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+trait Halfie&lt;'a, 'b&gt;: 'a {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+struct S&lt;T&gt;(T);
+
+// The trait bounds apply
+impl&lt;'a&gt; S&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt; { fn f01() {} } // 'a (not 'static)
+impl&lt;'a, 'r&gt; S&lt;&amp;'r dyn Single&lt;'a&gt;&gt; { fn f02() {} } // 'a (not 'r)
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt;&gt;&gt; { fn f03() {} } // 'a (not 'static)
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r dyn Halfie&lt;'a, 'b&gt;&gt; { fn f04() {} } // 'a (not 'r)
+// Ambiguous (uncomment for error)
+// impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Double&lt;'a, 'b&gt;&gt;&gt; { fn f05() {} }
+// impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r dyn Double&lt;'a, 'b&gt;&gt; { fn f05() {} }
+
+// Try `+ 'static` or `+ 'r` for errors
+fn f&lt;'a, 'b, 'r&gt;(_: &amp;'r &amp;'a str, _: &amp;'r &amp;'b str) {
+    S::&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt;::f01();
+    S::&lt;&amp;'r (dyn Single&lt;'a&gt; + 'a)&gt;::f02();
+    S::&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'a&gt;&gt;::f03();
+    S::&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'a)&gt;::f04();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>As in function signatures, but unlike function bodies, the wildcard lifetime
+<code>'_</code> acts like normal elision (introducing a new anonymous lifetime variable).</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span><span class="boring">trait Halfie&lt;'a, 'b&gt;: 'a {}
+</span><span class="boring">trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+</span><span class="boring">struct S&lt;T&gt;(T);
+</span>// The wildcard lifetime `'_` introduces an independent lifetime
+// (covering all cases including `'static`) as per normal
+impl&lt;'a&gt; S&lt;Box&lt;dyn Single&lt;'a&gt; + '_&gt;&gt; { fn f26() {} }
+impl&lt;'a, 'r&gt; S&lt;&amp;'r (dyn Single&lt;'a&gt; + '_)&gt; { fn f27() {} }
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + '_&gt;&gt; { fn f28() {} }
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + '_)&gt; { fn f29() {} }
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt;&gt; { fn f30() {} }
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r (dyn Double&lt;'a, 'b&gt; + '_)&gt; { fn f31() {} }
+
+fn f&lt;'a, 'b, 'r&gt;(_: &amp;'r &amp;'a str, _: &amp;'r &amp;'b str) {
+    S::&lt;Box&lt;dyn Single&lt;'a&gt; + 'static&gt;&gt;::f26();
+    S::&lt;&amp;'r (dyn Single&lt;'a&gt; + 'static)&gt;::f27();
+    S::&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'static&gt;&gt;::f28();
+    S::&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'static)&gt;::f29();
+    S::&lt;Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt;&gt;::f30();
+    S::&lt;&amp;'r (dyn Double&lt;'a, 'b&gt; + 'static)&gt;::f31();
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="associated-types"><a class="header" href="#associated-types">Associated types</a></h3>
+<p>Similar to <code>impl</code> headers, trait bounds always apply to associated types.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span>trait Single&lt;'a&gt;: 'a {}
+trait Halfie&lt;'a, 'b&gt;: 'a {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+trait Assoc {
+    type A01: ?Sized + Default;
+    type A02: ?Sized + Default;
+    //type A03: ?Sized + Default;
+    type A04: ?Sized + Default;
+    type A05: ?Sized + Default;
+    //type A06: ?Sized + Default;
+}
+
+impl&lt;'r, 'a, 'b&gt; Assoc for (&amp;'r &amp;'a (), &amp;'r &amp;'b ()) {
+    // '_ is not allowed here
+    // &amp; /* elided */ is not allowed here
+    type A01 = PhantomData&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt;;
+    type A02 = PhantomData&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt;&gt;&gt;;
+    // ambiguous
+    // type A03 = PhantomData&lt;Box&lt;dyn Double&lt;'a, 'b&gt;&gt;&gt;;
+    type A04 = PhantomData&lt;&amp;'r dyn Single&lt;'a&gt;&gt;;
+    type A05 = PhantomData&lt;&amp;'r dyn Halfie&lt;'a, 'b&gt;&gt;;
+    // ambiguous
+    // type A06 = PhantomData&lt;&amp;'r dyn Double&lt;'a, 'b&gt;&gt;;
+}
+
+fn f&lt;'r, 'a: 'r, 'b: 'r&gt;() {
+    // 'a (not `'static`, `'r`, `'b`)
+    let _: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A01::default();
+    let _: PhantomData&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'a&gt;&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A02::default();
+    let _: PhantomData&lt;&amp;'r (dyn Single&lt;'a&gt; + 'a)&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A04::default();
+    let _: PhantomData&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'a)&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A05::default();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Note: I have not performed extensive tests with GATs or associated types which themselves
+have lifetime bounds in combination with bounded traits.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-elision-advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-elision-citations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-elision-advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-elision-citations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

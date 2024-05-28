@@ -1,0 +1,531 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn Trait coercions - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Practical suggestions for building intuition around borrow errors</li><li class="chapter-item "><a href="lifetime-intuition.html"><strong aria-hidden="true">1.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="community.html"><strong aria-hidden="true">2.</strong> Keep at it and participate in the community</a></li><li class="chapter-item "><a href="have-no-life.html"><strong aria-hidden="true">3.</strong> Prefer ownership over long-lived references</a></li><li class="chapter-item "><a href="dont-hide.html"><strong aria-hidden="true">4.</strong> Don't hide lifetimes</a></li><li class="chapter-item "><a href="elision.html"><strong aria-hidden="true">5.</strong> Understand elision and get a feel for when to name lifetimes</a></li><li class="chapter-item "><a href="subtypes.html"><strong aria-hidden="true">6.</strong> Get a feel for variance, references, and reborrows</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="st-model.html"><strong aria-hidden="true">6.1.</strong> The seed of a mental model</a></li><li class="chapter-item "><a href="st-types.html"><strong aria-hidden="true">6.2.</strong> Reference types</a></li><li class="chapter-item "><a href="st-bounds.html"><strong aria-hidden="true">6.3.</strong> Lifetime bounds</a></li><li class="chapter-item "><a href="st-references.html"><strong aria-hidden="true">6.4.</strong> Reference lifetimes</a></li><li class="chapter-item "><a href="st-reborrow.html"><strong aria-hidden="true">6.5.</strong> Copy and reborrows</a></li><li class="chapter-item "><a href="st-invariance.html"><strong aria-hidden="true">6.6.</strong> Nested borrows and invariance</a></li><li class="chapter-item "><a href="st-more-invariance.html"><strong aria-hidden="true">6.7.</strong> Invariance elsewhere</a></li><li class="chapter-item "><a href="st-non-references.html"><strong aria-hidden="true">6.8.</strong> Non-references</a></li></ol></li><li class="chapter-item "><a href="methods.html"><strong aria-hidden="true">7.</strong> Get a feel for borrow-returning methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="m-naming.html"><strong aria-hidden="true">7.1.</strong> When not to name lifetimes</a></li><li class="chapter-item "><a href="m-infect.html"><strong aria-hidden="true">7.2.</strong> Bound-related lifetimes "infect" each other</a></li><li class="chapter-item "><a href="m-no-downgrades.html"><strong aria-hidden="true">7.3.</strong> &mut inputs don't "downgrade" to &</a></li><li class="chapter-item "><a href="m-rpitit-alikes.html"><strong aria-hidden="true">7.4.</strong> async and returning impl Trait</a></li></ol></li><li class="chapter-item "><a href="fn-parameters.html"><strong aria-hidden="true">8.</strong> Understand function lifetime parameters</a></li><li class="chapter-item "><a href="lifetime-analysis.html"><strong aria-hidden="true">9.</strong> Understand borrows within a function</a></li><li class="chapter-item "><a href="pitfalls.html"><strong aria-hidden="true">10.</strong> Learn some pitfalls and antipatterns</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="pf-dyn.html"><strong aria-hidden="true">10.1.</strong> dyn Trait lifetimes and Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="pf-nll3.html"><strong aria-hidden="true">10.2.</strong> Conditional return of a borrow</a></li><li class="chapter-item "><a href="pf-borrow-forever.html"><strong aria-hidden="true">10.3.</strong> Borrowing something forever</a></li><li class="chapter-item "><a href="pf-self.html"><strong aria-hidden="true">10.4.</strong> &'a mut self and Self aliasing more generally</a></li><li class="chapter-item "><a href="pf-meta.html"><strong aria-hidden="true">10.5.</strong> Avoid self-referential structs</a></li><li class="chapter-item "><a href="pf-shared-nested.html"><strong aria-hidden="true">10.6.</strong> &'a Struct&lt;'a&gt; and covariance</a></li></ol></li><li class="chapter-item "><a href="compiler.html"><strong aria-hidden="true">11.</strong> Scrutinize compiler advice</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="c-signatures.html"><strong aria-hidden="true">11.1.</strong> Advice to change function signature when aliases are involved</a></li><li class="chapter-item "><a href="c-equality.html"><strong aria-hidden="true">11.2.</strong> Advice to add bound which implies lifetime equality</a></li><li class="chapter-item "><a href="c-static.html"><strong aria-hidden="true">11.3.</strong> Advice to add a static bound</a></li></ol></li><li class="chapter-item "><a href="lt-examples.html"><strong aria-hidden="true">12.</strong> Illustrative examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="lt-ex-mut-slice.html"><strong aria-hidden="true">12.1.</strong> Mutable slice iterator</a></li></ol></li><li class="chapter-item "><a href="circle.html"><strong aria-hidden="true">13.</strong> Circle back</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Miscellanea</li><li class="chapter-item "><a href="miscellanea.html"><strong aria-hidden="true">14.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="misc-slice.html"><strong aria-hidden="true">15.</strong> Slice layout</a></li><li class="chapter-item "><a href="misc-default-param.html"><strong aria-hidden="true">16.</strong> Default parameter mechanics</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">A tour of dyn Trait</li><li class="chapter-item "><a href="dyn-trait.html"><strong aria-hidden="true">17.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="dyn-trait-overview.html"><strong aria-hidden="true">18.</strong> dyn Trait overview</a></li><li class="chapter-item "><a href="dyn-trait-impls.html"><strong aria-hidden="true">19.</strong> dyn Trait implementations</a></li><li class="chapter-item expanded "><a href="dyn-trait-coercions.html" class="active"><strong aria-hidden="true">20.</strong> dyn Trait coercions</a></li><li class="chapter-item "><a href="dyn-safety.html"><strong aria-hidden="true">21.</strong> dyn safety (object safety)</a></li><li class="chapter-item "><a href="dyn-trait-lifetime.html"><strong aria-hidden="true">22.</strong> dyn Trait lifetimes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-covariance.html"><strong aria-hidden="true">22.1.</strong> Variance</a></li><li class="chapter-item "><a href="dyn-hr.html"><strong aria-hidden="true">22.2.</strong> Higher-ranked types</a></li><li class="chapter-item "><a href="dyn-elision.html"><strong aria-hidden="true">22.3.</strong> Elision rules</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-elision-basic.html"><strong aria-hidden="true">22.3.1.</strong> Basic guidelines</a></li><li class="chapter-item "><a href="dyn-elision-advanced.html"><strong aria-hidden="true">22.3.2.</strong> Advanced guidelines</a></li><li class="chapter-item "><a href="dyn-elision-trait-bounds.html"><strong aria-hidden="true">22.3.3.</strong> Trait bound interactions</a></li><li class="chapter-item "><a href="dyn-elision-citations.html"><strong aria-hidden="true">22.3.4.</strong> Citations</a></li></ol></li></ol></li><li class="chapter-item "><a href="dyn-trait-vs.html"><strong aria-hidden="true">23.</strong> dyn Trait vs. alternatives</a></li><li class="chapter-item "><a href="dyn-trait-examples.html"><strong aria-hidden="true">24.</strong> dyn Trait examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-trait-combining.html"><strong aria-hidden="true">24.1.</strong> Combining traits</a></li><li class="chapter-item "><a href="dyn-trait-box-impl.html"><strong aria-hidden="true">24.2.</strong> impl Trait for Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-clone.html"><strong aria-hidden="true">24.3.</strong> Cloneable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-eq.html"><strong aria-hidden="true">24.4.</strong> dyn PartialEq</a></li><li class="chapter-item "><a href="dyn-trait-borrow.html"><strong aria-hidden="true">24.5.</strong> Generalizing borrows</a></li><li class="chapter-item "><a href="dyn-trait-erased.html"><strong aria-hidden="true">24.6.</strong> Erased traits</a></li><li class="chapter-item "><a href="dyn-trait-hash.html"><strong aria-hidden="true">24.7.</strong> Hashable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-any-examples.html"><strong aria-hidden="true">24.8.</strong> dyn Any examples</a></li></ol></li><li class="chapter-item "><a href="dyn-any.html"><strong aria-hidden="true">25.</strong> dyn Any</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="dyn-trait-coercions"><a class="header" href="#dyn-trait-coercions"><code>dyn Trait</code> coercions</a></h1>
+<p>Some <code>dyn Trait</code> coercions which are typical (in terms of what is being coerced) look like so:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::sync::Arc;
+</span><span class="boring">trait Trait {}
+</span>fn coerce_ref&lt;'a, T: Trait + Sized + 'a&gt;(t:    &amp;T ) -&gt; &amp;(  dyn Trait + 'a) { t }
+fn coerce_box&lt;'a, T: Trait + Sized + 'a&gt;(t: Box&lt;T&gt;) -&gt; Box&lt;dyn Trait + 'a&gt; { t }
+fn coerce_arc&lt;'a, T: Trait + Sized + 'a&gt;(t: Arc&lt;T&gt;) -&gt; Arc&lt;dyn Trait + 'a&gt; { t }
+// etc
+<span class="boring">}</span></code></pre></pre>
+<p>These are more <em>syntactically noisy</em> than you will typically see in practice, as
+I have included some explicit lifetimes and bounds which are normally implied
+or not used.  For example the <code>Sized</code> bound on generic type parameters
+<a href="https://doc.rust-lang.org/reference/special-types-and-traits.html#sized">is usually implied,</a>
+but I've made it explicit to emphasize that we're talking about <code>Sized</code> base types.</p>
+<p>The key point is that given an <a href="dyn-safety.html">object safe <code>Trait</code>,</a> and when
+<code>T: 'a + Trait + Sized</code>, you can coerce a <code>Ptr&lt;T&gt;</code> to a <code>Ptr&lt;dyn Trait + 'a&gt;</code>
+for the supported <code>Ptr</code> pointer types such as <code>&amp;_</code> and <code>Box&lt;_&gt;</code>.</p>
+<p>If we had wanted a <code>dyn Trait + Send + 'a</code>, naturally we would need <code>T: Send</code>
+as well, and similarly for any other auto trait.</p>
+<p>In the rest of this section, we look at cases beyond these typical examples,
+as well as some limitations of coercions.</p>
+<h2 id="associated-types"><a class="header" href="#associated-types">Associated types</a></h2>
+<p>When a trait has one or more non-generic associated type, every concrete implementor of
+the trait chooses a single, statically-known type for each associated type.  For base
+types, this means the associated types are "outputs" of the implementing type and the
+implemented trait: if you know the latter two, you can statically determine the
+associated types as well.</p>
+<p>So what should the associated types be in the implementation of <code>Trait</code> for
+<code>dyn Trait</code>?</p>
+<p>There is no single answer; they would need to vary based on the erased base types.</p>
+<p>However, <code>dyn Trait</code> for traits with associated types is just too useful to
+make traits with associated types ineligible for <code>dyn Trait</code>.  Instead, associated
+types in the trait become, in essence, named <em>type parameters</em> of the <code>dyn Trait</code>
+type constructor. (Recall it's already a type constructor due to the trait object lifetime.)</p>
+<p>So given</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Iterator {
+    type Item;
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We have</p>
+<pre><code class="language-rust ignore">dyn Iterator&lt;Item = String&gt; + '_
+dyn Iterator&lt;Item = i32&gt; + '_
+dyn Iterator&lt;Item = f64&gt; + '_</code></pre>
+<p>and so on.  The associated types in <code>dyn Trait&lt;...&gt;</code> must be resolved to
+concrete types in order for the <code>dyn Trait&lt;...&gt;</code> to be a concrete type.</p>
+<p>Naturally, you can only coerce to <code>dyn Iterator&lt;Item = String&gt;</code> if you
+both implement <code>Iterator</code>, and in your implementation, <code>type Item = String</code>.
+The syntax mirrors that of associated type trait bounds:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn takes_string_iter&lt;Iter&gt;(i: Iter)
+where
+    Iter: Iterator&lt;Item = String&gt;,
+{
+   // ...
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The parameters being named has a number of benefits.  For one, it's
+usually quite relevant, such as what <code>Item</code> an <code>Iterator</code> returns
+(especially if the associated types are well named).  It also removes
+the need to order the associated types in a well-defined way, such as
+lexicographically or especially declaration order (which would be too fragile).</p>
+<p>The named parameters must be specified after all ordered parameters, however.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait AssocAndParams&lt;T, U&gt; { type Assoc1; type Assoc2; }
+
+// The trait's ordered type parameters must be in declaration order
+// (here, `String` then `usize`).  After that come the named associated
+// type parameters, which can be reordered arbitrary amongst themselves.
+fn foo(d: Box&lt;dyn AssocAndParams&lt;String, usize, Assoc1 = i32, Assoc2 = u32&gt;&gt;)
+-&gt;
+    Box&lt;dyn AssocAndParams&lt;String, usize, Assoc2 = u32, Assoc1 = i32&gt;&gt;
+{
+   d
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="opting-out-of-dyn-usability"><a class="header" href="#opting-out-of-dyn-usability">Opting out of <code>dyn</code>-usability</a></h3>
+<p><a href="https://github.com/rust-lang/rust/pull/112319/">As of Rust 1.72,</a> if you add
+a <code>where Self: Sized</code> bound to an associated type, it is considered
+<a href="dyn-safety.html#the-sized-constraints">non-<code>dyn</code>-usable.</a>  The associated type
+becomes unusable by <code>dyn Trait</code>, and you no longer need to constrain the
+associated type with the named parameter.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    type Foo where Self: Sized;
+    fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+    fn bar(&amp;self) {}
+}
+
+impl Trait for i32 {
+    type Foo = ();
+    fn foo(&amp;self) -&gt; Self::Foo {}
+}
+
+impl Trait for u64 {
+    type Foo = f32;
+    fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+}
+
+// No need for `dyn Trait&lt;Foo = ()&gt;`!
+let mut a: &amp;dyn Trait = &amp;0_i32;
+
+// No need for associated type equality between base types!
+a = &amp;0_u64;
+
+// This fails because the type is not defined (`dyn Trait` is not `Sized`)
+// let _: &lt;dyn Trait as Trait&gt;::Foo = todo!();
+<span class="boring">}</span></code></pre></pre>
+<p>Although it produces is awarning, you can still <em>optionally</em> specify the
+associated type, even though it's not usable by the <code>dyn Trait</code> itself.
+Note also that this does result in incompatible types and limits the
+possible coercions:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {
+</span><span class="boring">   type Foo where Self: Sized;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+</span><span class="boring">   fn bar(&amp;self) {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for i32 {
+</span><span class="boring">   type Foo = ();
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for u64 {
+</span><span class="boring">   type Foo = f32;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+</span><span class="boring">}
+</span>let mut a: &amp;dyn Trait&lt;Foo = ()&gt; = &amp;0_i32;
+
+// Fails!
+a = &amp;0_u64;
+<span class="boring">}</span></code></pre></pre>
+<p>This introduces some interesting possibilities around
+<a href="dyn-trait-box-impl.html">implementing <code>trait</code> for <code>Box&lt;dyn Trait&gt;</code>:</a></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {
+</span><span class="boring">   type Foo where Self: Sized;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+</span><span class="boring">   fn bar(&amp;self) {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for i32 {
+</span><span class="boring">   type Foo = ();
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for u64 {
+</span><span class="boring">   type Foo = f32;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+</span><span class="boring">}
+</span>impl&lt;T: Default&gt; Trait for Box&lt;dyn Trait&lt;Foo = T&gt;&gt; {
+    type Foo = T;
+    fn foo(&amp;self) -&gt; Self::Foo {
+        T::default()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The warning currently says "while the associated type can be specified, it cannot
+be used in any way," but this example shows that is not technically true.  I think
+this sort of usage was just not anticipated.</p>
+<p>The reason it's not an error to specify non-<code>dyn</code>-usable associated types in this
+manner is that there was a period where you could add <code>Self: Sized</code> bounds to
+associated types, but were still <em>required</em> to name the associated type in
+<code>dyn Trait&lt;..&gt;</code>.  Thus it would be a breaking change to make the warning an error.</p>
+<p>Given the potential utility, I would argue that the warning should at a minimum
+be reworded, and perhaps renamed.</p>
+<h2 id="no-nested-coercions"><a class="header" href="#no-nested-coercions">No nested coercions</a></h2>
+<p>An unsizing coercion needs to happen behind a layer of indirection (such as a
+reference or in a <code>Box</code>) in order to accomodate the wide pointer to the erased
+type's vtable (and because moving unsized types is not supported).</p>
+<p>However, the unsizing coercion can only happen behind a <em>single</em> layer of
+indirection.  For example, you can't coerce a <code>Vec&lt;Box&lt;T&gt;&gt;</code> to a <code>Vec&lt;Box&lt;dyn Trait&gt;&gt;</code>.
+Why not?  <code>Box&lt;T&gt;</code> and <code>Box&lt;dyn Trait&gt;</code> have different layouts!  The former
+is the size of one pointer, while the second is the size of two pointers.
+The entire <code>Vec</code> would need to be reallocated to accomodate such a change:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span>fn convert_vec&lt;'a, T: Trait + 'a&gt;(v: Vec&lt;Box&lt;T&gt;&gt;) -&gt; Vec&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+    v.into_iter().map(|bx| bx as _).collect()
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In general, unsizing coercions consume the original pointer (reference, <code>Box</code>,
+etc) and produce a new one, and this cannot happen in a nested context.</p>
+<p>Internally, which coercions are possible are determined by the
+<a href="https://doc.rust-lang.org/std/ops/trait.CoerceUnsized.html"><code>CoerceUnsized</code></a>
+trait, and the (compiler-implemented) <code>Unsize</code> trait, as discussed in the
+documentation.</p>
+<h3 id="except-when-you-can"><a class="header" href="#except-when-you-can">Except when you can</a></h3>
+<p>There are some material and some apparent exceptions where unsizing coercion
+can occur in a nested context.</p>
+<p>If you follow the link above, you'll see that <a href="https://doc.rust-lang.org/std/ops/trait.CoerceUnsized.html#impl-CoerceUnsized%3CCell%3CU%3E%3E-for-Cell%3CT%3E">some types such as <code>Cell</code>
+implement <code>CoerceUnsized</code> in a recursive manner.</a>
+The idea is that <code>Cell</code> and the others have the same layout as their
+generic type parameter.  As a result, outer layers of <code>Cell</code> don't count
+as "nesting".</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::cell::Cell;
+</span><span class="boring">trait Trait {}
+</span>// Fails :-(
+//fn coerce_vec&lt;'a, T: Trait + 'a&gt;(v: Vec&lt;Box&lt;T&gt;&gt;) -&gt; Vec&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+//    v
+//}
+
+// Works! :-)
+fn coerce_cell&lt;'a, T: Trait + 'a&gt;(c: Cell&lt;Box&lt;T&gt;&gt;) -&gt; Cell&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+    c
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We'll cover the apparent exceptions (which are actually just supertype
+coercions) <a href="./dyn-covariance.html#variance-in-nested-context">in an upcoming section.</a></p>
+<h2 id="the-sized-limitation"><a class="header" href="#the-sized-limitation">The <code>Sized</code> limitation</a></h2>
+<p>Base types must meet a <code>Sized</code> bound in order to be able to be coerced to
+<code>dyn Trait</code>.  For example, <code>&amp;str</code> cannot be coerced to <code>&amp;dyn Display</code>
+even though <code>str</code> implements <code>Display</code>, because <code>str</code> is unsized.</p>
+<p>Why is this limitation in place?  <code>&amp;str</code> is also a wide pointer; it consists
+of a pointer to the UTF8 bytes, and a <code>usize</code> which is the number of bytes.
+Similarly a slice reference <code>&amp;[T]</code> is a pointer to the contiguous data, and
+a count of the number of items.</p>
+<p>A <code>&amp;dyn Trait</code> created from a <code>&amp;str</code> or <code>&amp;[T]</code> would thus naively need to be
+a "super-wide pointer", with a pointer to the data, the element count, <em>and</em>
+the vtable pointer.  But <code>&amp;dyn Trait</code> is a concrete type with a static layout
+-- two pointers -- so this naive approach can't work.  Moreover, what if I
+wanted to coerce a super-wide pointer?  Each recursive coercion requires
+another pointer, making the size unbounded.</p>
+<p>A non-naive approach would require special-casing how dynamic dispatch
+works for erased non-<code>Sized</code> base types.  For example, once you've type
+erased <code>str</code>, you've lost the information that <code>&amp;str</code> is also a wide pointer,
+and how to create that wide pointer.  However, the code would need to recreate
+a wide pointer in order to perform dynamic dispatch.</p>
+<p>So for <code>dyn Trait</code> to non-naively support unsized types, it would need
+to examine at run-time how to construct a pointer to the erased base type:
+one possibility for thin pointers, and an additional possibility for each type
+of wide pointer supported.  Not only that, but the metadata required (such as
+the length of the <code>str</code>) has to be stored <em>somewhere</em>, and that can't be in
+static memory like the vtable is.</p>
+<p>Instead, unsized base types are simply not supported.</p>
+<p>Sometimes you can work around the limitation by, for example, implementing
+the trait for <code>&amp;str</code> instead of <code>str</code>, and then coercing a <code>&amp;'_ str</code> to
+<code>dyn Trait + '_</code> (since references are always <code>Sized</code>).</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>// This fails as we cannot coerce `str` to `dyn Display`, so we cannot coerce
+// `&amp;str` to `&amp;dyn Display`.
+// let _: &amp;dyn Display = "hi";
+
+// However, `&amp;str` also implements `Display`.  (If `T: Display`, then `&amp;T: Display`.)
+// Because `&amp;str` is `Sized`, we can instead coerce `&amp;&amp;str` to `&amp;dyn Display`:
+let _: &amp;dyn Display = &amp;"hi";
+<span class="boring">}</span></code></pre></pre>
+<p><code>Sized</code> is also used as a sort of "not-<code>dyn</code>" marker,
+<a href="dyn-safety.html#the-sized-constraints">which we explore later.</a></p>
+<p>There is one broad exception to the <code>Sized</code> limitation: coercing between
+forms of <code>dyn Trait</code> itself, which we look at immediately below.</p>
+<h2 id="discarding-auto-traits"><a class="header" href="#discarding-auto-traits">Discarding auto traits</a></h2>
+<p>You can coerce a <code>dyn Trait + Send</code> to a <code>dyn Trait</code>, and similarly discard
+any other auto trait.</p>
+<p>Although
+<a href="./dyn-trait-overview.html#dyn-trait-is-not-a-supertype"><code>dyn Trait</code> isn't a supertype of <code>dyn Trait + Send</code>,</a>
+this is nonetheless referred to as <em>upcasting</em> <code>dyn Trait + Send</code> to <code>dyn Trait</code>.</p>
+<p>Note that auto traits have no methods, and thus no change to the vtable is
+required for these coercions.  They allow one to call a less restricted
+function (that takes <code>dyn Trait</code>) from a more restrictive one (e.g. one that
+requires <code>dyn Trait + Send</code>).  The coercion is necessary as, again, these are
+(distinct) concrete types, and not generics nor subtypes nor dynamic types.</p>
+<p>Although no change to the vtable is required, this coercion can still
+<a href="#no-nested-coercions">not happen in a nested context.</a></p>
+<h2 id="the-reflexive-case"><a class="header" href="#the-reflexive-case">The reflexive case</a></h2>
+<p>You can cast <code>dyn Trait</code> to <code>dyn Trait</code>.</p>
+<p>Sorry, we're being too imprecise again.  You can cast a <code>dyn Trait + 'a</code> to a <code>dyn Trait + 'b</code>,
+where <code>'a: 'b</code>.  This is important for
+<a href="./dyn-covariance.html#unsizing-coercions-in-invariant-context">how borrowing works with <code>dyn Trait + '_</code>.</a></p>
+<p>As lifetimes are erased during compilation, the vtable is the same regardless of the lifetime.
+Despite that, this unsizing coercion can still <a href="#no-nested-coercions">not happen in a nested context.</a></p>
+<p>However, <a href="./dyn-covariance.html">in a future section</a> we'll see
+how variance can allow shortening the trait object lifetime even in nested context,
+provided that context is also covariant.  <a href="./dyn-hr.html">The section after that about higher-ranked
+types</a> explores another lifetime-related coercion which could also be
+considered reflexive.</p>
+<h2 id="supertrait-upcasting"><a class="header" href="#supertrait-upcasting">Supertrait upcasting</a></h2>
+<p>Though not supported on stable yet,
+<a href="https://github.com/rust-lang/rust/issues/65991">the ability to upcast from <code>dyn SubTrait</code> to <code>dyn SuperTrait</code></a>
+is a feature expected to be available some day.</p>
+<p>It is, once again, explicitly a coercion and not a sub/super type relationship
+(despite the terminology).  Although this is an implementation detail, the
+conversion will probably involve replacing the vtable pointer (in contrast
+with the last couple of examples).</p>
+<p>Until the feature is stable,
+<a href="./dyn-trait-combining.html#manual-supertrait-upcasting">you can write your own "manual" supertrait upcasts.</a></p>
+<h2 id="object-safe-traits-only"><a class="header" href="#object-safe-traits-only">Object-safe traits only</a></h2>
+<p>There are other restrictions on the <em>trait</em> which we have not discussed here,
+such as not (yet) supporting traits with generic associated types (GATs).
+<a href="dyn-safety.html">We cover those in the next section.</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-trait-impls.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-safety.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-trait-impls.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-safety.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

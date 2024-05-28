@@ -1,0 +1,427 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Basic guidelines - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Practical suggestions for building intuition around borrow errors</li><li class="chapter-item "><a href="lifetime-intuition.html"><strong aria-hidden="true">1.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="community.html"><strong aria-hidden="true">2.</strong> Keep at it and participate in the community</a></li><li class="chapter-item "><a href="have-no-life.html"><strong aria-hidden="true">3.</strong> Prefer ownership over long-lived references</a></li><li class="chapter-item "><a href="dont-hide.html"><strong aria-hidden="true">4.</strong> Don't hide lifetimes</a></li><li class="chapter-item "><a href="elision.html"><strong aria-hidden="true">5.</strong> Understand elision and get a feel for when to name lifetimes</a></li><li class="chapter-item "><a href="subtypes.html"><strong aria-hidden="true">6.</strong> Get a feel for variance, references, and reborrows</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="st-model.html"><strong aria-hidden="true">6.1.</strong> The seed of a mental model</a></li><li class="chapter-item "><a href="st-types.html"><strong aria-hidden="true">6.2.</strong> Reference types</a></li><li class="chapter-item "><a href="st-bounds.html"><strong aria-hidden="true">6.3.</strong> Lifetime bounds</a></li><li class="chapter-item "><a href="st-references.html"><strong aria-hidden="true">6.4.</strong> Reference lifetimes</a></li><li class="chapter-item "><a href="st-reborrow.html"><strong aria-hidden="true">6.5.</strong> Copy and reborrows</a></li><li class="chapter-item "><a href="st-invariance.html"><strong aria-hidden="true">6.6.</strong> Nested borrows and invariance</a></li><li class="chapter-item "><a href="st-more-invariance.html"><strong aria-hidden="true">6.7.</strong> Invariance elsewhere</a></li><li class="chapter-item "><a href="st-non-references.html"><strong aria-hidden="true">6.8.</strong> Non-references</a></li></ol></li><li class="chapter-item "><a href="methods.html"><strong aria-hidden="true">7.</strong> Get a feel for borrow-returning methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="m-naming.html"><strong aria-hidden="true">7.1.</strong> When not to name lifetimes</a></li><li class="chapter-item "><a href="m-infect.html"><strong aria-hidden="true">7.2.</strong> Bound-related lifetimes "infect" each other</a></li><li class="chapter-item "><a href="m-no-downgrades.html"><strong aria-hidden="true">7.3.</strong> &mut inputs don't "downgrade" to &</a></li><li class="chapter-item "><a href="m-rpitit-alikes.html"><strong aria-hidden="true">7.4.</strong> async and returning impl Trait</a></li></ol></li><li class="chapter-item "><a href="fn-parameters.html"><strong aria-hidden="true">8.</strong> Understand function lifetime parameters</a></li><li class="chapter-item "><a href="lifetime-analysis.html"><strong aria-hidden="true">9.</strong> Understand borrows within a function</a></li><li class="chapter-item "><a href="pitfalls.html"><strong aria-hidden="true">10.</strong> Learn some pitfalls and antipatterns</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="pf-dyn.html"><strong aria-hidden="true">10.1.</strong> dyn Trait lifetimes and Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="pf-nll3.html"><strong aria-hidden="true">10.2.</strong> Conditional return of a borrow</a></li><li class="chapter-item "><a href="pf-borrow-forever.html"><strong aria-hidden="true">10.3.</strong> Borrowing something forever</a></li><li class="chapter-item "><a href="pf-self.html"><strong aria-hidden="true">10.4.</strong> &'a mut self and Self aliasing more generally</a></li><li class="chapter-item "><a href="pf-meta.html"><strong aria-hidden="true">10.5.</strong> Avoid self-referential structs</a></li><li class="chapter-item "><a href="pf-shared-nested.html"><strong aria-hidden="true">10.6.</strong> &'a Struct&lt;'a&gt; and covariance</a></li></ol></li><li class="chapter-item "><a href="compiler.html"><strong aria-hidden="true">11.</strong> Scrutinize compiler advice</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="c-signatures.html"><strong aria-hidden="true">11.1.</strong> Advice to change function signature when aliases are involved</a></li><li class="chapter-item "><a href="c-equality.html"><strong aria-hidden="true">11.2.</strong> Advice to add bound which implies lifetime equality</a></li><li class="chapter-item "><a href="c-static.html"><strong aria-hidden="true">11.3.</strong> Advice to add a static bound</a></li></ol></li><li class="chapter-item "><a href="lt-examples.html"><strong aria-hidden="true">12.</strong> Illustrative examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="lt-ex-mut-slice.html"><strong aria-hidden="true">12.1.</strong> Mutable slice iterator</a></li></ol></li><li class="chapter-item "><a href="circle.html"><strong aria-hidden="true">13.</strong> Circle back</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">Miscellanea</li><li class="chapter-item "><a href="miscellanea.html"><strong aria-hidden="true">14.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="misc-slice.html"><strong aria-hidden="true">15.</strong> Slice layout</a></li><li class="chapter-item "><a href="misc-default-param.html"><strong aria-hidden="true">16.</strong> Default parameter mechanics</a></li><li class="spacer"></li><li class="chapter-item affix "><li class="part-title">A tour of dyn Trait</li><li class="chapter-item "><a href="dyn-trait.html"><strong aria-hidden="true">17.</strong> Sectional introduction</a></li><li class="chapter-item "><a href="dyn-trait-overview.html"><strong aria-hidden="true">18.</strong> dyn Trait overview</a></li><li class="chapter-item "><a href="dyn-trait-impls.html"><strong aria-hidden="true">19.</strong> dyn Trait implementations</a></li><li class="chapter-item "><a href="dyn-trait-coercions.html"><strong aria-hidden="true">20.</strong> dyn Trait coercions</a></li><li class="chapter-item "><a href="dyn-safety.html"><strong aria-hidden="true">21.</strong> dyn safety (object safety)</a></li><li class="chapter-item expanded "><a href="dyn-trait-lifetime.html"><strong aria-hidden="true">22.</strong> dyn Trait lifetimes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-covariance.html"><strong aria-hidden="true">22.1.</strong> Variance</a></li><li class="chapter-item "><a href="dyn-hr.html"><strong aria-hidden="true">22.2.</strong> Higher-ranked types</a></li><li class="chapter-item expanded "><a href="dyn-elision.html"><strong aria-hidden="true">22.3.</strong> Elision rules</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="dyn-elision-basic.html" class="active"><strong aria-hidden="true">22.3.1.</strong> Basic guidelines</a></li><li class="chapter-item "><a href="dyn-elision-advanced.html"><strong aria-hidden="true">22.3.2.</strong> Advanced guidelines</a></li><li class="chapter-item "><a href="dyn-elision-trait-bounds.html"><strong aria-hidden="true">22.3.3.</strong> Trait bound interactions</a></li><li class="chapter-item "><a href="dyn-elision-citations.html"><strong aria-hidden="true">22.3.4.</strong> Citations</a></li></ol></li></ol></li><li class="chapter-item "><a href="dyn-trait-vs.html"><strong aria-hidden="true">23.</strong> dyn Trait vs. alternatives</a></li><li class="chapter-item "><a href="dyn-trait-examples.html"><strong aria-hidden="true">24.</strong> dyn Trait examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="dyn-trait-combining.html"><strong aria-hidden="true">24.1.</strong> Combining traits</a></li><li class="chapter-item "><a href="dyn-trait-box-impl.html"><strong aria-hidden="true">24.2.</strong> impl Trait for Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-clone.html"><strong aria-hidden="true">24.3.</strong> Cloneable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-trait-eq.html"><strong aria-hidden="true">24.4.</strong> dyn PartialEq</a></li><li class="chapter-item "><a href="dyn-trait-borrow.html"><strong aria-hidden="true">24.5.</strong> Generalizing borrows</a></li><li class="chapter-item "><a href="dyn-trait-erased.html"><strong aria-hidden="true">24.6.</strong> Erased traits</a></li><li class="chapter-item "><a href="dyn-trait-hash.html"><strong aria-hidden="true">24.7.</strong> Hashable Box&lt;dyn Trait&gt;</a></li><li class="chapter-item "><a href="dyn-any-examples.html"><strong aria-hidden="true">24.8.</strong> dyn Any examples</a></li></ol></li><li class="chapter-item "><a href="dyn-any.html"><strong aria-hidden="true">25.</strong> dyn Any</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="basic-guidelines-and-subtleties"><a class="header" href="#basic-guidelines-and-subtleties">Basic guidelines and subtleties</a></h1>
+<p>As a reminder, <code>dyn Trait</code> is a type constructor which is parameterized with a
+lifetime; a fully resolved type includes the lifetime, such as <code>dyn Trait + 'static</code>.
+The lifetime can be elided in many situations, in which case the actual lifetime
+used may take on some default lifetime, or may be inferred.</p>
+<p>When talking about default trait object (<code>dyn Trait</code>) lifetimes, we're talking about
+situations where the lifetime has been completely elided.  If the wildcard lifetime
+is used (<code>dyn Trait + '_</code>), then <a href="https://doc.rust-lang.org/reference/lifetime-elision.html#lifetime-elision-in-functions">the normal lifetime elision rules</a>
+usually apply instead.  (The exceptions are rare, and you can usually be explicit
+instead if you need to.)</p>
+<p>For a completely elided <code>dyn Trait</code> lifetime, you can start with these
+general guidelines for traits with no lifetime bounds (which are the vast majority):</p>
+<ul>
+<li>In function bodies, the trait object lifetime is inferred (i.e. ignore the following bullets)</li>
+<li>For references like <code>&amp;'a dyn Trait</code>, the default is the same as the reference lifetime (<code>'a</code>)</li>
+<li>For <code>dyn</code>-supporting <code>std</code> types with lifetime parameters such as
+<a href="https://doc.rust-lang.org/std/cell/struct.Ref.html"><code>Ref&lt;'a, T&gt;</code></a>, it is also <code>'a</code></li>
+<li>For non-lifetime-parameter types like <code>Box&lt;dyn Trait&gt;</code>, and for bare <code>dyn Trait</code>, it's <code>'static</code></li>
+</ul>
+<p>And for the (rare) trait with lifetime bounds:</p>
+<ul>
+<li>If the trait has a <code>'static</code> bound, the trait object lifetime is always <code>'static</code></li>
+<li>If the trait has only non-<code>'static</code> lifetime bounds, <a href="./dyn-elision-trait-bounds.html">you're better off being explicit</a></li>
+</ul>
+<p>This is a close enough approximation to let you understand <code>dyn Trait</code>
+lifetime elision most of the time, but there are exceptions to these
+guidelines (which are explored on the next couple of pages).</p>
+<p>There are also a few subtleties worth pointing out <em>within</em> these guidelines,
+which are covered immediately below.</p>
+<h2 id="default-static-bound-gotchas"><a class="header" href="#default-static-bound-gotchas">Default <code>'static</code> bound gotchas</a></h2>
+<p>The most likely scenario to run into an error about <code>dyn Trait</code> lifetime is
+when <code>Box</code> or similar is involved, resulting an implicit <code>'static</code> constraint.</p>
+<p>Those errors can often be addressed by either adding an explicit <code>'static</code>
+bound, or by overriding the implicit <code>'static</code> lifetime.  In particular, using
+<code>'_</code> will usually result in the "normal" (non-<code>dyn Trait</code>) lifetime elision for
+the given context.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {}
+impl&lt;T: Trait&gt; Trait for &amp;T {}
+
+// Remove `+ 'static` to see an error
+fn with_explicit_bound&lt;'a, T: Trait + 'static&gt; (t: T) -&gt; Box&lt;dyn Trait&gt; {
+    Box::new(t)
+}
+
+// Remove `+ 'a` (in either position) to see an error
+fn with_nonstatic_box&lt;'a, T: Trait + 'a&gt;(t: T) -&gt; Box&lt;dyn Trait + 'a&gt; {
+    Box::new(t)
+}
+
+// Remove `+ '_` to see an error
+fn with_fn_lifetime_elision(t: &amp;impl Trait) -&gt; Box&lt;dyn Trait + '_&gt; {
+    Box::new(t)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This can be particularly confusing within a function body, where a
+<code>Box&lt;dyn Trait&gt;</code> variable annotation acts differently from a <code>Box&lt;dyn Trait&gt;</code>
+function input parameter annotation:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span><span class="boring">impl Trait for &amp;i32 {}
+</span>// In this context, the elided lifetime is `'static`
+fn requires_static(_: Box&lt;dyn Trait&gt;) {}
+
+fn example() {
+    let local = 0;
+
+    // In this context, the annotation means `Box&lt;dyn Trait + '_&gt;`!
+    // That is why it can compile on it's own, with the local reference.
+    let bx: Box&lt;dyn Trait&gt; = Box::new(&amp;local);
+
+    // So despite using the same syntax, this call cannot compile.
+    // Uncomment it to see the compilation error.
+    // requires_static(bx);
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="impl-headers"><a class="header" href="#impl-headers"><code>impl</code> headers</a></h2>
+<p>The <code>dyn Trait</code> lifetime elision applies in <code>impl</code> headers, which can lead to
+implementations being less general than possible or desired:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {}
+trait Two {}
+
+impl Two for Box&lt;dyn Trait&gt; {}
+impl Two for &amp;dyn Trait {}
+<span class="boring">}</span></code></pre></pre>
+<p><code>Two</code> is implemented for</p>
+<ul>
+<li><code>Box&lt;dyn Trait + 'static&gt;</code></li>
+<li><code>&amp;'a (dyn Trait + 'a)</code> for any <code>'a</code> (the lifetimes must match)</li>
+</ul>
+<p>Consider using implementations like the following if possible, as they are
+more general:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span><span class="boring">trait Two {}
+</span>// Implemented for all lifetimes
+impl Two for Box&lt;dyn Trait + '_&gt; {}
+
+// Implemented for all lifetimes such that the inner lifetime is
+// at least as long as the outer lifetime
+impl Two for &amp;(dyn Trait + '_) {}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="alias-gotchas"><a class="header" href="#alias-gotchas">Alias gotchas</a></h2>
+<p>Similar to <code>impl</code> headers, elision will apply when defining a type alias:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait MyTraitICouldNotThinkOfAShortNameFor {}
+
+// This is an alias to `dyn ... + 'static`!
+type MyDyn = dyn MyTraitICouldNotThinkOfAShortNameFor;
+
+// The default does not "override" the type alias and thus
+// requires the trait object lifetime to be `'static`
+fn foo(_: &amp;MyDyn) {}
+
+// As per the `dyn` elision rules, this requires the trait
+// object lifetime to be the same as the reference...
+fn bar(d: &amp;dyn MyTraitICouldNotThinkOfAShortNameFor) {
+    // ...and thus this fails as the lifetime cannot be extended
+    foo(d);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>More generally, elision does not "penetrate" or alter type aliases.
+This includes the <code>Self</code> alias within implementation blocks.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {}
+
+impl dyn Trait {
+    // Error: requires `T: 'static`
+    fn f&lt;T: Trait&gt;(t: &amp;T) -&gt; &amp;Self { t }
+}
+
+impl&lt;'a&gt; dyn Trait + 'a {
+    // Error: requires `T: 'a`
+    fn g&lt;T: Trait&gt;(t: &amp;T) -&gt; &amp;Self { t }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>See also <a href="./dyn-elision-advanced.html#iteraction-with-type-aliases">how type aliases with parameters behave.</a></p>
+<h2 id="static-traits"><a class="header" href="#static-traits"><code>'static</code> traits</a></h2>
+<p>When the trait itself is <code>'static</code>, the trait object lifetime has an implied
+<code>'static</code> bound.  Therefore if you name the trait object lifetime explicitly,
+the name you give it will also have an implied <code>'static</code> bound.  So here:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">use core::any::Any;
+</span>// n.b. trait `Any` has a `'static` bound
+fn example&lt;'a&gt;(_: &amp;'a (dyn Any + 'a)) {}
+
+fn main() {
+    let local = ();
+    example(&amp;local);
+}</code></pre></pre>
+<p>We get an error that the borrow of <code>local</code> must be <code>'static</code>.  The problem is
+that <code>'a</code> in <code>example</code> has inherited the <code>'static</code> bound (<code>'a: 'static</code>), and
+we also gave the outer reference the lifetime of <code>'a</code>.  This is a case where
+we don't actually want them to be the same.</p>
+<p>The most ergonomic solution is to always completely elide the trait object
+lifetime when the trait itself has a <code>'static</code> bound.  Unlike other cases,
+the trait object lifetime is independent of the outer reference lifetime when
+the trait itself has a <code>'static</code> bound, so this compiles:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">use core::any::Any;
+</span>// This is `&amp;'a (dyn Any + 'static)` and `'a` doesn't have to be `'static`
+fn example(_: &amp;dyn Any) {}
+
+fn main() {
+    let local = ();
+    example(&amp;local);
+}</code></pre></pre>
+<p><code>Any</code> is the most common trait with a <code>'static</code> bound, i.e. the most likely
+reason for you to encounter this scenario.</p>
+<h2 id="static-contexts"><a class="header" href="#static-contexts"><code>static</code> contexts</a></h2>
+<p>In some contexts like when declaring a <code>static</code>, it's possible to elide the
+lifetime of types like references; doing so will result in <code>'static</code> being
+used for the elided lifetime:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// The elided lifetime is `'static`
+static S: &amp;str = "";
+const C: &amp;str = "";
+<span class="boring">}</span></code></pre></pre>
+<p>As a result, elided <code>dyn Trait</code> lifetimes will by default also be <code>'static</code>,
+matching the inferred lifetime of the reference.  In contrast, this fails
+due to the outer lifetime being <code>'static</code>:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span><span class="boring">impl Trait for () {}
+</span>struct S&lt;'a: 'b, 'b&gt;(&amp;'b &amp;'a str);
+impl&lt;'a: 'b, 'b&gt; S&lt;'a, 'b&gt; {
+    const T: &amp;(dyn Trait + 'a) = &amp;();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In this context, eliding all the lifetimes is again <em>usually</em> what you want.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-elision.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-elision-advanced.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-elision.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-elision-advanced.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
