@@ -369,7 +369,7 @@ defaults.
 Lifetime paramters can not be given defaults, and do not change any of the
 default parameter behavior we've discussed.
 
-I've tried to take care to use phrases like "specify one or mmore non-lifetime
+I've tried to take care to use phrases like "specify one or more non-lifetime
 parameter" instead of phrase like "empty parameter list".  But just to make
 things more explicit: the inclusion or elision of lifetime parameters doesn't
 change how parameter defaults work.
