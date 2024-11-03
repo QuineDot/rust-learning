@@ -166,7 +166,7 @@ to the elements, that's *also* multiple `&mut` to the same memory!
 This is what the error is telling us: We can't hold onto the entire `slice` and
 return `first`.
 
-(There's a pattern called "leanding iterators" where you can hand out borrows of
+(There's a pattern called "lending iterators" where you can hand out borrows of
 data you own in an iterator-like fashion, but it's not possible with the current
 `Iterator` trait; it is also a topic for another day.)
 
