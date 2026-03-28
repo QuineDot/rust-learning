@@ -1,88 +1,148 @@
 # `async` and returning `impl Trait`
 
-The return type of an `async` function captures all of its generic parameters,
-including any lifetimes.  So here:
+A lot can be said about `async fn` and returning `impl Trait`; more than can be covered here.
+But something to be particularly aware of is how they nearly invisibly introduce borrow
+relationships in function signatures.
+
+## About `-> impl Trait` and implicit capturing
+
+You can use `impl Trait` as a return type to return something which the caller
+knows satisfies the trait, without actually naming the type.  This is also
+called "`return` position `impl Trait`", or RPIT.
+
+When you use `-> impl Trait`, it's possible for lifetimes (and type generics)
+to flow into the return type almost invisibly:
+
 ```rust
-async fn example(v: &mut Vec<String>) -> String {
-    "Hi :-)".to_string()
-}
-```
-The future returned by the `async fn` implicitly reborrows the `v` input, and
-"carries" the same lifetime, just like the other examples we saw.
-
-The same is true when you use `return`-position `impl Trait` (RPIT) in traits (RPITIT):
-```rust,compile_fail
-# struct MyStruct {}
-trait StringIter {
-    fn iter(&self) -> impl Iterator<Item = String>;
-}
-
-impl StringIter for MyStruct {
-    fn iter(&self) -> impl Iterator<Item = String> {
-        ["Hi :-)"].into_iter().map(ToString::to_string)
+# #![deny(elided_lifetimes_in_paths)]
+# use either::Either;
+# use std::fs::File;
+# use std::io::{self, BufRead, BufReader};
+# use std::iter;
+fn example(s: &str) -> impl Iterator<Item = Result<String, io::Error>> {
+    match File::open(s) {
+        Ok(file) => Either::Left(BufReader::new(file).lines()),
+        Err(e) => Either::Right(iter::once(Err(e))),
     }
 }
+```
 
-// Fails to compile as `iter` borrows `my`
-fn example(my: MyStruct) {
-    let iter = my.iter();
-    let _move_my = my;
+The signature is actually syntactic sugar for:
+```rust,ignore
+//                          vvvvvvvvv
+fn example(s: &str) -> impl use<'_> + Iterator<Item = Result<String, io::Error>> {
+```
+
+This is called "capturing" the generic lifetime.  In this case it means that callers
+will treat the returned value as if it contains the `&str` which we passed in.
+However, we're not actually doing that!  So this may cause unexpected borrow checker
+errors, like so:
+```rust,compile_fail
+# #![deny(elided_lifetimes_in_paths)]
+# use either::Either;
+# use std::fs::File;
+# use std::io::{self, BufRead, BufReader};
+# use std::iter;
+# fn example(s: &str) -> impl Iterator<Item = Result<String, io::Error>> {
+#     match File::open(s) {
+#         Ok(file) => Either::Left(BufReader::new(file).lines()),
+#         Err(e) => Either::Right(iter::once(Err(e))),
+#     }
+# }
+fn main() {
+    let local = String::from("filename.txt");
+    let iter = example(&local);
+    let _move_of_local = local; // Errors because `local` is still borrowed...
+    for _ in iter {}            // ...as if `&local` ended up in `iter`
+}
+```
+The return value keeps `local` borrowed, as that's what the function API tells the
+compiler to enforce.  Capturing the lifetime is part of the API contract.
+
+By default, *all* generics are captured (all lifetimes and all types).  But we can
+write out our own `use` clause manually to only capture the lifetimes we actually need.
+(So far, you are always required to capture all *type* generics.)
+
+In this example we don't need any lifetimes -- we don't actually use `s` in our
+returned value -- so the change looks like this:
+```diff
+-fn example(s: &str) -> impl Iterator<Item = Result<String, io::Error>> {
++fn example(s: &str) -> impl use<> + Iterator<Item = Result<String, io::Error>> {
+```
+And now this compiles:
+```rust
+# #![deny(elided_lifetimes_in_paths)]
+# use either::Either;
+# use std::fs::File;
+# use std::io::{self, BufRead, BufReader};
+# use std::iter;
+fn example(s: &str) -> impl use<> + Iterator<Item = Result<String, io::Error>> {
+    // ...
+#     match File::open(s) {
+#         Ok(file) => Either::Left(BufReader::new(file).lines()),
+#         Err(e) => Either::Right(iter::once(Err(e))),
+#     }
+}
+
+fn main() {
+    let local = String::from("filename.txt");
+    let iter = example(&local);
+    let _move_of_local = local;
     for _ in iter {}
 }
 ```
 
-`self` will remained borrowed here for as long as the iterator is alive.  Note that
-this is true even if it's not required by the body!  The implicit lifetime capture
-is considered part of the API contract.
+As far as I know there is no lint to require making the `use<..>` clause explicit.
+Instead, I recommend trying to get in the habit of seeing `-> impl` as a signal that
+a borrow relationship may be happening, similar to how you may see `-> &_`.
 
-For both of these cases, all generic *types* are also captured.
+<details>
+<summary>Expand for some historical notes.</summary>
 
----
+[RPIT outside of traits do not capture lifetimes by default on older editions.](https://doc.rust-lang.org/nightly/edition-guide/rust-2024/rpit-lifetime-capture.html)
+On those editions, someone may use `+ use<..>` to capture *more* lifetimes instead of less!
+(But ideally, you should just use the newest stable edition of Rust.)
 
-Not that RPIT *outside* of traits does *not* implicitly capture lifetimes!  At least,
-not as of this writing -- the plan is that RPIT outside of traits will act like RPITIT
-and implicitly capture all lifetimes in edition 2024 and beyond.  But for now, they
-only implicitly capture type parameters.
+Like the edition guide states, you may also see `-> impl Trait + 'lifetime` instead of
+`+ use<'lifetime>`.  The pattern became somewhat common as it was stable before the
+creation of the `use<..>` clause, but `use<..>` is usually the correct choice.
 
+</details>
+
+## `async fn` capturing
+
+`async fn` uses the RPIT capabilities under the hood.  As a result, the return type of an
+`async` function captures all of its generic parameters, including any lifetimes.  So here:
 ```rust
-# use std::fmt::Display;
-// Required: edition 2021 or before
-fn no_capture(s: &str) -> impl Display {
-    s.to_string()
+async fn example(v: &mut Vec<String>) -> String {
+    "Hi :-)".to_string()
 }
 
-// This wouldn't compile if `no_capture` reborrowed `*s`
-fn check() {
-    let mut s = "before".to_string();
-    let d = no_capture(&s);
-    s ="after".to_string();
-    println!("{d}");
+// Notionally the same as:
+// fn example(v: &mut Vec<String>) -> impl use<'_> + Future<Output = String> {
+//     async move {
+//         // Always capture everything!
+//         let v = v;
+//         "Hi :-)".to_string()
+//     }
+// }
+```
+The future returned by the `async fn` implicitly reborrows the `v` input, and
+"carries" the same lifetime, just like the other examples we saw.
+
+So you should view `async fn` similarly to how you view `-> impl`: a flag
+that the return type might be holding onto borrows from the inputs.
+
+If you run into a case where the capturing is unnecessary, you can rewrite the
+`async fn` as an `impl Trait` returning normal `fn` instead.
+```rust
+// Note the empty `use<>`...
+fn example(v: &mut Vec<String>) -> impl use<> + Future<Output = String> {
+    let _ignore = v;
+    // ...and don't move or otherwise use the borrow inside the `async` block
+    async {
+        "Hi :-)".to_string()
+    }
 }
 ```
-
-```rust
-# use std::fmt::Display;
-// This fails on edition 2021 or before, because it tries to
-// return a reborrow of `*s`, but that requires capturing the lifetime
-fn no_capture(s: &str) -> impl Display {
-    s
-}
-```
-
-```rust
-# use std::fmt::Display;
-// This allows it to work again (but `+ '_` is too restrictive
-// for every situation, which is part of why edition 2021 will
-// change the behavior of RPIT outside of traits)
-//
-//                                     vvvv
-fn no_capture(s: &str) -> impl Display + '_ {
-    s
-}
-```
-
----
-
-A lot can be said about `async` and RPITs; more than can be covered here.  But their
-implicit capturing nature is something to be aware of, given how invisible it is.
 
