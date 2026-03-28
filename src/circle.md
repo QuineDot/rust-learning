@@ -1,6 +1,6 @@
 # Circle back
 
-Ownership, borrowing, and lifetimes is a huge topic.  There's way too much in this "intro" guide alone for you to absorb everything in it at once.
+Ownership, borrowing, and lifetimes are huge topics.  There's way too much in this "intro" guide alone for you to absorb everything in it at once.
 So occasionally circle back and revisit the common misconceptions, or the documentation on variance, or take another crack at some complicated problem you saw.
 Your mental model will expand over time; it's enough in the beginning to know some things exist and revisit them when you run into a wall.
 

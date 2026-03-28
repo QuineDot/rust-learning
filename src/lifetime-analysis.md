@@ -245,7 +245,7 @@ This demonstrates that reborrowing is more powerful than nesting references.
 When it comes to detecting conflicts, the borrow checker distinguishes between shared
 reborrows and exclusive ones.  In particular, creating a shared reborrow will invalidate
 any exclusive reborrows of the same value (as they are no longer exclusive).  But it will
-not invalidated shared reborrows:
+not invalidate shared reborrows:
 
 ```rust
 struct Pair {

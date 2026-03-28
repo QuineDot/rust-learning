@@ -17,9 +17,9 @@ impl<'a> Foo<'a> {
 
 This can make it non-obvious that borrowing is going on, and harder to figure
 out where errors are coming from.  The above code used to be silently accepted,
-but there are now a `mismatched_lifetime_syntaxes` lint which fires for the
-most common troublesome patterns.  To save yourself some headaches, you may
-even want to make the warning a hard error:
+but there are now some lints, like `mismatched_lifetime_syntaxes`, which fire
+for the most common troublesome patterns.  To save yourself some headaches, you
+may even want to make the warning a hard error:
 
 ```rust,compile_fail
 #![deny(mismatched_lifetime_syntaxes)]
@@ -38,8 +38,8 @@ There is also an allow-by-default lint called `elided_lifetimes_in_paths` which
 fires on code patterns considered less likely to be problematic.
 
 The first thing I do when taking on a borrow check error in someone else's code
-is to check these lints.  If you have not enabled the lint and are getting errors
-in your own code, try enabling the lint.  For every place that errors, take a moment
+is to check these lints.  If you have not enabled the lints and are getting errors
+in your own code, try enabling the lints.  For every place that errors, take a moment
 to pause and consider what is going on with the lifetimes.  Sometimes there's only
 one possibility and you will just need to make a trivial change:
 ```diff
