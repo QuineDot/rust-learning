@@ -5,9 +5,13 @@ which often involves adding lifetimes and naming previously-elided lifetimes:
 ```rust
 # struct S; impl S {
 fn quz<'a: 'b, 'b>(&'a mut self) -> &'b str { todo!() }
+
+// (The meaning is still "uses of the return value keep `*self` exclusively borrowed"
+// due to the `'a: 'b` bound: `'a` must be valid wherever `'b` is.)
 # }
 ```
-But this doesn't actually permit more lifetimes than this:
+
+But this doesn't really permit more lifetimes than this:
 ```rust
 # struct S; impl S {
 fn quz<'b>(&'b mut self) -> &'b str { todo!() }
@@ -15,7 +19,8 @@ fn quz<'b>(&'b mut self) -> &'b str { todo!() }
 ```
 
 Because in the first example, `&'a mut self` can coerce to `&'b mut self`.
-And, in fact, you want it to -- because you generally don't want to exclusively borrow `self` any longer than necessary.
+And, in fact, you want it to -- because you generally *don't* want to exclusively
+borrow `self` for any longer than is necessary.
 
 And at this point you can instead utilize lifetime elision and stick with:
 ```rust

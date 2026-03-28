@@ -4,6 +4,10 @@ Separating `'a` and `'b` in the last section didn't make things any more flexibl
 Once you declare a bound like `'a: 'b`, then the two lifetimes "infect" each other.
 Even though the return type had a different lifetime than the input, it was still effectively a reborrow of the input.
 
+That's why uses of the return value still keep `*self` exclusively borrowed: Uses of the return value mean that
+`'b` must still be valid, and because `'a: 'b`, `'a` must also still be valid.  So the original borrow must still be
+in effect.
+
 This can actually happen between two input parameters too: if you've stated a lifetime relationship between two borrows,
 the compiler assumes they can observe each other in some sense.  It's probably not anything you'll run into soon,
 but if you do, the compiler errors tend to be drop errors ("borrow might be used here, when `x` is dropped"), or
