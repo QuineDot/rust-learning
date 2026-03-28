@@ -11,12 +11,12 @@ struct Snek<'a> {
 
 The only safe way to construct this to be self-referential is to take a `&'a mut Snek<'a>`, get a `&'a str` to the `owned` field, and assign it to the `borrowed` field.
 ```rust
-#struct Snek<'a> {
-#    owned: String,
-#    // Like if you want this to point to the `owned` field
-#    borrowed: &'a str,
-#}
-
+# struct Snek<'a> {
+#     owned: String,
+#     // Like if you want this to point to the `owned` field
+#     borrowed: &'a str,
+# }
+# 
 impl<'a> Snek<'a> {
     fn bite(&'a mut self) {
         self.borrowed = &self.owned;

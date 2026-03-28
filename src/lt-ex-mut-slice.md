@@ -20,17 +20,17 @@ impl<'a, T> Iterator for MyIterMut<'a, T> {
 ```
 Below are a few starting attempts at it.  Spoilers, they don't compile.
 ```rust,compile_fail
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
         // Eh, we'll worry about iterative logic later!
         self.slice.get_mut(0)
     }
-#}
+# }
 ```
 ```rust,compile_fail
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -39,10 +39,10 @@ Below are a few starting attempts at it.  Spoilers, they don't compile.
         self.slice = rest;
         Some(first)
     }
-#}
+# }
 ```
 ```rust,compile_fail
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #    type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -52,7 +52,7 @@ Below are a few starting attempts at it.  Spoilers, they don't compile.
             [first, rest @ ..] => Some(first),
         }
     }
-#}
+# }
 ```
 
 Yeah, the compiler really doesn't like any of that.  Let's take a minute to write out all the elided
@@ -63,13 +63,13 @@ lifetimes.  Some of them are in aliases, which we're also going to expand:
 
 Here's what it looks like with everything being explicit:
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next<'s>(self: &'s mut MyIterMut<'a, T>) -> Option<&'a mut T> {
         todo!()
     }
-#}
+# }
 ```
 And remember that in `MyIterMut<'a, T>`, `slice` is a `&'a mut [T]`.
 
@@ -98,7 +98,7 @@ for `&mut [T]`.
 Why does this unstick us?  With that implementation, we can conjure an empty `&mut [T]`
 out of nowhere and *move our `slice` field out from behind `&mut self`:*
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -106,7 +106,7 @@ out of nowhere and *move our `slice` field out from behind `&mut self`:*
         // Eh, we'll worry about iterative logic later!
         slice.get_mut(0)
     }
-#}
+# }
 ```
 [`std::mem::take`](https://doc.rust-lang.org/std/mem/fn.take.html) and `swap` and `replace` are
 very useful and safe functions; don't be thrown off by them being in `std::mem` along side the
@@ -116,14 +116,14 @@ an arbitrarily short lifetime -- just long enough to move the memory around.
 
 So we're done aside from iterative logic, right?  This should just give us the first element forever?
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
 #   fn next(&mut self) -> Option<Self::Item> {
 #       let mut slice = std::mem::take(&mut self.slice);
 #       slice.get_mut(0)
 #   }
-#}
+# }
 let mut arr = [0, 1, 2, 3];
 let iter = MyIterMut { slice: &mut arr };
 for x in iter.take(10) {
@@ -133,7 +133,7 @@ for x in iter.take(10) {
 Uh, it only gave us one item.  Oh right -- when we're done with the slice, we need to move it
 back into our `slice` field.  We only want to *temporarily* replace that field with an empty slice.
 ```rust,compile_fail
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -143,7 +143,7 @@ back into our `slice` field.  We only want to *temporarily* replace that field w
         self.slice = slice;
         first
     }
-#}
+# }
 ```
 Uh oh, now what.
 ```rust
@@ -173,7 +173,7 @@ data you own in an iterator-like fashion, but it's not possible with the current
 Alright, let's try [`split_first_mut`](https://doc.rust-lang.org/std/primitive.slice.html#method.split_first_mut)
 again instead, that really did seem like a perfect fit for our iteration logic.
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -198,7 +198,7 @@ which we briefly mentioned before.
 
 And for the sake of completion, here's the pattern based approach to borrow splitting:
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {
@@ -221,7 +221,7 @@ for x in iter {
 ```
 Oh whoops, just one element again.  Right.  We need to put the `rest` back in `self.slice`:
 ```rust
-#struct MyIterMut<'a, T> { slice: &'a mut [T], }
+# struct MyIterMut<'a, T> { slice: &'a mut [T], }
 # impl<'a, T> Iterator for MyIterMut<'a, T> {
 #   type Item = &'a mut T;
     fn next(&mut self) -> Option<Self::Item> {

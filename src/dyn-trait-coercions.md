@@ -132,19 +132,19 @@ associated type, even though it's not usable by the `dyn Trait` itself.
 Note also that this does result in incompatible types and limits the
 possible coercions:
 ```rust,compile_fail
-#trait Trait {
+# trait Trait {
 #    type Foo where Self: Sized;
 #    fn foo(&self) -> Self::Foo where Self: Sized;
 #    fn bar(&self) {}
-#}
-#impl Trait for i32 {
+# }
+# impl Trait for i32 {
 #    type Foo = ();
 #    fn foo(&self) -> Self::Foo {}
-#}
-#impl Trait for u64 {
+# }
+# impl Trait for u64 {
 #    type Foo = f32;
 #    fn foo(&self) -> Self::Foo { 0.0 }
-#}
+# }
 let mut a: &dyn Trait<Foo = ()> = &0_i32;
 
 // Fails!
@@ -154,19 +154,19 @@ a = &0_u64;
 This introduces some interesting possibilities around
 [implementing `trait` for `Box<dyn Trait>`:](dyn-trait-box-impl.md)
 ```rust
-#trait Trait {
+# trait Trait {
 #    type Foo where Self: Sized;
 #    fn foo(&self) -> Self::Foo where Self: Sized;
 #    fn bar(&self) {}
-#}
-#impl Trait for i32 {
+# }
+# impl Trait for i32 {
 #    type Foo = ();
 #    fn foo(&self) -> Self::Foo {}
-#}
-#impl Trait for u64 {
+# }
+# impl Trait for u64 {
 #    type Foo = f32;
 #    fn foo(&self) -> Self::Foo { 0.0 }
-#}
+# }
 impl<T: Default> Trait for Box<dyn Trait<Foo = T>> {
     type Foo = T;
     fn foo(&self) -> Self::Foo {

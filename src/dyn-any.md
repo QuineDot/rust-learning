@@ -460,9 +460,9 @@ type ST = dyn Look<'static> + 'static;
 `HR` is a *subtype* of `ST`, but not *the same type*.
 However, they both satisfy a `'static` bound:
 ```rust
-#trait Look<'s> {}
-#type HR = dyn for<'any> Look<'any> + 'static;
-#type ST = dyn Look<'static> + 'static;
+# trait Look<'s> {}
+# type HR = dyn for<'any> Look<'any> + 'static;
+# type ST = dyn Look<'static> + 'static;
 fn assert_static<T: ?Sized + 'static>() {}
 
 assert_static::<HR>();

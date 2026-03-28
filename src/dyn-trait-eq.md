@@ -121,25 +121,25 @@ this example could be made more general.
 
 Anyway, let's move on to performing cross-type equality checking:
 ```rust
-#use std::any::Any;
+# use std::any::Any;
 #
-#trait AsDynCompare: Any {
+# trait AsDynCompare: Any {
 #    fn as_any(&self) -> &dyn Any;
 #    fn as_dyn_compare(&self) -> &dyn DynCompare;
-#}
+# }
 #
-#impl<T: Any + DynCompare> AsDynCompare for T {
+# impl<T: Any + DynCompare> AsDynCompare for T {
 #    fn as_any(&self) -> &dyn Any {
 #        self
 #    }
 #    fn as_dyn_compare(&self) -> &dyn DynCompare {
 #        self
 #    }
-#}
+# }
 #
-#trait DynCompare: AsDynCompare {
+# trait DynCompare: AsDynCompare {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool;
-#}
+# }
 impl<T: Any + PartialEq> DynCompare for T {
     fn dyn_eq(&self, other: &dyn DynCompare) -> bool {
         if let Some(other) = other.as_any().downcast_ref::<Self>() {
@@ -167,26 +167,26 @@ This allows us to implement `PartialEq` for `dyn Compare`.
 
 Then we want to wire this functionality up to our actual trait:
 ```rust
-#use std::any::Any;
-#
-#trait AsDynCompare: Any {
+# use std::any::Any;
+# 
+# trait AsDynCompare: Any {
 #    fn as_any(&self) -> &dyn Any;
 #    fn as_dyn_compare(&self) -> &dyn DynCompare;
-#}
+# }
 #
-#impl<T: Any + DynCompare> AsDynCompare for T {
+# impl<T: Any + DynCompare> AsDynCompare for T {
 #    fn as_any(&self) -> &dyn Any {
 #        self
 #    }
 #    fn as_dyn_compare(&self) -> &dyn DynCompare {
 #        self
 #    }
-#}
+# }
 #
-#trait DynCompare: AsDynCompare {
+# trait DynCompare: AsDynCompare {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool;
-#}
-#impl<T: Any + PartialEq> DynCompare for T {
+# }
+# impl<T: Any + PartialEq> DynCompare for T {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool {
 #        if let Some(other) = other.as_any().downcast_ref::<Self>() {
 #            self == other
@@ -194,13 +194,13 @@ Then we want to wire this functionality up to our actual trait:
 #            false
 #        }
 #    }
-#}
-#
-#impl PartialEq<dyn DynCompare> for dyn DynCompare {
+# }
+# 
+# impl PartialEq<dyn DynCompare> for dyn DynCompare {
 #    fn eq(&self, other: &dyn DynCompare) -> bool {
 #        self.dyn_eq(other)
 #    }
-#}
+# }
 trait Trait: DynCompare {}
 impl Trait for i32 {}
 impl Trait for bool {}
@@ -221,27 +221,27 @@ gives us `PartialEq` for `Box<dyn Trait>` automatically.
 
 Now let's try it out:
 ```rust,compile_fail
-#use std::any::Any;
-#
-#trait AsDynCompare: Any {
+# use std::any::Any;
+# 
+# trait AsDynCompare: Any {
 #    fn as_any(&self) -> &dyn Any;
 #    fn as_dyn_compare(&self) -> &dyn DynCompare;
-#}
-#
-#impl<T: Any + DynCompare> AsDynCompare for T {
+# }
+# 
+# impl<T: Any + DynCompare> AsDynCompare for T {
 #    fn as_any(&self) -> &dyn Any {
 #        self
 #    }
 #    fn as_dyn_compare(&self) -> &dyn DynCompare {
 #        self
 #    }
-#}
-#
-#trait DynCompare: AsDynCompare {
+# }
+# 
+# trait DynCompare: AsDynCompare {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool;
-#}
-#
-#impl<T: Any + PartialEq> DynCompare for T {
+# }
+# 
+# impl<T: Any + PartialEq> DynCompare for T {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool {
 #        if let Some(other) = other.as_any().downcast_ref::<Self>() {
 #            self == other
@@ -249,23 +249,23 @@ Now let's try it out:
 #            false
 #        }
 #    }
-#}
-#
-#impl PartialEq<dyn DynCompare> for dyn DynCompare {
+# }
+# 
+# impl PartialEq<dyn DynCompare> for dyn DynCompare {
 #    fn eq(&self, other: &dyn DynCompare) -> bool {
 #        self.dyn_eq(other)
 #    }
-#}
-#
-#trait Trait: DynCompare {}
-#impl Trait for i32 {}
-#impl Trait for bool {}
-#
-#impl PartialEq<dyn Trait> for dyn Trait {
+# }
+# 
+# trait Trait: DynCompare {}
+# impl Trait for i32 {}
+# impl Trait for bool {}
+# 
+# impl PartialEq<dyn Trait> for dyn Trait {
 #    fn eq(&self, other: &dyn Trait) -> bool {
 #        self.as_dyn_compare() == other.as_dyn_compare()
 #    }
-#}
+# }
 fn main() {
     let bx1a: Box<dyn Trait> = Box::new(1);
     let bx1b: Box<dyn Trait> = Box::new(1);
@@ -285,28 +285,28 @@ also offers a workaround that's ergonomic at the use site: implement `PartialEq<
 too.
 
 ```rust
-#use std::any::Any;
+# use std::any::Any;
 #
-#trait AsDynCompare: Any {
+# trait AsDynCompare: Any {
 #    fn as_any(&self) -> &dyn Any;
 #    fn as_dyn_compare(&self) -> &dyn DynCompare;
-#}
+# }
 #
-#// Sized types only
-#impl<T: Any + DynCompare> AsDynCompare for T {
+# // Sized types only
+# impl<T: Any + DynCompare> AsDynCompare for T {
 #    fn as_any(&self) -> &dyn Any {
 #        self
 #    }
 #    fn as_dyn_compare(&self) -> &dyn DynCompare {
 #        self
 #    }
-#}
+# }
 #
-#trait DynCompare: AsDynCompare {
+# trait DynCompare: AsDynCompare {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool;
-#}
+# }
 #
-#impl<T: Any + PartialEq> DynCompare for T {
+# impl<T: Any + PartialEq> DynCompare for T {
 #    fn dyn_eq(&self, other: &dyn DynCompare) -> bool {
 #        if let Some(other) = other.as_any().downcast_ref::<Self>() {
 #            self == other
@@ -314,23 +314,23 @@ too.
 #            false
 #        }
 #    }
-#}
+# }
 #
-#impl PartialEq<dyn DynCompare> for dyn DynCompare {
+# impl PartialEq<dyn DynCompare> for dyn DynCompare {
 #    fn eq(&self, other: &dyn DynCompare) -> bool {
 #        self.dyn_eq(other)
 #    }
-#}
+# }
 #
-#trait Trait: DynCompare {}
-#impl Trait for i32 {}
-#impl Trait for bool {}
+# trait Trait: DynCompare {}
+# impl Trait for i32 {}
+# impl Trait for bool {}
 #
-#impl PartialEq<dyn Trait> for dyn Trait {
+# impl PartialEq<dyn Trait> for dyn Trait {
 #    fn eq(&self, other: &dyn Trait) -> bool {
 #        self.as_dyn_compare() == other.as_dyn_compare()
 #    }
-#}
+# }
 #
 // New
 impl PartialEq<&Self> for Box<dyn Trait> {

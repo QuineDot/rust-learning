@@ -67,15 +67,15 @@ trait Trait: DynClone {}
 
 Now we're ready for `Box<dyn Trait + '_>`.
 ```rust
-#trait Trait: DynClone {}
-#trait DynClone {
+# trait Trait: DynClone {}
+# trait DynClone {
 #    fn dyn_clone<'s>(&self) -> Box<dyn Trait + 's> where Self: 's;
-#}
-#impl<T: Clone + Trait> DynClone for T {
+# }
+# impl<T: Clone + Trait> DynClone for T {
 #    fn dyn_clone<'s>(&self) -> Box<dyn Trait + 's> where Self: 's {
 #        Box::new(self.clone())
 #    }
-#}
+# }
 impl Trait for Box<dyn Trait + '_> {}
 
 impl Clone for Box<dyn Trait + '_> {

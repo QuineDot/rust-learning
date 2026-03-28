@@ -228,12 +228,12 @@ let _: &dyn Trait<Gat<'static> = &'static str> = &();
 ```
 ...but also higher-ranked GAT equality:
 ```rust
-#trait Trait {
+# trait Trait {
 #    type Gat<'a> where Self: Sized;
-#}
-#impl Trait for () {
+# }
+# impl Trait for () {
 #    type Gat<'a> = &'a str;
-#}
+# }
 // This syntax is still not supported
 // let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
 

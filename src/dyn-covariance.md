@@ -91,12 +91,12 @@ to coerce `dyn Trait + 'a` to that shorter lifetime.*
 Similar considerations come into play when going between a `&mut Box<dyn Trait>`
 and a `&mut dyn Trait`:
 ```rust
-#trait Trait {}
-#fn foo(d: &mut dyn Trait) {}
-#fn bar<'a>(d: &'a mut (dyn Trait + 'a)) {
+# trait Trait {}
+# fn foo(d: &mut dyn Trait) {}
+# fn bar<'a>(d: &'a mut (dyn Trait + 'a)) {
 #    foo(d);
 #    foo(d);
-#}
+# }
 fn baz(bx: &mut Box<dyn Trait /* + 'static */>) {
     // If the trait object lifetime could not "shrink" inside the `&mut`,
     // we could not make these calls at all

@@ -82,7 +82,7 @@ The elided lifetime of `Box<dyn Single<'a>>` is always `'a`.
 
 However, this is not actually the case:
 ```rust
-#trait Single<'a>: 'a {}
+# trait Single<'a>: 'a {}
 // The elided lifetime was `'static`, not `'a`, so this compiles
 fn foo<'a>(s: Box<dyn Single<'a>>) {
     let s: Box<dyn Single<'a> + 'static> = s;
@@ -90,7 +90,7 @@ fn foo<'a>(s: Box<dyn Single<'a>>) {
 ```
 
 ```rust,compile_fail
-#trait Single<'a>: 'a {}
+# trait Single<'a>: 'a {}
 // In this case it *is* `'a`, so compilation fails
 fn bar<'a: 'a>(s: Box<dyn Single<'a>>) {
     let s: Box<dyn Single<'a> + 'static> = s;
@@ -246,7 +246,7 @@ But if you change either example to `Double<'a, 'a>`, then
 exactly one of the bounding parameters is early-bound, and they
 will compile:
 ```rust
-#pub trait Double<'a, 'b>: 'a + 'b {}
+# pub trait Double<'a, 'b>: 'a + 'b {}
 fn foo<'a: 'static, 'b: 'static>(d: Box<dyn Double<'a, 'a>>) {}
 fn bar<'a: 'b, 'b: 'a>(d: &dyn Double<'a, 'a>) {}
 ```
@@ -302,7 +302,7 @@ they do override non-ambiguous struct bounds (such as those of `&_`).
 The interaction between what the default object lifetime is for a given
 signature can interact in potentially surprising ways.  Consider this example:
 ```rust
-#pub trait LifetimeTrait<'a>: 'a {}
+# pub trait LifetimeTrait<'a>: 'a {}
 // The implied bounds in `&'outer (dyn Lifetime<'param> + 'trait)` are:
 // - `'param: 'outer` (validity of the reference)
 // - `'trait: 'outer` (validity of the reference)
@@ -409,7 +409,7 @@ lifetime elision behavior (which would be inferring the lifetime).
 All three of the examples above behave identically if `'_` is used.
 
 ```rust
-#trait Single<'a>: 'a {}
+# trait Single<'a>: 'a {}
 fn foo<'r, 'a>(bx: Box<dyn Single<'a> + 'static>, rf: &'r (dyn Single<'a> + 'static)) {
     let bx: Box<dyn Single<'a> + '_> = bx;
     // Fails
@@ -455,7 +455,7 @@ In most static contexts, any elided lifetimes (not just trait object
 lifetimes) default to the `'static` lifetime.
 
 ```rust
-#use core::marker::PhantomData;
+# use core::marker::PhantomData;
 trait Single<'a>: 'a + Send + Sync {}
 trait Halfie<'a, 'b>: 'a + Send + Sync {}
 trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
@@ -486,8 +486,8 @@ In the meanwhile, elided lifetimes act like independent lifetime
 variables on the `impl` block.  Those in turn act like early-bound
 lifetimes in function signatures.
 ```rust
-#use core::marker::PhantomData;
-#trait Single<'a>: 'a + Send + Sync {}
+# use core::marker::PhantomData;
+# trait Single<'a>: 'a + Send + Sync {}
 struct L<'l, 'm>(&'l str, &'m str);
 impl<'a, 'b> L<'a, 'b> {
     const CS: PhantomData<Box<dyn Single<'a>>> = PhantomData;
@@ -500,9 +500,9 @@ impl<'a, 'b> L<'a, 'b> {
 
 Elided lifetimes can be inferred to be `'static` elsewhere...
 ```rust
-#use core::marker::PhantomData;
-#trait Single<'a>: 'a + Send + Sync {}
-#struct L<'l, 'm>(&'l str, &'m str);
+# use core::marker::PhantomData;
+# trait Single<'a>: 'a + Send + Sync {}
+# struct L<'l, 'm>(&'l str, &'m str);
 impl<'a, 'b> L<'a, 'b> {
     const ECS: PhantomData<Box<dyn Single<'_>>> = PhantomData;
     const SCS: PhantomData<Box<dyn Single<'static>>> = PhantomData;
@@ -515,9 +515,9 @@ impl<'a, 'b> L<'a, 'b> {
 *...however,* it's really a free variable.  Therefore, cases such
 as this are considered ambiguous:
 ```rust
-#use core::marker::PhantomData;
-#trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
-#struct L<'l, 'm>(&'l str, &'m str);
+# use core::marker::PhantomData;
+# trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
+# struct L<'l, 'm>(&'l str, &'m str);
 impl<'a, 'b> L<'a, 'b> {
     const EBCD: PhantomData<Box<dyn Double<'a, '_>>> = PhantomData;
 }
@@ -526,8 +526,8 @@ impl<'a, 'b> L<'a, 'b> {
 as there are no outlives relationships between the anonymously
 introduced lifetime parameters:
 ```rust
-#use core::marker::PhantomData;
-#trait Single<'a>: 'a + Send + Sync {}
+# use core::marker::PhantomData;
+# trait Single<'a>: 'a + Send + Sync {}
 struct R<'l, 'm, 'r>(&'l str, &'m str, &'r ());
 impl<'a, 'b, 'r> R<'a, 'b, 'r> where 'a: 'r, 'b: 'r {
     const ECS: PhantomData<&dyn Single<'_>> = PhantomData;
@@ -569,10 +569,10 @@ fn f<'a, 'b, 'r>(_: &'r &'a str, _: &'r &'b str) {
 As in function signatures, but unlike function bodies, the wildcard lifetime
 `'_` acts like normal elision (introducing a new anonymous lifetime variable).
 ```rust
-#trait Single<'a>: 'a {}
-#trait Halfie<'a, 'b>: 'a {}
-#trait Double<'a, 'b>: 'a + 'b {}
-#struct S<T>(T);
+# trait Single<'a>: 'a {}
+# trait Halfie<'a, 'b>: 'a {}
+# trait Double<'a, 'b>: 'a + 'b {}
+# struct S<T>(T);
 // The wildcard lifetime `'_` introduces an independent lifetime
 // (covering all cases including `'static`) as per normal
 impl<'a> S<Box<dyn Single<'a> + '_>> { fn f26() {} }
@@ -596,7 +596,7 @@ fn f<'a, 'b, 'r>(_: &'r &'a str, _: &'r &'b str) {
 
 Similar to `impl` headers, trait bounds always apply to associated types.
 ```rust
-#use core::marker::PhantomData;
+# use core::marker::PhantomData;
 trait Single<'a>: 'a {}
 trait Halfie<'a, 'b>: 'a {}
 trait Double<'a, 'b>: 'a + 'b {}

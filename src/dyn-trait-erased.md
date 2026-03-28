@@ -72,15 +72,15 @@ We want to be able to create a `dyn erased::Iterable` from anything
 that is `useful::Iterable`, so we need a blanket implementation to
 connect the two:
 ```rust
-#fn main() {}
-#pub mod useful {
+# fn main() {}
+# pub mod useful {
 #    pub trait Iterable {
 #        type Item;
 #        type Iter<'a>: Iterator<Item = &'a Self::Item> where Self: 'a;
 #        fn iter(&self) -> Self::Iter<'_>;
 #        fn visit<F: FnMut(&Self::Item)>(&self, f: F);
 #    }
-#}
+# }
 pub mod erased {
     use crate::useful;
 #    pub trait Iterable {
@@ -117,15 +117,15 @@ The purpose of our `erased::Iterable` is to be able to type-erase to
 `dyn erased::Iterable` anyway though, so instead we just implement
 `useful::Iterable` directly on `dyn erased::Iterable`:
 ```rust
-#fn main() {}
-#pub mod useful {
+# fn main() {}
+# pub mod useful {
 #    pub trait Iterable {
 #        type Item;
 #        type Iter<'a>: Iterator<Item = &'a Self::Item> where Self: 'a;
 #        fn iter(&self) -> Self::Iter<'_>;
 #        fn visit<F: FnMut(&Self::Item)>(&self, f: F);
 #    }
-#}
+# }
 pub mod erased {
     use crate::useful;
 #    pub trait Iterable {

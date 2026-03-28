@@ -69,8 +69,8 @@ The main idea behind the approach is to utilize the following trait, which
 encapsulates the ability to borrow `self` in the form of your custom borrowed
 type:
 ```rust
-#pub struct Data { first: usize, others: Vec<usize> }
-#pub struct DataRef<'a> { first: usize, others: &'a [usize] }
+# pub struct Data { first: usize, others: Vec<usize> }
+# pub struct DataRef<'a> { first: usize, others: &'a [usize] }
 pub trait Lend {
     fn lend(&self) -> DataRef<'_>;
 }
@@ -102,25 +102,25 @@ And the key insight is that any implementor can also coerce from
 themselves!
 
 ```rust
-#pub struct Data { first: usize, others: Vec<usize> }
-#pub struct DataRef<'a> { first: usize, others: &'a [usize] }
-#pub trait Lend { fn lend(&self) -> DataRef<'_>; }
-#impl Lend for Data {
+# pub struct Data { first: usize, others: Vec<usize> }
+# pub struct DataRef<'a> { first: usize, others: &'a [usize] }
+# pub trait Lend { fn lend(&self) -> DataRef<'_>; }
+# impl Lend for Data {
 #    fn lend(&self) -> DataRef<'_> {
 #        DataRef {
 #            first: self.first,
 #            others: &self.others,
 #        }
 #    }
-#}
-#impl Lend for DataRef<'_> {
+# }
+# impl Lend for DataRef<'_> {
 #    fn lend(&self) -> DataRef<'_> {
 #        DataRef {
 #            first: self.first,
 #            others: self.others,
 #        }
 #    }
-#}
+# }
 use std::borrow::Borrow;
 
 impl<'a> Borrow<dyn Lend + 'a> for Data {
@@ -219,8 +219,8 @@ impl std::hash::Hash for Data {
 And in fact, this is exactly the approach we want to take for
 `dyn Lend` as well:
 ```rust
-#pub struct DataRef<'a> { first: usize, others: &'a [usize] }
-#pub trait Lend { fn lend(&self); }
+# pub struct DataRef<'a> { first: usize, others: &'a [usize] }
+# pub trait Lend { fn lend(&self); }
 impl std::cmp::PartialEq<dyn Lend + '_> for dyn Lend + '_ {
     fn eq(&self, other: &(dyn Lend + '_)) -> bool {
         self.lend() == other.lend()

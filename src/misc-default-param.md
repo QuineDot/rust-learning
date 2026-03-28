@@ -79,7 +79,7 @@ let foo = Foo::<_>::Baz;
 ```
 And some of the workarounds may be even more confusing:
 ```rust
-#pub enum Foo<T = String> { Bar(T), Baz }
+# pub enum Foo<T = String> { Bar(T), Baz }
 // This works!
 let foo = <Foo>::Baz;
 ```
@@ -91,7 +91,7 @@ the workarounds solve the problem.
 
 First let's tackle why just wrapping the type in `<>` worked for that last example.
 ```rust
-#pub enum Foo<T = String> { Bar(T), Baz }
+# pub enum Foo<T = String> { Bar(T), Baz }
 let foo = <Foo>::Baz;
 ```
 The leading `<Foo>::` notation is called a
@@ -99,7 +99,7 @@ The leading `<Foo>::` notation is called a
 And the short answer to why it works is that, with respect to elided default
 parameters, types in `<>`s act the same as type ascription:
 ```rust
-#pub enum Foo<T = String> { Bar(T), Baz }
+# pub enum Foo<T = String> { Bar(T), Baz }
 // Also works
 let foo: Foo = Foo::Baz;
 ```
@@ -110,7 +110,7 @@ within a turbofish, not just as a qualified path type.
 
 As for the difference here:
 ```rust
-#use std::collections::HashSet;
+# use std::collections::HashSet;
 // This fails if we change `HashSet::new()` to `HashSet::default()`
 let mut hs = HashSet::new();
 hs.insert(String::new());
@@ -124,7 +124,7 @@ in a sense, this is a workaround on the side of the `HashSet` implementation!
 
 Finally, let's look at this workaround:
 ```rust
-#use std::collections::HashSet;
+# use std::collections::HashSet;
 // Remember, `HashSet::default()` fails
 let mut hs = HashSet::<_>::default();
 hs.insert(String::new());
@@ -135,7 +135,7 @@ then *all* the type (and `const`) parameters -- *including defaulted parameters*
 parameter is specified, it desugars to a qualified type path -- where default
 parameters act the same as they do in type ascription.
 ```rust,compile_fail
-#use std::collections::HashSet;
+# use std::collections::HashSet;
 // These are all the same and fail
 // let mut hs = HashSet::default();
 // let mut hs = HashSet::<>::default();
@@ -144,7 +144,7 @@ let mut hs = <HashSet::<_, _>>::default();
 hs.insert(String::new());
 ```
 ```rust
-#use std::collections::HashSet;
+# use std::collections::HashSet;
 // These are the same and succeed.
 // let mut hs = HashSet::<_>::default();
 let mut hs = <HashSet<_>>::default();
@@ -166,8 +166,8 @@ replaced by their default types (or `const` values) specifically (i.e. not infer
 
 Let's see some examples:
 ```rust
-#use std::collections::HashSet;
-#use std::hash::RandomState;
+# use std::collections::HashSet;
+# use std::hash::RandomState;
 # enum Foo<T = String> { Bar(T), Baz, }
 // These ascriptions mean the same thing
 //     vvvvvvvvvvv
@@ -188,8 +188,8 @@ and that inference variables don't fall back to the defaults.
 let e: Foo<_> = Foo::Baz;
 ```
 ```rust,compile_fail
-#use std::collections::HashSet;
-#use std::hash::RandomState;
+# use std::collections::HashSet;
+# use std::hash::RandomState;
 // Fails due to ambiguity
 let hs: HashSet<String, _> = Default::default();
 ```
@@ -247,13 +247,13 @@ let _: (i32, (), _) = <_ as Trait<_, _>>::foo(0);
 //                    ^^^^^^^^^^^^^^^^^^
 ```
 ```rust
-#trait Trait<One, Two = String>: Sized {
+# trait Trait<One, Two = String>: Sized {
 #    fn foo(self) -> (Self, One, Two) where One: Default, Two: Default {
 #        (self, One::default(), Two::default())
 #    }
-#}
-#impl<T, U> Trait<T, U> for i32 {}
-#impl<T, U> Trait<T, U> for f64 {}
+# }
+# impl<T, U> Trait<T, U> for i32 {}
+# impl<T, U> Trait<T, U> for f64 {}
 // Working versions
 let _: (i32, (), _) = Trait::<_>::foo(0);
 let _: (i32, (), _) = <_ as Trait<_>>::foo(0);
@@ -330,7 +330,7 @@ struct One<T = String> { t: T }
 let _ = One { t: Default::default() };
 ```
 ```rust,compile_fail
-#struct One<T = String> { t: T }
+# struct One<T = String> { t: T }
 // Not accepted grammatically
 let _ = <One> { t: Default::default() };
 ```
@@ -492,8 +492,8 @@ Default parameters on `impl` headers do not serve any purpose as far as I'm
 aware.  Implementations don't have names at all (which is why the parameters
 are on the `impl` keyword).
 ```rust
-#struct MyStruct;
-#trait WhyThough<T, U> { }
+# struct MyStruct;
+# trait WhyThough<T, U> { }
 #[allow(invalid_type_param_default)]
 impl<T = String> WhyThough<i32, T> for MyStruct {}
 ```

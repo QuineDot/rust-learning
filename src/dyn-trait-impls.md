@@ -205,7 +205,7 @@ And if you have a blanket implementation to implement `Trait` and `dyn Trait`
 happens to meet the bounds on the implementation, it will be ignored and the
 compiler defined implementation will still be used:
 ```rust
-#use std::any::type_name;
+# use std::any::type_name;
 #
 trait Trait {
     fn hi(&self) {
@@ -289,7 +289,7 @@ information.
 Implementing methods on `dyn Trait` that don't attempt to shadow the
 methods of `Trait` does work, however.
 ```rust
-#trait Trait {}
+# trait Trait {}
 impl dyn Trait + '_ {
     fn some_other_method(&self) {}
 }
