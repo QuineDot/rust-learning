@@ -1,12 +1,12 @@
 # Advice to add bound which implies lifetime equality
 
 The example for this one is very contrived, but [consider the output here:](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=aad18e17e4308fc4e94c5fd039e64d90)
-```rust
+```rust,compile_fail
 fn f<'a, 'b>(s: &'a mut &'b mut str) -> &'b str {
     *s
 }
 ```
-```rust
+```rust,ignore
   = help: consider adding the following bound: `'a: 'b`
 ```
 
@@ -15,7 +15,7 @@ If you follow the advice and add a `'a: 'b` bound, then the two bounds together 
 More clear advice would be to use a single lifetime.  Even better advice for this particular example would be to return `&'a str` instead.
 
 Another possible pitfall of blindly following this advice is ending up with something like this:
-```rust
+```rust,ignore
 impl Node<'a> {
     fn g<'s: 'a>(&'s mut self) { /* ... */ }
 ```

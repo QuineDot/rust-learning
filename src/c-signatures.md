@@ -1,7 +1,7 @@
 # Advice to change function signature when aliases are involved
 
 [Here's a scenario from earlier in this guide.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=ad6f395f748927ae66d06b2fd42603ea)  The compiler advice is:
-```rust
+```rust,ignore
 error[E0621]: explicit lifetime required in the type of `s`
  --> src/lib.rs:5:9
   |

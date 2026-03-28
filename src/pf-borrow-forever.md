@@ -13,7 +13,7 @@ So avoid `&'a mut Thing<'a>`.
 ---
 
 Examples:
-```rust
+```rust,compile_fail
 #[derive(Debug)]
 struct Node<'a>(&'a str);
 fn example_1<'a>(node: &'a mut Node<'a>) {}

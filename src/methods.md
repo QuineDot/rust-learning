@@ -2,7 +2,7 @@
 
 Here we look at how borrow-returning methods work.  Our examples will consider a typical
 pattern:
-```rust
+```rust,ignore
 fn method(&mut self) -> &SomeReturnType {}
 // AKA:
 // fn method<'this>(&'this mut self) -> &'this SomeReturnType {}

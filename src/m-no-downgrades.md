@@ -1,7 +1,7 @@
 # &mut inputs don't "downgrade" to &
 
 Still talking about this signature:
-```rust
+```rust,ignore
 fn quz(&mut self) -> &str { todo!() }
 ```
 Newcomers often expect `self` to only be shared-borrowed after `quz` returns, because the return is a shared reference.

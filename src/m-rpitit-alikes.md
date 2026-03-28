@@ -13,7 +13,7 @@ called "`return` position `impl Trait`", or RPIT.
 When you use `-> impl Trait`, it's possible for lifetimes (and type generics)
 to flow into the return type almost invisibly:
 
-```rust
+```rust,ignore,mdbook-runnable
 # #![deny(elided_lifetimes_in_paths)]
 # use either::Either;
 # use std::fs::File;
@@ -70,7 +70,7 @@ returned value -- so the change looks like this:
 +fn example(s: &str) -> impl use<> + Iterator<Item = Result<String, io::Error>> {
 ```
 And now this compiles:
-```rust
+```rust,ignore,mdbook-runnable
 # #![deny(elided_lifetimes_in_paths)]
 # use either::Either;
 # use std::fs::File;

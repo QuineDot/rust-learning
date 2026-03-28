@@ -129,23 +129,29 @@ fn foo(b: bool) -> impl Display {
 but will probably become stable before *too* much longer.  TAIT allows
 one to define aliases for opaque types, which allows them to be named
 and to be used in more than one location.
-```rust,nightly
+```rust,ignore,nightly,mdbook-runnable
 #![feature(type_alias_impl_trait)]
+# fn main() {}
 type MyDisplay = impl std::fmt::Display;
 
+#[define_opaque(MyDisplay)]
 fn foo() -> MyDisplay { "hello," }
+
+#[define_opaque(MyDisplay)]
 fn bar() -> MyDisplay { " world" }
 ```
 
 Notionally (and hopefully literally), RPIT desugars to a TAIT in
 a manner similar to this:
-```rust,nightly
+```rust,ignore,nightly,mdbook-runnable
 #![feature(type_alias_impl_trait)]
+# fn main() {}
 # use std::fmt::Display;
 fn foo1() -> impl Display { "hi" }
 
 // Same thing... or so
 type __Unnameable_Tait = impl Display;
+#[define_opaque(__Unnameable_Tait)]
 fn foo2() -> __Unnameable_Tait { "hi" }
 ```
 

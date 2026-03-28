@@ -17,7 +17,7 @@ memory safety.  The `dyn Trait` lifetime represents the maximum lifetime the era
 ---
 
 Some short examples:
-```rust
+```rust,compile_fail
 trait Trait {}
 
 // The return is `Box<dyn Trait + 'static>` and this errors as there
@@ -26,7 +26,9 @@ trait Trait {}
 fn one<T: Trait>(t: T) -> Box<dyn Trait> {
     Box::new(t)
 }
-
+```
+```rust
+# trait Trait {}
 // This works as we've added the bound
 fn two<T: Trait + 'static>(t: T) -> Box<dyn Trait> {
     Box::new(t)

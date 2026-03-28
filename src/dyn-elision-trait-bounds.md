@@ -325,7 +325,7 @@ pub fn g<'r, 'a>(d: &'r dyn LifetimeTrait<'a>) {
 ```
 
 The results can be even more surprising with more complex bounds:
-```rust
+```rust,compile_fail
 trait Double<'a, 'b>: 'a + 'b {}
 
 fn h<'a, 'b, T>(bx: Box<dyn Double<'a, 'b>>, t: &'a T)
@@ -514,7 +514,7 @@ impl<'a, 'b> L<'a, 'b> {
 
 *...however,* it's really a free variable.  Therefore, cases such
 as this are considered ambiguous:
-```rust
+```rust,compile_fail
 # use core::marker::PhantomData;
 # trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
 # struct L<'l, 'm>(&'l str, &'m str);
@@ -525,7 +525,7 @@ impl<'a, 'b> L<'a, 'b> {
 ...and cases such this are considered to be a borrow check violation,
 as there are no outlives relationships between the anonymously
 introduced lifetime parameters:
-```rust
+```rust,compile_fail
 # use core::marker::PhantomData;
 # trait Single<'a>: 'a + Send + Sync {}
 struct R<'l, 'm, 'r>(&'l str, &'m str, &'r ());

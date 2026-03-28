@@ -7,7 +7,7 @@ in disguise.  [As discussed in the previous section,](./pf-borrow-forever.md) th
 
 More generally, `self` types and the `Self` alias include any parameters on the type constructor post-resolution.
 [Which means here:](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=a46b294ec613acda99767069a744c488)
-```rust
+```rust,compile_fail
 struct Node<'a>(&'a str);
 
 impl<'a> Node<'a> {
@@ -18,29 +18,35 @@ impl<'a> Node<'a> {
 ```
 
 `Self` is an alias for `Node<'a>`.  It is *not* an alias for `Node<'_>`.  So it means:
-```rust
+```rust,ignore
     fn new<'s>(s: &'s str) -> Node<'a> {
 ```
 And not:
-```rust
+```rust,ignore
     fn new<'s>(s: &'s str) -> Node<'s> {
 ```
 And you really meant to code one of these:
-```rust
+```rust,ignore
     fn new(s: &'a str) -> Self {
     fn new(s: &str) -> Node<'_> {
 ```
 
 Similarly, using `Self` as a constructor will use the resolved type parameters.  So this won't work:
-```rust
+```rust,compile_fail
+# struct Node<'a>(&'a str);
+# impl<'a> Node<'a> {
     fn new(s: &str) -> Node<'_> {
         Self(s)
     }
+# }
 ```
 You need
 ```rust
+# struct Node<'a>(&'a str);
+# impl<'a> Node<'a> {
     fn new(s: &str) -> Node<'_> {
         Node(s)
     }
+# }
 ```
 

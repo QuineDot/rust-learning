@@ -83,7 +83,7 @@ fn as_whatever<'w>(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'w>> {
 Note that this still isn't a form of variance for the *lifetime parameter* of the
 trait.  This fails for example, because you can't coerce from `dyn Look<'static>`
 to `dyn Look<'w>`:
-```rust
+```rust,compile_fail
 # trait Look<'s> { fn method(&self, s: &'s str); }
 # fn as_static(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'static>> { bx }
 fn as_whatever<'w>(bx: Box<dyn for<'any> Look<'any>>) -> Box<dyn Look<'w>> {

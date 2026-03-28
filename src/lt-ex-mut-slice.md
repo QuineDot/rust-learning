@@ -146,8 +146,7 @@ back into our `slice` field.  We only want to *temporarily* replace that field w
 # }
 ```
 Uh oh, now what.
-```rust
-
+```rust,ignore
 error[E0499]: cannot borrow `*slice` as mutable more than once at a time
 9  |         let first = slice.get_mut(0);
    |                     ----- first mutable borrow occurs here

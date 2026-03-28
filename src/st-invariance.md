@@ -9,7 +9,7 @@ We say that `&mut T` is *invariant* in `T`, which means any lifetimes in `T` can
 (grow or shrink) at all. In the example, `T` is `&'long mut U`, and the `'long` cannot be changed.
 
 Why not?  Consider this:
-```rust
+```rust,compile_fail
 fn bar(v: &mut Vec<&'static str>) {
     let w: &mut Vec<&'_ str> = v; // call the lifetime 'w
     let local = "Gottem".to_string();

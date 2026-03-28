@@ -18,8 +18,11 @@ But you're not copying it either, because `&mut _` does not implement `Copy`.
 Instead `*v` is reborrowed for some shorter lifetime than `'v`, which ends on line 1.
 
 An explicit reborrow would look like this:
-```rust,no_compile
+```rust
+# fn foo<'v>(v: &'v mut Vec<i32>) {
     Vec::push(&mut *v, 0);
+#   println!("{v:?}");
+# }
 ```
 
 `v` can't be used while the reborrow `&mut *v` exists, but after it "expires", you can use `v` again.

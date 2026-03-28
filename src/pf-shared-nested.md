@@ -45,7 +45,7 @@ Even though it's not as problematic as the `&mut` case, there is
 still something non-ideal about that signature: it forces the
 borrow of `person` to be longer than it needs to be.  For example,
 this fails:
-```rust
+```rust,compile_fail
 # struct Person<'a> { given: &'a str }
 # impl<'a> Person<'a> { fn given(&'a self) -> &'a str { self.given } }
 # struct Stork(String);
@@ -131,6 +131,7 @@ this page, there's no practical difference between these two methods:
 impl<'a> Person<'a> {
     fn foo(&self) {}
     fn bar(&'a self) {}
+}
 ```
 
 There's no return value to force the lifetime to be longer, so these
@@ -140,6 +141,7 @@ on `&'a self`, but it's not hurting anything either.
 Similarly, within a struct there's rarely a benefit to keeping the
 nested lifetimes separated, so you might as well use this:
 ```rust
+# struct Person<'a> { given: &'a str }
 struct Cradle<'a> {
     person: &'a Person<'a>
 }

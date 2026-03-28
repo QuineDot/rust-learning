@@ -116,7 +116,7 @@ from `&T` and `&mut T`.
 Here's a graphical representation of the layout of slices, shared slices,
 `Vec<T>`, and `&Vec<T>`.
 
-```
+```text
 +---+---+---+---+---+---+---+---+
 | Pointer       | Length        | &[T] (or &str, &Path, Box<[T]>, ...)
 +---+---+---+---+---+---+---+---+
@@ -157,7 +157,7 @@ do with the borrowed data.
 
 The layout of an array is the same as a slice, except the length is known.
 
-```
+```text
 +---+---+---+---+---+---+---+---+
 | Pointer       | Length        | &[T] (or &str, &Path, Box<[T]>, ...)
 +---+---+---+---+---+---+---+---+

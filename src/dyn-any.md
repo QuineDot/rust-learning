@@ -20,7 +20,7 @@ of the implementing type.  We also have
 which lets us look up the `TypeId` of any `'static` type.
 
 Together, this allows fallible downcasting by doing [things along these lines:](https://doc.rust-lang.org/src/core/any.rs.html)
-```rust
+```rust,ignore
     pub fn downcast_ref<T: Any>(&self) -> Option<&T> {
         if self.is::<T>() {
             // SAFETY: just checked whether we are pointing to the correct type, and we can rely on

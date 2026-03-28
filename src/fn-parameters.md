@@ -24,7 +24,7 @@ And the main corollaries are
 ---
 
 Here's a couple of error examples related to function lifetime parameters:
-```rust
+```rust,compile_fail
 fn long_borrowing_local<'a>(name: &'a str) {
     let local = String::new();
     let borrow: &'a str = &local;

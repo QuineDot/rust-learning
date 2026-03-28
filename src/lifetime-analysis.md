@@ -18,7 +18,7 @@ while `&` references are shared and implement `Copy`.  You can't intermix using
 a shared reference and an exclusive reference to the same value, or two exclusive
 references to the same value.
 
-```rust
+```rust,compile_fail
 # fn main() {
 let mut local = "Hello".to_string();
 
@@ -41,7 +41,7 @@ any other existing references must cease to be valid.
 ### Borrows are often implicit
 
 Here's the example again, only slightly rewritten.
-```rust
+```rust,compile_fail
 # fn main() {
 let mut local = "Hello".to_string();
 
@@ -69,7 +69,7 @@ just uses that involve references or just uses that involve lifetimes.
 For example, moving a value invalidates any references to the
 value, as otherwise those references would dangle.
 
-```rust
+```rust,compile_fail
 # fn main() {
 let local = "Hello".to_string();
 
@@ -89,7 +89,7 @@ println!("{x}");
 
 The effects of a value going out of scope are similar to moving the
 value: all references are invalidated.
-```rust
+```rust,compile_fail
 # fn main() {
 let x;
 {
@@ -108,7 +108,7 @@ In the example below, `left` becomes invalid when we create `&self`
 to call `bar`.  Because you can get a `&self.left` out of a `&self`,
 this is similar to trying to intermix `&mut self.left` and `&self.left`.
 
-```rust
+```rust,compile_fail
 #[derive(Debug)]
 struct Pair {
     left: String,
@@ -167,7 +167,7 @@ Note that data you access through indexing are not consider fields
 per se; instead indexing is [an operation that generally borrows
 all of `&self` or `&mut self`.](https://doc.rust-lang.org/std/ops/trait.Index.html)
 
-```rust
+```rust,compile_fail
 # fn main() {
 let mut v = vec![0, 1, 2];
 
