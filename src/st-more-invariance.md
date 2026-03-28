@@ -10,3 +10,6 @@ Trait parameters are invariant too.  As a result, lifetime-parameterized traits 
 Additionally, if you have a bound like `T: Trait<U>`, `U` becomes invariant because it's a type parameter of the trait.
 If your `U` resolves to `&'x V`, the lifetime `'x` will be invariant too.
 
+Associated types are also invariant.
+
+`-> impl Trait` types are also invariant.
