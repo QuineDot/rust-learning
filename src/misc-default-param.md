@@ -457,6 +457,29 @@ foo.papers_please();
 sometimes means "infer this for me", but that's a topic for another
 day.  Lifetime *parameters* cannot have defaults.)
 
+## A warning about extending structs with a defaulted parameter
+
+Part of the motivation of defaulted parameters is so that one can add
+a parameter to a type where it didn't exist before.  For example, as of
+this writing, [`Vec<T>` is really `Vec<T, Allocator>.`](https://doc.rust-lang.org/std/vec/struct.Vec.html)
+The `Allocator` type parameter did not always exist (and is currently
+only usable on unstable).
+
+By this point it's probably clear that more inference breakage than one
+hoped may happen despite providing a default when adding a parameter.  It's
+generally not considered a major breaking change, but it still may be
+significant.
+
+And in particular, if your struct had *no* type or `const` parameters
+before adding one, the fallout will likely be much worse -- because
+consumers of your type had no way to specify any non-lifetime parameters
+(which would "activate" the defaults).
+
+[See the comments starting here](https://github.com/rust-lang/rust/pull/149328#issuecomment-4071450073)
+for a real-life example: adding an allocator to `String` requires more
+involved changes than adding one to `Vec<_>` did.  (That PR is also the
+third attempt to add the parameter.)
+
 ## Default type parameters elsewhere
 
 Declaring default parameters that are not on types, traits, or trait
