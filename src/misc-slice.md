@@ -159,12 +159,12 @@ The layout of an array is the same as a slice, except the length is known.
 
 ```text
 +---+---+---+---+---+---+---+---+
-| Pointer       | Length        | &[T] (or &str, &Path, Box<[T]>, ...)
+| Pointer       | Length        | &[T]
 +---+---+---+---+---+---+---+---+
   |
   V
 +---+---+---+---+---+---+---+
-| D | A | T | A | . | . | . | [T; N] (or str, Path, ...)
+| D | A | T | A | . | . | . | [T; N]
 +---+---+---+---+---+---+---+
   ^
   |
