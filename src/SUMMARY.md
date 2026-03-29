@@ -58,7 +58,7 @@
 - [`dyn Trait` overview](dyn-trait-overview.md)
 - [`dyn Trait` implementations](dyn-trait-impls.md)
 - [`dyn Trait` coercions](dyn-trait-coercions.md)
-- [`dyn` safety (object safety)](dyn-safety.md)
+- [`dyn` compatibility (object safety)](dyn-safety.md)
 - [`dyn Trait` lifetimes](dyn-trait-lifetime.md)
   - [Variance](dyn-covariance.md)
   - [Higher-ranked types](dyn-hr.md)

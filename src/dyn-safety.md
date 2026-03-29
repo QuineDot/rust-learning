@@ -1,4 +1,4 @@
-# `dyn` safety (object safety)
+# `dyn` compatiability (object safety, `dyn` safety)
 
 There exists traits for which you cannot create a `dyn Trait`:
 ```rust,compile_fail
@@ -7,8 +7,9 @@ let d: &dyn Clone = &s;
 ```
 
 Instead of repeating all the rules here,
-[I'll just link to the reference.](https://doc.rust-lang.org/reference/items/traits.html#object-safety)
-You should go read that first.
+[I'll just link to the reference.](https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility)
+You should go read that first.  (As the reference notes, `dyn` compatibility use
+to be called object safety.  And an earlier version of this guide used the term "`dyn` safety".)
 
 Note that as of this writing, the reference hasn't been updated to document that you
 can opt to make associated types and <abbr title="generic associated types">GATs</abbr>
@@ -21,10 +22,10 @@ The rest of this page explores some of the reasons.
 ## The `Sized` constraints
 
 Before we get into the restrictions, let's have an aside about how the
-`Sized` constraints work with `dyn Trait` and `dyn` safety.
+`Sized` constraints work with `dyn Trait` and `dyn` compatibility.
 
 Rust uses `Sized` to indicate that
-- A trait is not `dyn` safe
+- A trait is not `dyn` compatible
 - An associated type or <abbr title="generic associated type">GAT</abbr> is not `dyn`-usable
 - A method is not `dyn`-dispatchable
 - An associated function is not callable for `dyn Trait`
@@ -38,12 +39,12 @@ However, it's still a hack as there are types which are not `Sized` but also
 not `dyn Trait`, and we might want to implement our trait for those, *including*
 some methods which are not `dyn`-dispatchable (such as generic methods).
 Currently that's just not possible in Rust (the non-`dyn`-dispatchable methods
-will also not be available for other unsized types).
+will also not be available for other unsized types which implement the trait).
 
-The next few paragraphs demonstrate (or perhaps rant about) how this can be an annoying limitation.
-If you'd rather get on with learning practical Rust, [you may want to skip ahead 🙂.](#receiver-limitations)
+<details>
+<summary>Expand if you'd like to read a rant about the limitations of this hack.</summary>
 
-Consider this example, where we've added a `Sized` bound in order to remain a `dyn`-safe trait:
+Consider this example, where we've added a `Sized` bound in order to remain a `dyn` compatible trait:
 ```rust
 # trait Bound<T: ?Sized> {}
 trait Trait {
@@ -54,44 +55,21 @@ trait Trait {
 
 If you try to implement this trait for `str`, you won't have `method`
 available, even if it would logically make sense to have it available.
-Moreover, if you write the implementation like so:
-```rust,compile_fail
-# trait Bound<T: ?Sized> {}
-# trait Trait {
-#    fn method<T: Bound<Self>>(&self) where Self: Sized;
-# }
-impl Trait for str {
-    // `Self: Sized` isn't true, so don't bother with `method`
-}
-```
-You get an error saying you must provide `method`, even though the
-bounds cannot be satisfied.  So then you can provide a perfectly
-functional implementation:
-```rust,compile_fail
-# trait Bound<T: ?Sized> {}
-# trait Trait {
-#    fn method<T: Bound<Self>>(&self) where Self: Sized;
-# }
-impl Trait for str {
-    fn method<T: Bound<Self>>(&self) where Self: Sized {
-        // do logical `method` things
-    }
-}
-```
-Whoops, it doesn't accept that either! 😠 We have to implement it
-without the bound, like so:
+You're allowed to write the implementation like so, but aren't allowed to
+call the method, because the bounds on the trait take precedence.
 ```rust
 # trait Bound<T: ?Sized> {}
 # trait Trait {
 #    fn method<T: Bound<Self>>(&self) where Self: Sized;
 # }
+// This compiles...
 impl Trait for str {
+    // N.b. we omitted the bound in our implementation.
     fn method<T: Bound<Self>>(&self) {
-        // do logical `method` things
+        println!("Hi there");
     }
 }
 ```
-And that compiles... but we can never actually call it.
 ```rust,compile_fail
 # trait Bound<T: ?Sized> {}
 # trait Trait {
@@ -99,48 +77,49 @@ And that compiles... but we can never actually call it.
 # }
 # impl Trait for str {
 #     fn method<T: Bound<Self>>(&self) {
+#         println!("Hi there");
 #     }
 # }
-fn main() {
-    "".method();
-}
+# impl Bound<str> for i32 {}
+// ...but the method is not callable.
+"".method::<i32>()
 ```
-Alternatively, we can exploit the fact that higher-ranked bounds
-are checked at the call site and not the definition site to sneak
-in the unsatisfiable `Self: Sized` bound in a way that compiles:
+
+So you might as well just leave it out.
 ```rust
 # trait Bound<T: ?Sized> {}
 # trait Trait {
 #    fn method<T: Bound<Self>>(&self) where Self: Sized;
 # }
 impl Trait for str {
-    // Still not callable, but compiles:   vvvvvvv  due to this binder
-    fn method<T: Bound<Self>>(&self) where for<'a> Self: Sized {
-        unreachable!()
-    }
+    // You can just omit the method since Rust 1.87
 }
 ```
-But naturally the method still cannot be called, as the bound is not satisfiable.
 
 This is a pretty sad state of affairs.  Ideally, there would be a
-distinct trait for opting out of `dyn` safety and dispatchability
+distinct trait for opting out of `dyn` compatibility and dispatchability
 instead of using `Sized` for this purpose; let's call it `NotDyn`.
 Then we could have `Sized: NotDyn` for backwards compatibility,
 change the bound above to be `NotDyn`, and have our implementation
 for `str` be functional.
 
-There also some other future possibilities that may improve the situation:
-- [Some resolution of RFC issue 2829](https://github.com/rust-lang/rfcs/issues/2829)
-or the duplicates linked within would allow omitting the method altogether
-(but it would still not be callable)
-- [RFC 2056](https://rust-lang.github.io/rfcs/2056-allow-trivial-where-clause-constraints.html)
-will allow defining the method with the trivially unsatifiable bound without
-exploiting the higher-ranked trick (but it will still not be callable)
-- [RFC 3245](https://rust-lang.github.io/rfcs/3245-refined-impls.html) will allow
-calling `<str as Trait>::method` and refined implementations more generally
+There has been some improvement to the situation, and are also some other future
+possibilities that may improve the situation more:
 
-But I feel removing the conflation between `dyn` safety and `Sized` would
+- [Since Rust 1.87,](https://github.com/rust-lang/rust/pull/135480) you can
+simply omit the uncallable method (before that you had to supply the method)
+- [RFC 2056](https://rust-lang.github.io/rfcs/2056-allow-trivial-where-clause-constraints.html)
+will also allow defining the method with the trivially unsatifiable bound without
+[exploiting higher-ranked bound tricks](https://github.com/rust-lang/rust/issues/48214#issuecomment-1150463333)
+(but it will still not be callable)
+- [RFC 3245](https://rust-lang.github.io/rfcs/3245-refined-impls.html) or
+an expansion thereof may allow calling `<str as Trait>::method` and refined
+implementations more generally
+
+But I feel removing the conflation between `dyn` compatibility and `Sized` would
 be more clear and correct regardless of any future workarounds that may exist.
+
+</details>
 
 ## Receiver limitations
 
@@ -227,7 +206,7 @@ impl Trait for () {
 let _: &dyn Trait<Gat<'static> = &'static str> = &();
 ```
 ...but also higher-ranked GAT equality:
-```rust
+```rust,compile_fail
 # trait Trait {
 #    type Gat<'a> where Self: Sized;
 # }
@@ -235,8 +214,15 @@ let _: &dyn Trait<Gat<'static> = &'static str> = &();
 #    type Gat<'a> = &'a str;
 # }
 // This syntax is still not supported
-// let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
-
+let _: &dyn Trait<for<'a> Gat<'a> = &'a str> = &();
+```
+```rust
+# trait Trait {
+#    type Gat<'a> where Self: Sized;
+# }
+# impl Trait for () {
+#    type Gat<'a> = &'a str;
+# }
 // However, with `dyn Trait`, you can move the binder to outside the `Trait`:
 let _: &dyn for<'a> Trait<Gat<'a> = &'a str> = &();
 ```
