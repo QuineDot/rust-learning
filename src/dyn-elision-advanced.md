@@ -41,6 +41,9 @@ example will compile.
 If `T: 'a` is an inferred bound of your type, and `T: ?Sized`, I recommend
 including the explicit `T: 'a` bound.
 
+Despite being extremely subtle, this is in fact
+[an intentional design.](https://rust-lang.github.io/rfcs/2093-infer-outlives.html#trait-object-lifetime-defaults)
+
 ## Ambiguous bounds
 
 If you have more than one lifetime bound in your type definition, the
@@ -84,7 +87,7 @@ When you use a type alias, the bounds between lifetime parameters and type
 parameters *on the `type` alias* determine how `dyn Trait` lifetime elision
 behaves, overriding the bounds on the aliased type (be they stronger or weaker).
 
-```rust,compile_fail
+```rust
 # trait Trait {}
 // Without the `T: 'a` bound, the default trait object lifetime
 // for this alias is `'static`
@@ -94,7 +97,9 @@ type MyRef<'a, T> = &'a T;
 fn foo(mr: MyRef<'_, dyn Trait>) -> &(dyn Trait + 'static) {
    mr
 }
-
+```
+```rust,compile_fail
+# trait Trait {}
 // With the `T: 'a` bound, the default trait object lifetime for
 // this alias is the lifetime parameter
 type MyOtherRef<'a, T: 'a> = MyRef<'a, T>;

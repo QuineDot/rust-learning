@@ -194,17 +194,29 @@ reason for you to encounter this scenario.
 ## `static` contexts
 
 In some contexts like when declaring a `static`, it's possible to elide the
-lifetime of types like references; doing so will result in `'static` being
-used for the elided lifetime:
+lifetime of types like references; doing so will generally result in `'static`
+being used for the elided lifetime:
 ```rust
 // The elided lifetime is `'static`
 static S: &str = "";
 const C: &str = "";
 ```
 
-As a result, elided `dyn Trait` lifetimes will by default also be `'static`,
-matching the inferred lifetime of the reference.  In contrast, this fails
-due to the outer lifetime being `'static`:
+In the [ancient days,](https://github.com/rust-lang/rust/issues/35897), you
+used to have to write out the `'static` lifetime.  Since Rust 1.17, eliding
+the lifetime at the top level of a module has been sugar for `'static`.
+
+As a result, elided `dyn Trait` lifetimes will by default also be `'static`:
+```rust
+# trait Trait {}
+# impl Trait for () {}
+// These are `&'static (dyn Trait + Sync + 'static)`.
+static S: &(dyn Trait + Sync) = &();
+const C: &(dyn Trait + Sync) = &();
+```
+
+Unfortunately, what happens in other contexts has not been as consistent.
+For example, this snippet:
 ```rust,compile_fail
 # trait Trait {}
 # impl Trait for () {}
@@ -214,4 +226,25 @@ impl<'a: 'b, 'b> S<'a, 'b> {
 }
 ```
 
-In this context, eliding all the lifetimes is again *usually* what you want.
+Required an explicit lifetime before Rust 1.64, but generated a new anonymous
+lifetime after that.  Since Rust 1.81 this has fired
+[a deny-by-default future-compatibility lint.](https://github.com/rust-lang/rust/issues/115010)
+
+There have been at least a few cases of unintentionally causing elided
+lifetimes in `const` context to be `'static`.  For example, the following
+snippet [failed to compile from Rust 1.64 to 1.70](https://github.com/rust-lang/rust/pull/110984)
+due to the lifetime being desugared as `'static`.
+```rust
+fn foo() -> [(); {
+    // (This is a `const` context)
+    let a = 10_usize;
+    let b: &usize = &a;
+   *b
+}] {
+    [(); 10]
+}
+```
+
+In these contexts, eliding all the lifetimes is again *usually* what you want.
+So should you run into a lifetime error in this context, the best advice I have
+is to try eliding everything, and if that fails, try being explicit about everything.

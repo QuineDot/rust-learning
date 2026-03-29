@@ -500,6 +500,7 @@ impl<'a, 'b> L<'a, 'b> {
 
 Elided lifetimes can be inferred to be `'static` elsewhere...
 ```rust
+#![allow(elided_lifetimes_in_associated_constant)]
 # use core::marker::PhantomData;
 # trait Single<'a>: 'a + Send + Sync {}
 # struct L<'l, 'm>(&'l str, &'m str);
@@ -515,6 +516,7 @@ impl<'a, 'b> L<'a, 'b> {
 *...however,* it's really a free variable.  Therefore, cases such
 as this are considered ambiguous:
 ```rust,compile_fail
+#![allow(elided_lifetimes_in_associated_constant)]
 # use core::marker::PhantomData;
 # trait Double<'a, 'b>: 'a + 'b + Send + Sync {}
 # struct L<'l, 'm>(&'l str, &'m str);
@@ -526,6 +528,7 @@ impl<'a, 'b> L<'a, 'b> {
 as there are no outlives relationships between the anonymously
 introduced lifetime parameters:
 ```rust,compile_fail
+#![allow(elided_lifetimes_in_associated_constant)]
 # use core::marker::PhantomData;
 # trait Single<'a>: 'a + Send + Sync {}
 struct R<'l, 'm, 'r>(&'l str, &'m str, &'r ());
@@ -536,6 +539,11 @@ impl<'a, 'b, 'r> R<'a, 'b, 'r> where 'a: 'r, 'b: 'r {
 ```
 (There is no implicit bound due to nesting the lifetimes because
 the nesting occurs in the body of the `impl` block and not the header.)
+
+As of the latest update to this subsection, examples with
+`allow(elided_lifetimes_in_associated_constant)` fire a deny-by-default
+forward compatibility lint, and will likely be entirely disallowed at some
+point.
 
 ### `impl` headers
 

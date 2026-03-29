@@ -55,6 +55,15 @@ Trait objects used to be just "spelled" as `Trait` in type position, instead of 
 - [RFC 1156](https://rust-lang.github.io/rfcs/1156-adjust-default-object-bounds.html) superseded RFC 0599 (`dyn Trait` lifetime elision)
 - [PR 39305](https://github.com/rust-lang/rust/pull/39305) modified RFC 1156 (unofficially) to [allow more inference in function bodies](dyn-elision-advanced.md#an-exception-to-inference-in-function-bodies)
 - [RFC 2093](https://rust-lang.github.io/rfcs/2093-infer-outlives.html#trait-object-lifetime-defaults) defined [how `struct` bounds interact with `dyn Trait` lifetime elision](dyn-elision-advanced.md#guiding-behavior-of-your-own-types)
-- [Issue 100270](https://github.com/rust-lang/rust/issues/100270) notes that type aliases take precedent in terms of RFC 2093 `dyn Trait` lifetime elision rules
 - [Issue 47078](https://github.com/rust-lang/rust/issues/47078) notes that being late-bound influences `dyn Trait` lifetime elision
+- [Issue 100270](https://github.com/rust-lang/rust/issues/100270) notes that type aliases take precedent in terms of RFC 2093 `dyn Trait` lifetime elision rules
+- [Issue 115379](https://github.com/rust-lang/rust/issues/115379) notes that default `dyn Trait` lifetimes don't apply in GATs
+  - [Issue 151649](https://github.com/rust-lang/rust/issues/151649) notes the same for unstable type `const`s
+  - [Issue 151662](https://github.com/rust-lang/rust/issues/151662) notes the same for unstable <abbr title="Return Type Notation">RTN</abbr> paths
+  - [Issue 140710](https://github.com/rust-lang/rust/issues/140710) is a related issue for unstable trait aliases
+  - [Issue 141997](https://github.com/rust-lang/rust/issues/141997) is a related issue for unstable <abbr title="Inherent Associated Types">IATs</abbr>
+- [PR 129543](https://github.com/rust-lang/rust/pull/129543) aims to resolve the above issues and make defaults more consistent
+  - It notes a few odd behaviors I think I missed and would change many details about default trait object lifetimes
+- [Issue 91302](https://github.com/rust-lang/rust/issues/91302) proposes tuning the default elision rules (but has been pretty dormant)
+- [Reference issue 1407](https://github.com/rust-lang/reference/issues/1407) is an issue I created to hopefully make the reference accurate on this topic
 
