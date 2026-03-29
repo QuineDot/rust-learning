@@ -120,7 +120,7 @@ let fp = generic::<String>;
 ```
 That is, the function item type is parameterized by some `T: Trait`.
 
-In contrast, there will always only be only one `non_generic` function in
+In contrast, there will always be only one `not_generic` function in
 the resulting library.  The base implementors of `Trait` must be typed-erased
 into `dyn Trait + '_` before being passed to the function.  The function type
 is not parameterized by a generic type.
