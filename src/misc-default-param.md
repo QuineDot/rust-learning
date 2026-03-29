@@ -24,8 +24,8 @@ defaults.
 
 What are inference variables?  For types, an inference variable is the same as the
 "wildcard type" `_`, which tells the compiler to infer the type for you.
-[`_` cannot be used for `const` parameters as of yet,](https://github.com/rust-lang/rust/issues/85077)
-but they can still be inferred implicitly.
+`_` can also be used for `const` parameters
+([since Rust 1.89](https://github.com/rust-lang/rust/pull/141610)).
 
 (For most of this guide, we'll be focused on types;
 [there's a subsection about `const` parameters specifically later.](#const-parameters))
@@ -225,11 +225,21 @@ have "trait inference variables", so the trait must be named; you can't use
 `_` in place of the trait, for example.  (You can still use it in place of
 the trait's type parameters.)
 
+Note also that while this works:
+```rust
+//              vvvvvvv A trait name
+let s: String = Default::default();
+```
+This is not allowed:
+```rust,compile_fail
+let s: String = <Default>::default();
+```
+
 ## Traits
 
 Default parameters for traits work the same as default parameters for types,
 both inside and outside of "type position".  When thinking of traits in paths
-as sugar for qualified paths, the desugaring is like so:
+as sugar for qualified paths, the notional desugaring is like so:
 ```rust,compile_fail
 trait Trait<One, Two = String>: Sized {
     fn foo(self) -> (Self, One, Two) where One: Default, Two: Default {
@@ -273,13 +283,14 @@ For example:
 ```rust,ignore
 let _: i32 = Trait::name(0.0);
 
-// If `Trait` has a method called `name`, that is is
+// If `Trait` has a method called `name`, the above is
 let _: i32 = <_ as Trait>::name(0.0);
 
-// But if it does not, and `dyn Trait` has a method called `name`, this is
+// But if it does not, and `dyn Trait` has a method called `name`, the first line is
 let _: i32 = <dyn Trait>::name(0.0)
 
 // And the following line is always referring to `dyn Trait`
+// (as traits aren't allowed in the `<>`)
 let _: i32 = <Trait>::name(0.0);
 ```
 
@@ -335,7 +346,7 @@ let _ = One { t: Default::default() };
 let _ = <One> { t: Default::default() };
 ```
 
-Finally, there is no way to syntactically represent inferred but
+As of Rust 1.89, you can also use `_` to represent inferred,
 non-defaulted `const` parameters in qualified path types (or any
 other type-annotation-like position).
 ```rust
@@ -346,15 +357,20 @@ impl<const N: usize> Default for Pixel<N> {
     }
 }
 
-// Works
-let pixel = Pixel::default();
-
-// These fail because `_` cannot be used for const parameters yet
-// let pixel = <Pixel<_>>::default();
-// let pixel: Pixel<_> = Default::default();
-
-drive_inference(pixel);
+// Calling this will let Rust infer the `const` parameter is `3`
 fn drive_inference(_: Pixel<3>) {}
+
+// This has worked since before Rust 1.89
+let pixel = Pixel::default();
+drive_inference(pixel);
+
+// These failed before Rust 1.89  because `_` was not allowed for
+// const parameters, but they work today.
+let pixel = <Pixel<_>>::default();
+drive_inference(pixel);
+
+let pixel: Pixel<_> = Default::default();
+drive_inference(pixel);
 ```
 
 ## Non-type generic parameters
@@ -386,44 +402,21 @@ let foo = Foo2::<'_>::Bar;
 let foo = Foo2::<'static>::Bar;
 ```
 
+You can think of generic lists as really being *two* lists: lifetimes (which must
+come first when not elided) and non-lifetimes.  For example: if you annotate one
+lifetime, you must annotate all lifetimes, but you can still elide the non-lifetime
+parameters.  And if you annotate some non-lifetimes, you can still elide the lifetimes.
+
 ### `const` parameters
 
-[`const` parameters defaults were stabilized in 1.59,](https://github.com/rust-lang/rust/pull/90207)
+[`const` parameters defaults were stabilized in Rust 1.59,](https://github.com/rust-lang/rust/pull/90207)
 along with the ability to intermix `const` and type parameters
 in the parameter list (as otherwise the presence of a defaulted
 type parameter would force all `const` parameters to also have
-defaults, for example).
+defaults, for example). [`_` for `const` parameters were stabilized in Rust 1.89.](https://github.com/rust-lang/rust/pull/141610)
 
 Generally speaking, defaulted `const` parameters act just like defaulted
-type parameters.  However, one important difference is that
-[`_` cannot be used for `const` parameters as of yet.](https://github.com/rust-lang/rust/issues/85077)
-
-This does mean that some of the workarounds we've seen cannot be applied:
-```rust,compile_fail
-// We'll use this analogously to our `HashSet` examples
-struct MyArray<const N: usize, T = String>([T; N]);
-
-impl<T: Default, const N: usize> Default for MyArray<N, T> {
-    fn default() -> Self {
-        Self(std::array::from_fn(|_| T::default()))
-    }
-}
-
-// Ambiguous for the usual reasons
-// let arr = MyArray::default();
-
-// Here's what we did when `HashSet` had this problem.
-// But it fails because we can't use `_` for the `const` parameter!
-let arr = MyArray::<_>::default();
-
-// Explicitness it is then
-// let arr = MyArray::<16>::default();
-
-// (These parts are just here to make everything above work like
-// our `HashSet` examples worked.)
-drive_inference_of_length(&arr);
-fn drive_inference_of_length<T>(_: &MyArray<16, T>) {}
-```
+type parameters (especially since `_` for `const` was stabilized).
 
 ## A warning about implementations and function arguments
 
@@ -446,7 +439,7 @@ impl Foo {
     fn papers_please(&self) {}
 }
 
-// This is an implemenetation for all (`Sized`) `T`
+// This is an implementation for all (`Sized`) `T`
 impl<T> Foo<T> {
     fn welcome(&self) {}
 }
@@ -479,7 +472,7 @@ applied.
 That being said, the case where you use a turbofish with one or more
 non-elided type parameter still works:
 ```rust
-#[allow(invalid_type_param_default)]
+#[expect(invalid_type_param_default)]
 fn example<X, Y: Default = String>() -> Y {
     Y::default()
 }
@@ -494,7 +487,7 @@ are on the `impl` keyword).
 ```rust
 # struct MyStruct;
 # trait WhyThough<T, U> { }
-#[allow(invalid_type_param_default)]
+#[expect(invalid_type_param_default)]
 impl<T = String> WhyThough<i32, T> for MyStruct {}
 ```
 
