@@ -32,9 +32,15 @@ The main difference is that generics allow
   - e.g. `D::to_string(&d)`
 - other utilizers to turbofish the function
   - e.g. `let function_pointer = foo::<String>;`
-
-Whereas the `impl Display` parameter is not nameable inside nor
-outside the function.
+- is compatible with `impl use<..>` return types
+  - whereas APIT is not:
+  ```rust,compile_fail
+  # use std::fmt::Display;
+  fn works<D: Display>(_: &D) -> impl Sized + use<D> {}
+  fn fails(_: &impl Display) -> impl Sized + use<> {}
+  ```
+These differences are due to the `impl Display` parameter being unnameable
+both inside and outside of the function.
 
 There may be more differences in the future, but for now at least,
 generics are the more flexible and thus superior form -- unless you
@@ -72,7 +78,7 @@ Yet in your typical Rust program, generic arguments are preferred over
 `dyn Trait` arguments.  Why is that?  There are a number of reasons:
 - Each monomorphized function can typically be optimized better
 - Trait bounds are more general than `dyn Trait`
-  - No `dyn` safety concerns (`T: Clone` is possible)
+  - No `dyn` compatibility concerns (`T: Clone` is possible)
   - No single trait restriction (`T: Trait1 + Trait2` is allowed)
 - Less indirection through dynamic dispatch
 - No need for boxing in the owned case
@@ -81,7 +87,7 @@ Yet in your typical Rust program, generic arguments are preferred over
 The `dyn Trait` versions do have the following advantages:
 - Smaller code size
 - Faster code generation
-- [Do not make traits `dyn`-unsafe](./dyn-trait-erased.md)
+- [Do not make traits `dyn` incompatible](./dyn-trait-erased.md)
 
 In general, you should prefer generics unless you have a specific
 reason to opt for `dyn Trait` in argument position.
@@ -173,7 +179,7 @@ RPITs and `dyn Trait` returns share some benefits for the function writer:
 `dyn Trait` does have some limitations and downsides:
 - Only one non-auto-trait is supportable without [subtrait boilerplate](./dyn-trait-combining.md)
   - In contrast, with RPIT you can return `impl Trait1 + Trait2`
-- Only `dyn`-safe traits are supportable
+- Only `dyn` compatible traits are supportable
   - In contrast, with RPIT you can return `impl Clone`
 - Boxing in some form is required to returned owned types
 - You pay the typical optimization penalties of not knowing the base type and performing dynamic dispatch
@@ -182,7 +188,7 @@ However, RPITs also have their downsides:
 - As an opaque alias, you can only return one actual, concrete type
 - For now, the return type is unnameable, which can be awkward for consumers
   - e.g. you can't store the result as a non-generic field in your struct
-  - ...unless the opaque type bounds are `dyn`-safe and you can type erase it yourself
+  - ...unless the opaque type bounds are `dyn` compatible and you can type erase it yourself
 - Auto-traits are leaky, so it's easy for the function writer to accidentally break SemVer
   - Whereas auto-traits are explicit with `dyn Trait`
 - RPIT methods in traits (stabilized in Rust 1.75) are [not `dyn`-dispatchable](dyn-safety.md)
@@ -191,11 +197,10 @@ However, RPITs also have their downsides:
 RPITs also have some rather tricky behavior around type parameter and lifetime capture.
 The planned `impl Trait` functionalities deserve their own exploration independent of
 `dyn Trait`, so I'll only mention them in brief:
-- RPIT captures all type parameters ([and their implied lifetimes](https://github.com/rust-lang/rust/issues/42940))
-  - And also lifetime parameters, in traits and [in edition 2024](https://github.com/rust-lang/rust/issues/117587)
+- RPIT captures all type and lifetime parameters by default
+  - Though [precise capturing](https://doc.rust-lang.org/nightly/edition-guide/rust-2024/rpit-lifetime-capture.html#capturing) can mitigate this to some extent
 - RPIT captures specific lifetimes and not [the intersection of all lifetimes](./dyn-trait-lifetime.md#when-multiple-lifetimes-are-involved)
   - And thus it is [tedious to capture an intersection of input lifetimes](https://github.com/danielhenrymantilla/fix_hidden_lifetime_bug.rs) instead of a union
-  - (The situation will be improved by [precise capturing](https://github.com/rust-lang/rust/issues/123432))
 
 Despite all these downsides, I would say that RPIT has a *slight* edge over `dyn Trait`
 in return position *when applicable,* especially for owned types.  The advantage between
@@ -257,7 +262,7 @@ The upside is that you (and the consumers of your method) get many of the upside
 - No boxing penalty
 - No concrete-type specific optimization loss
 - No single trait limitation
-- No `dyn`-safe limitation
+- No `dyn` compatibility limitation
 - Applicable in traits
 - Ability to be specific about captures
 - Ability to change your implementation within the API bounds
