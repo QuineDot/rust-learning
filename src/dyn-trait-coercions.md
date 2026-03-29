@@ -16,7 +16,7 @@ or not used.  For example the `Sized` bound on generic type parameters
 [is usually implied,](https://doc.rust-lang.org/reference/special-types-and-traits.html#sized)
 but I've made it explicit to emphasize that we're talking about `Sized` base types.
 
-The key point is that given an [object safe `Trait`,](dyn-safety.md) and when
+The key point is that given a [`dyn` compatible `Trait`,](dyn-safety.md) and when
 `T: 'a + Trait + Sized`, you can coerce a `Ptr<T>` to a `Ptr<dyn Trait + 'a>`
 for the supported `Ptr` pointer types such as `&_` and `Box<_>`.
 
@@ -237,7 +237,7 @@ fn coerce_cell<'a, T: Trait + 'a>(c: Cell<Box<T>>) -> Cell<Box<dyn Trait + 'a>> 
 }
 ```
 
-We'll cover the apparent exceptions (which are actually just supertype
+We'll cover some other apparent exceptions (which are actually just supertype
 coercions) [in an upcoming section.](./dyn-covariance.md#variance-in-nested-context)
 
 ## The `Sized` limitation
@@ -311,6 +311,14 @@ requires `dyn Trait + Send`).  The coercion is necessary as, again, these are
 Although no change to the vtable is required, this coercion can still
 [not happen in a nested context.](#no-nested-coercions)
 
+## Discarding the principal trait
+
+[As of Rust 1.84,](https://github.com/rust-lang/rust/pull/131857) you can also
+drop the principal trait to create something like a `dyn Send`, should you want
+to do that for some reason.  This could be implemented by changing the pointer,
+or it could be implemented by leaving the pointer alone; the only callable method
+after such a coercion has been performed is calling the destructor.
+
 ## The reflexive case
 
 You can cast `dyn Trait` to `dyn Trait`.
@@ -330,17 +338,16 @@ considered reflexive.
 
 ## Supertrait upcasting
 
-Though not supported on stable yet,
-[the ability to upcast from `dyn SubTrait` to `dyn SuperTrait`](https://github.com/rust-lang/rust/issues/65991)
-is a feature expected to be available some day.
+[Since Rust 1.86](https://github.com/rust-lang/rust/pull/134367) you can also
+coerce ("upcast") from a `dyn SubTrait` to a `dyn SuperTrait`.
 
-It is, once again, explicitly a coercion and not a sub/super type relationship
-(despite the terminology).  Although this is an implementation detail, the
-conversion will probably involve replacing the vtable pointer (in contrast
-with the last couple of examples).
+It is, once again, explicitly a coercion and not an actual sub/super type
+relationship, despite the terminology.  Although this is an implementation
+detail, the conversion may involve replacing the vtable pointer (in contrast
+with dropping auto traits or the reflexive case).
 
-Until the feature is stable,
-[you can write your own "manual" supertrait upcasts.](./dyn-trait-combining.md#manual-supertrait-upcasting)
+[You can also write your own "manual" supertrait upcasts](./dyn-trait-combining.md#manual-supertrait-upcasting)
+(which was more important before trait upcasting stabilized).
 
 ## Object-safe traits only
 
