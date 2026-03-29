@@ -2,9 +2,9 @@
 
 In order for `dyn Trait` to be useful for abstracting over the base
 types which implement `Trait`, `dyn Trait` itself needs to implement
-`Trait`.  The compiler always supplies that implementation.  Here we
-look at how this notionally works, and also touch on how this leads
-to some related limitations around `dyn Trait`.
+`Trait`.  The compiler supplies that implementation.  Here we look at
+how this notionally works, and also touch on how this leads to some
+related limitations around `dyn Trait`.
 
 We also cover a few surprising corner-cases related to how the
 implementation of `Trait` for `dyn Trait` works... or doesn't.
@@ -231,15 +231,18 @@ unfortunately, [there are some compiler bugs around the compiler
 implementation taking precedence over your blanket implementations.](https://github.com/rust-lang/rust/issues/57893#issuecomment-510690333)
 How those bugs are dealt with is yet to be determined; it's possible
 that certain blanket implementations will be disallowed, or that
-some traits will no longer be `dyn`-safe.  (The *general* pattern,
-such as the simple example above, is almost surely too widespread
-to be deprecated.)
+some traits will no longer be `dyn` compatible, or that the user-supplied
+implementation will take precendence instead of the compiler-supplied
+implementation.  (The *general* pattern, such as the simple example
+above, is almost surely too widespread to be deprecated.  And the
+compiler-supplied implementation *must* take precedence for `dyn Any`
+in particular.)
 
 ## The implementation cannot be indirectly bypassed
 
 You may be aware that when a concrete type has an inherent method with
-the same name and receiver as a trait method, the inherent method takes
-precedence when performing method lookup:
+the same name and receiver as a trait method, the inherent method usually
+takes precedence when performing method lookup:
 ```rust
 trait Trait { fn method(&self) { println!("In trait Trait"); } }
 
@@ -342,4 +345,4 @@ fn example(v: Vec<String>) {
 With this particular example, [it's possible to provide an implementation such that
 `dyn Iterable` meets the bounds.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=7b897bcb453c6d8b7b8e3461f70db7a6)
 If that's not possible, you probably need to drop the bound or give up
-on the trait being `dyn`-safe.
+on the trait being `dyn` compatible.
