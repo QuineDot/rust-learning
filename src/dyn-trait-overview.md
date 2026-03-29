@@ -32,8 +32,8 @@ You can also have objects such as `dyn Trait + Send + Sync`.  `Send` and `Sync` 
 and a trait object can include any number of these auto traits as additional bounds.
 Every distinct set of `Trait + AutoTraits` is a distinct type.
 
-However, you can only have one *non*-auto trait in a trait object, so this will not
-work:
+However, you can only have one *non*-auto trait in a trait object, which is also called
+the principal trait.  So this will not work:
 ```rust,compile_fail
 trait Trait1 {}
 trait Trait2 {};
@@ -89,6 +89,11 @@ fn bar<T: Trait + ?Sized>(t: &T) {
     foo(t);
 }
 ```
+
+You should consider using `+ ?Sized` to relax the implicit bound when your generics
+are only used behind indirections such as `&T` or `Box<T>`.  On the other hand,
+you may need to coerce the `T` to a `dyn Trait` yourself, which you cannot do if
+`T` is not `Sized`.  So it's not necessarily the correction choice every time!
 
 ### `dyn Trait` is neither a generic nor dynamically typed
 
@@ -151,6 +156,10 @@ but deref coercion usually takes care of that case. For many `std` traits,
 the trait is explicitly implemented for `Box<dyn Trait>` as well;
 [we'll also explore what that can look like.](./dyn-trait-box-impl.md))
 
+On top of this, the method traits of a `dyn Trait` act like inherent methods
+of the `dyn Trait` type, and can therefore be used even when the `Trait` has
+not been imported.
+
 As a concrete type, you can also implement methods on `dyn Trait`
 (provided `Trait` is local to your crate), and even implement *other*
 traits for `dyn Trait`
@@ -161,12 +170,13 @@ traits for `dyn Trait`
 Because you can coerce base types into a `dyn Trait`, it is not uncommon for
 people to think that `dyn Trait` is some sort of supertype over all the
 coercible implementors of `Trait`.  The confusion is likely exacerbated by
-trait bounds and lifetime bounds sharing the same syntax.
+trait bounds and lifetime bounds sharing the same syntax, and by overloading
+the terms "upcasting" and "downcasting".
 
 But the coercion from a base type to a `dyn Trait` is an unsizing coercion,
 and not a sub-to-supertype conversion; the coercion happens at statically
 known locations in your code, and may change the layout of the types
-involved (e.g. changing a thin pointer into a wide pointer) as well.
+involved as well.  For example, it may change a thin pointer into a wide pointer.
 
 Relatedly, `trait Trait` is not a class.  You cannot create a `dyn Trait`
 without an implementing type (they do not have built-in constructors),
