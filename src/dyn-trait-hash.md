@@ -20,29 +20,14 @@ The complete code:
 use core::cmp::Ordering;
 use std::any::Any;
 
-trait AsDynCompare: Any {
-    fn as_any(&self) -> &dyn Any;
-    fn as_dyn_compare(&self) -> &dyn DynCompare;
-}
-
-// Sized types only
-impl<T: Any + DynCompare> AsDynCompare for T {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-    fn as_dyn_compare(&self) -> &dyn DynCompare {
-        self
-    }
-}
-
-trait DynCompare: AsDynCompare {
+trait DynCompare: Any {
     fn dyn_eq(&self, other: &dyn DynCompare) -> bool;
     fn dyn_partial_cmp(&self, other: &dyn DynCompare) -> Option<Ordering>;
 }
 
 impl<T: Any + PartialOrd + Eq> DynCompare for T {
     fn dyn_eq(&self, other: &dyn DynCompare) -> bool {
-        if let Some(other) = other.as_any().downcast_ref::<Self>() {
+        if let Some(other) = (other as &dyn Any).downcast_ref::<Self>() {
             self == other
         } else {
             false
@@ -50,8 +35,7 @@ impl<T: Any + PartialOrd + Eq> DynCompare for T {
     }
 
     fn dyn_partial_cmp(&self, other: &dyn DynCompare) -> Option<Ordering> {
-        other
-            .as_any()
+        (other as &dyn Any)
             .downcast_ref::<Self>()
             .and_then(|other| self.partial_cmp(other))
     }
@@ -74,16 +58,17 @@ trait Trait: DynCompare {}
 impl Trait for i32 {}
 impl Trait for bool {}
 
+
 impl Eq for dyn Trait {}
 impl PartialEq<dyn Trait> for dyn Trait {
     fn eq(&self, other: &dyn Trait) -> bool {
-        self.as_dyn_compare() == other.as_dyn_compare()
+        (self as &dyn DynCompare) == (other as &dyn DynCompare)
     }
 }
 
 impl PartialOrd<dyn Trait> for dyn Trait {
     fn partial_cmp(&self, other: &dyn Trait) -> Option<Ordering> {
-        self.as_dyn_compare().partial_cmp(other.as_dyn_compare())
+        (self as &dyn DynCompare).partial_cmp(other as &dyn DynCompare)
     }
 }
 
@@ -140,13 +125,15 @@ impl Hash for dyn DynHash + '_ {
 ```
 Now is a good time to point out a couple of things we're relying on:
 - [`Hasher`](https://doc.rust-lang.org/std/hash/trait.Hasher.html) *is* object safe
-    <br><br>If this wasn't the case, we couldn't take a `&mut dyn Hasher` in our `dyn_hash` method.
+    <br>If this wasn't the case, we couldn't take a `&mut dyn Hasher` in our `dyn_hash` method.
 
 - The generic `H` in `Hash::hash<H: Hasher>` has an implicit `Sized` bound
-    <br><br>If this wasn't the case, we couldn't coerce the `&mut H` to a `&mut dyn Hasher`
-    in our implementation of `Hash` for `dyn DynHash`.
+    <br>If this wasn't the case, we couldn't coerce the `&mut H` to a `&mut dyn Hasher`
+    in our implementation of `Hash` for `dyn DynHash`.  We wouldn't have been totally stuck though --
+    [this recursive definition](https://doc.rust-lang.org/std/hash/trait.Hasher.html#impl-Hasher-for-%26mut+H)
+    means we could have coerced `&mut &mut H` to `&mut dyn Hasher` at the cost of some indirection.
 
-This demonstrates that *relaxing* a `Sized` bound can be a breaking change!
+However, this does demonstrate that *relaxing* a `Sized` bound can be a breaking change!
 
 
 Moving on, we still need to wire up this new functionality to our own trait.
@@ -165,7 +152,7 @@ impl Hash for dyn Trait {
     }
 }
 ```
-[And that's it!](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=de3908f78bbeeb4da109ca0fa8e1d53b)
+[And that's it!](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=8c9bcb89f72f7267bc2babda8e1efe8a)
 ```rust,ignore
     let bx1a: Box<dyn Trait> = Box::new(1);
     let bx1b: Box<dyn Trait> = Box::new(1);

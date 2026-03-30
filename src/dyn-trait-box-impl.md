@@ -115,9 +115,6 @@ Here's how things flow when calling `Trait::bye` on `Box<dyn Trait + '_>`:
 <      Erased  >::bye      (_:       Erased  ) :)
 ```
 
-There's rarely a reason to implement `BoxedBye for Box<dyn Trait + '_>`, since
-that takes a nested `Box<Box<dyn Trait + '_>>` receiver.
-
 Any `Sized` implementor of `Trait` will get our blanket implementation of
 the `BoxedBye` supertrait "for free", so they don't have to do anything
 special.

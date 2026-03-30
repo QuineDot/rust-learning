@@ -252,8 +252,8 @@ let data_ref = DataRef { first: 3, others: &[5,7]};
 assert!(set.contains(&data_ref as &dyn Lend));
 ```
 
-[Here's a playground with the complete example.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=cae538dbbf73e3e7692135bf2d397f39)
+[Here's a playground with the complete example.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=d6746544abc769632e4761c24a04fa29)
 
 Another alternative to casting or turbofish is to add an
 `as_lend(&self) -> &dyn Lend + '_` method, similar to many
-of the previous examples.
+of the previous manual supertrait upcasting examples.

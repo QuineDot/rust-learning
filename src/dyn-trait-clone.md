@@ -3,7 +3,7 @@
 What can you do if you want a `Box<dyn Trait>` that you can clone?
 You can't have `Clone` as a [supertrait,](dyn-trait-combining.md)
 because `Clone` requires `Sized` and that will make `Trait` be
-[non-object-safe.](dyn-safety.md)
+[`dyn` incompatible.](dyn-safety.md)
 
 You might be tempted to do this:
 

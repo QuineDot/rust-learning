@@ -55,11 +55,17 @@ between implementors of said traits, et cetera.
 
 ## Manual supertrait upcasting
 
-[Supertrait upcasting is planned, but not yet stable.](./dyn-trait-coercions.md#supertrait-upcasting)
-Until stabilized, if you need to cast something like `dyn Subtrait` to `dyn Foo`, you
-have to supply the implementation yourself.
+[Supertrait upcasting](./dyn-trait-coercions.md#supertrait-upcasting) stabilized in Rust 1.86.
+Before then, it was still possible, but you had to supply the implementation yourself.  This
+section walks through how to supply the implementation yourself, as
+- it's still applicable if you must support a version before Rust 1.86
+- the general pattern of a supertrait with a blanket implementation is common
+- having methods for upcasting can be more ergonomic than coercions
 
-For a start, we could build it into our traits like so:
+But if compatibility or compatibility isn't a concern, you can skip the rest of this page.
+The language level supertrait upcasting is probably adequate for your needs.
+
+On to the manual implementation!  For a start, we could build upcasting directly into our traits like so:
 ```rust
 trait Foo {
     fn foo(&self) {}
@@ -69,9 +75,10 @@ trait Foo {
 
 But we can't supply a default function body, as `Self: Sized` is required to perform
 the type erasing cast to `dyn Foo`.  We don't want that restriction or the method
-won't be available on `dyn Supertrait`, which is not `Sized`.
+won't be available on `dyn Supertrait`, which is not `Sized`.  It would also be
+annoying if every implementation had to supply the function body, though.
 
-Instead we can separate out the method and supply an implementation for all `Sized`
+So instead we can separate out the method and supply an implementation for all `Sized`
 types, via another supertrait:
 ```rust
 trait AsDynFoo {
@@ -117,3 +124,30 @@ fn main() {
     let _: &dyn Bar = quz.as_dyn_bar();
 }
 ```
+
+For comparison, let's see how much cleaner built-in trait upcasting is:
+```rust
+trait Foo { fn foo(&self) {} }
+trait Bar { fn bar(&self) {} }
+
+impl Foo for () {}
+impl Bar for () {}
+
+trait Subtrait: Foo + Bar {}
+impl<T: ?Sized> Subtrait for T where T: Foo + Bar {}
+
+fn main() {
+    let quz: &dyn Subtrait = &();
+    quz.foo();
+    quz.bar();
+    let _: &dyn Foo = quz;
+    let _: &dyn Bar = quz;
+}
+```
+
+Less supertrait and blanket implementation noise, and direct coercions instead
+of having to go through a method call.  Definitely an improvement to this example!
+
+[We will later see](./dyn-trait-eq.md#comparison-with-manual-supertrait-upcasting)
+that having the method can be more ergnomic due to method chaining in some
+circumstances, however.

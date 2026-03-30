@@ -40,7 +40,7 @@ pub mod useful {
 }
 ```
 
-However, it's not [`dyn` safe](./dyn-safety.md) and you wish it was.
+However, it's not [`dyn` compatible](./dyn-safety.md) and you wish it was.
 Even if we get support for GATs in `dyn Trait` some day, there
 are no plans to support functions with generic type parameters
 like `Iterable::visit`.  Besides, you want the functionality now,
@@ -51,13 +51,13 @@ and you don't want to redo everything.  Maybe it's not even your
 own trait.
 
 This may be a case where you want to provide an "erased" version
-of the trait to make it `dyn` safe.  The general idea is to use
-`dyn` (type erasure) to replace all the non-`dyn`-safe uses such
+of the trait to make it `dyn` compatible.  The general idea is to use
+`dyn` (type erasure) to replace all the non-`dyn`-compatible uses such
 as GATs and type-parameterized methods.
 
 ```rust
 pub mod erased {
-    // This trait is `dyn` safe
+    // This trait is `dyn` compatible
     pub trait Iterable {
         type Item;
         // No more GAT
@@ -111,7 +111,7 @@ pub mod erased {
 
 We're also going to want to pass our `erased::Iterable`s to functions
 that have a `useful::Iterable` trait bound.  However, we can't add
-that as a supertrait, because that would remove the `dyn` safety.
+that as a supertrait, because that would remove the `dyn` compatibility.
 
 The purpose of our `erased::Iterable` is to be able to type-erase to
 `dyn erased::Iterable` anyway though, so instead we just implement
