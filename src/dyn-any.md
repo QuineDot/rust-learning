@@ -67,24 +67,15 @@ the `dyn Any` implementation in the case of `type_id`.  It would be much more
 fraught if `downcast_ref` worked like this, for example.
 
 However, this does mean that having `Any` as a supertrait does not allow
-downcasting for your own `dyn Trait`s.  [Instead you have to first upcast
-to dyn Any,](./dyn-trait-combining.md#manual-supertrait-upcasting) and then
-downcast.  Once we have [built-in supertrait upcasting,](dyn-trait-coercions.md#supertrait-upcasting)
-the process will involve much less boilerplate when an `Any` suptertrait
-bound is acceptable.
+downcasting for your own `dyn Trait`s.  Instead you have to first upcast
+to `dyn Any`, and then downcast, [as we've seen before.](./dyn-trait-eq.md#comparison-with-manual-supertrait-upcasting)
 
 But note that a supertrait `Any` bound is not the only solution for custom downcasting!
 [We explore another approach below.](#custom-downcasting)
 
 ## Some brief examples
 
-[In our other example,](dyn-trait-eq.md#downcasting-with-dyn-any-to-emulate-dynamic-typing)
-we used [manual supertrait casting](./dyn-trait-combining.md#manual-supertrait-upcasting) to
-turn a `dyn DynCompare` into a `dyn Any`.  This was a case where we really just wished we
-could attempt to downcast `dyn DynCompare` itself.
-
-Here we instead look at some simple examples of type erasing and downcasting concrete
-types directly.
+Here we look at some simple examples of type erasing and downcasting concrete types directly.
 
 ### The basics
 
@@ -354,9 +345,19 @@ mod private {
 Now if an implementor tries to write out the signature of the `type_id` method,
 they'll get a privacy error.
 
-[Here's a playground with a couple more methods.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=af12a6896f44c7843dd331904c5b6bce)
+[Here's a playground with a couple more methods.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=6df13500be32478b8dbed5e11cf29e3a)
 This example is based on [`std::error::Error`](https://doc.rust-lang.org/std/error/trait.Error.html)
 and its own custom downcasting implementation.
+
+## The representation of `TypeId`
+
+`TypeId` is intentionally opaque and subject to change.  It was internally represented
+by a `u64` for quite some time; as of Rust 1.72
+[the representation is a `u128`.](https://github.com/rust-lang/rust/pull/109953)
+At some future time it could be [something more exotic.](https://github.com/rust-lang/rust/pull/95845)
+
+Long story short, you're not meant to rely on the exact representation of `TypeId`,
+only it's type comparing properties.
 
 ## Why `'static`?
 
@@ -399,7 +400,7 @@ but can soundly map erased lifetimes back to their proper position.  [A sketch i
 provided here,](https://github.com/sagebind/castaway/pull/6#issuecomment-1150952050)
 but an in-depth exploration is out of scope for this guide.
 
-## A potential footgun around subtypes (subtitle: why not `const`?)
+## Higher-ranked type considerations
 
 Let's take a minute to talk about types that *do* have a sub and supertype
 relationship in Rust!  Types which are [higher-ranked](./dyn-hr.md) have this
@@ -416,49 +417,14 @@ let fp: fn(&'static str) = fp;
 // let fp: fn(&str) = fp;
 ```
 
-And as it turns out, it is possible for two Rust types which are more than
-superficially syntactically different to be *subtypes of one another.*  Some
-parts of the language consider the existence of such a relationship to mean
-that the two types are equal.  Let's say they are semantically equal.
-
-Below is an example.  Due to covariance, it's always possible to call
-either of the functions from the other, which helps explain why they are
-considered subtypes of one another.
-```rust
-let one: for<'a    > fn(&'a str, &'a str) = |_, _| {};
-let two: for<'a, 'b> fn(&'a str, &'b str) = |_, _| {};
-let mut fp = one;
-fp = two;
-let mut fp = two;
-fp = one;
-```
-
-[However, these two types have different `TypeId`s!](https://github.com/rust-lang/rust/issues/97156)
-
-So different parts of Rust currently disagree about what types are equal or not.
-
-As the issue explains, this is a bit of a footgun if you were expecting consistency.
-Additionally, it's a blocker for [a `const type_id` function](https://github.com/rust-lang/rust/issues/77125)
-as it is possible to cause UB in safe code with a `const type_id` function so long
-as this inconsistency remains.
-
-How the language will evolve around this is unclear.  People want the `const` feature
-bad enough that [some version with caveats about false negatives](https://github.com/rust-lang/libs-team/issues/231)
-may be pursued.  Personally I feel making the type system consistent would be the
-better solution and worth waiting for.
-
-## More considerations around higher-ranked types
-
-Even if the issue discussed above gets resolved and Rust becomes consistent about
-what types are equal, [higher-ranked types](./dyn-hr.md) introduce some nuance to
-be aware of.  For example, when considering these two types:
+And as we mentioned before, this sub/supertype relationship applies to `dyn Trait`
+types as well:
 ```rust
 trait Look<'s> {}
 type HR = dyn for<'any> Look<'any> + 'static;
 type ST = dyn Look<'static> + 'static;
 ```
-`HR` is a *subtype* of `ST`, but not *the same type*.
-However, they both satisfy a `'static` bound:
+Here, `HR` is a *subtype* of `ST`, but not *the same type*.  However, they both satisfy a `'static` bound:
 ```rust
 # trait Look<'s> {}
 # type HR = dyn for<'any> Look<'any> + 'static;
@@ -481,12 +447,117 @@ example of such a soundness hole, and
 [this comment in particular](https://github.com/rust-lang/rust/issues/85863#issuecomment-872536139)
 exploring the sub/super type relationships of higher-ranked function pointers.
 
-## The representation of `TypeId`
+The fact that the sub-and-super types are still distinct types means that it's
+also possible for them to have differing implementations of a trait other than
+`Any`, as well:
+```rust
+# trait Look<'s> {}
+# type HR = dyn for<'any> Look<'any> + 'static;
+# type ST = dyn Look<'static> + 'static;
+#
+# trait Trait {
+#     fn say(&self);
+# }
+#
+impl Trait for HR {
+    fn say(&self) {
+        println!("Meow");
+    }
+}
 
-`TypeId` is intentionally opaque and subject to change.  It was internally represented
-by a `u64` for quite some time; as of Rust 1.72
-[the representation is a `u128`.](https://github.com/rust-lang/rust/pull/109953)
-At some future time it could be [something more exotic.](https://github.com/rust-lang/rust/pull/95845)
+impl Trait for ST {
+    fn say(&self) {
+        println!("Woof");
+    }
+}
+```
 
-Long story short, you're not meant to rely on the exact representation of `TypeId`,
-only it's type comparing properties.
+While this does currently give a future compatibility warning,
+[the plan is to keep accepting this pattern.](https://github.com/rust-lang/rust/issues/56105#issuecomment-633038069)
+
+### History around `const` `TypeId::of`
+
+[As of Rust 1.91, `TypeId::of` is a `const fn`.](https://github.com/rust-lang/rust/pull/144133)
+(`Any::type_id` is still not `const` as trait methods in general cannot yet be `const`.)
+
+The stabilization was a long time coming due to how different parts of the
+compiler considered type equality.  When different parts of the compiler
+disagreed, the results could be unsound in a `const` context.
+
+To briefly describe the historical disagreement, consider the following example.
+```rust
+let one: for<'a    > fn(&'a str, &'a str) = |_, _| {};
+let two: for<'a, 'b> fn(&'a str, &'b str) = |_, _| {};
+let mut fp = one;
+fp = two;
+let mut fp = two;
+fp = one;
+```
+
+Due to covariance, it's always possible to call either of the functions from
+the other.  They can be considered subtypes of one another.  However, similar
+to what we explored above, they are distinct types with distinct `TypeId`s.
+
+Before [PR 118247,](https://github.com/rust-lang/rust/pull/118247) parts of
+the compiler would consider the two types to be subtypes of each other, and
+consider types which are subtypes of each other to be *equal* types -- let's
+call them *semantically equal*.  However, [this was unsound](https://github.com/rust-lang/rust/issues/97156)
+as `TypeId` is based on *syntactic equality*.
+
+The PR resolved that disagreement in favor of the syntactic interpretation.
+
+The code example just above still compiles, so internally the types are either
+still subtypes of each other, or some other coercion is possible even though
+they are not subtypes of each other.  In either case, it is unintuitive that
+they are nonetheless distinct types.
+
+## Built-in `dyn` implementation precedence considerations
+
+[We noted before](./dyn-trait-impls.md#the-implementation-cannot-be-directly-overrode)
+that even if you have a blanket implementation which should cover `dyn Trait`, the
+built-in implementation of `Trait` for `dyn Trait` usually takes precedence.  And we
+[linked to this issue](https://github.com/rust-lang/rust/issues/57893) about how this
+is currently sometimes unsound.
+
+Based on the conversation around that issue, the language developers would prefer to
+give precedence to the user implementation in most cases.  However, this would break
+the `Any` trait!  [Its implementation](https://doc.rust-lang.org/std/any/trait.Any.html#implementors)
+is a blanket implementation which overlaps with the built-in `dyn Any` implementation.
+But returning the `TypeId` for `dyn Any` from `<dyn Any as Any>::type_id` would negate
+the entire point of the trait -- getting the `TypeId` of the *erased* type.
+
+In other words, for `dyn Any` ([and the `dyn` of any subtraits of `Any`](https://github.com/rust-lang/rust/issues/57893#issuecomment-2888905443))
+it is crucial that the built-in implementation continues to take precedence.
+
+And in fact, it even goes beyond that.  Consider our (and `Error`'s) built-in downcasting approach:
+```rust,ignore
+pub trait Trait {
+    // SAFETY: This method must return the base type's `TypeId` to ensure
+    // soundness in the `is` and downcasting methods of this module.  The
+    // method is therefore sealed so that the default body below is the
+    // only possible body.
+    #[doc(hidden)]
+    fn type_id(&self, _: private::Seal) -> TypeId
+    where
+        Self: 'static,
+    {
+        TypeId::of::<Self>()
+    }
+}
+```
+
+If there's any situation where the built-in implementation does not take
+precedence, `<dyn Trait>::type_id` will return the `TypeId` for `dyn Trait`
+and not the erased type -- *even though there is no supertrait relationship here.*
+
+There is such a situation under active development as of this writing --
+[`final` methods.](https://github.com/rust-lang/rust/issues/131179)  One of the
+possible implementations for that feature is that `final` methods could be excluded
+from the vtable of the trait.  But in effect, that would mean that the default
+method body takes precedence over the built-in vtable based implementation.
+
+Or in other words, if `final` methods are never in the vtable,
+[making `Trait::type_id` a `final` method](https://github.com/rust-lang/rust/pull/153598)
+as an alternative to sealing the method [cannot work.](https://github.com/rust-lang/rust/pull/153696#issuecomment-4042092817)
+
+Where the feature goes is still an open question.

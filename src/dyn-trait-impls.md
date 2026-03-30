@@ -235,7 +235,7 @@ some traits will no longer be `dyn` compatible, or that the user-supplied
 implementation will take precendence instead of the compiler-supplied
 implementation.  (The *general* pattern, such as the simple example
 above, is almost surely too widespread to be deprecated.  And the
-compiler-supplied implementation *must* take precedence for `dyn Any`
+compiler-supplied implementation [*must* take precedence for `dyn Any`](./dyn-any.md#built-in-dyn-implementation-precedence-considerations)
 in particular.)
 
 ## The implementation cannot be indirectly bypassed
