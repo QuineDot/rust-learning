@@ -12,7 +12,7 @@ parameter as a function input parameter, or use the `&self` lifetime in return p
 
 The reason the lifetime exists is that coercing values to `dyn Trait` erases their base type, including any
 lifetimes that it may contain.  But those lifetimes have to be tracked by the compiler somehow to ensure
-memory safety.  The `dyn Trait` lifetime represents the maximum lifetime the erased type is valid for.
+memory safety.  The `dyn Trait` lifetime represents an upper limit on how long the erased type is valid for.
 
 ---
 
@@ -22,20 +22,20 @@ trait Trait {}
 
 // The return is `Box<dyn Trait + 'static>` and this errors as there
 // needs to be a bound requiring `T` to be `'static`, or the return
-// type needs to be more flexible
+// type needs to be more flexible.
 fn one<T: Trait>(t: T) -> Box<dyn Trait> {
     Box::new(t)
 }
 ```
 ```rust
 # trait Trait {}
-// This works as we've added the bound
+// This works as we've added the bound.
 fn two<T: Trait + 'static>(t: T) -> Box<dyn Trait> {
     Box::new(t)
 }
 
-// This works as we've made the return type more flexible.  We still
-// have to add a lifetime bound.
+// This works as we've made the return type more flexible.
+// (We still have to add a lifetime bound.)
 fn three<'a, T: Trait + 'a>(t: T) -> Box<dyn Trait + 'a> {
     Box::new(t)
 }

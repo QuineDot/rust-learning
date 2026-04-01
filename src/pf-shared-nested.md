@@ -190,8 +190,8 @@ snek.bite();
 println!("{snek:?}");
 ```
 
-That doesn't seem so bad though, right?  Well, it's quite as bad as the `&mut`
-case, but it's still usually too restrictive to be useful.
+That doesn't seem so bad though, right?  Well, it's not quite as bad as the `&mut`
+case, but it's often still too restrictive to be useful.
 ```rust,compile_fail
 # use std::cell::Cell;
 # #[derive(Debug)]

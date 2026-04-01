@@ -11,7 +11,7 @@ fn quz<'a: 'b, 'b>(&'a mut self) -> &'b str { todo!() }
 # }
 ```
 
-But this doesn't really permit more lifetimes than this:
+But this doesn't really permit more possibilities than this:
 ```rust
 # struct S; impl S {
 fn quz<'b>(&'b mut self) -> &'b str { todo!() }

@@ -10,9 +10,12 @@ lifetime is a type.  `&'a str` and `&'b str` are not the same type, unless `'a =
 Similarly, `Vec<T>` for a generic `T` is a type constructor, but `Vec<i32>` is a type.
 `Vec<T>` and `Vec<U>` are not the same type, unless `T == U`.
 
+There is no single `Vec` type for all possible contents, and there is no single `&str`
+type for all possible lifetimes.
+
 By "concrete lifetime", I mean some compile-time determined lifetime.  The exact
-definition of "lifetime" is surprisingly complicated and beyond the scope of this
-guide, but here are a few examples of `&str`s and their concrete types.
+definition of "lifetimes" in Rust is surprisingly complicated and beyond the scope
+of this guide, but here are a few examples of `&str`s and their concrete types.
 
 ```rust
 // The exact lifetime of `'a` is determined at each call site.  We'll explore

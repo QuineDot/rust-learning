@@ -19,7 +19,7 @@ This can make it non-obvious that borrowing is going on, and harder to figure
 out where errors are coming from.  The above code used to be silently accepted,
 but there are now some lints, like `mismatched_lifetime_syntaxes`, which fire
 for the most common troublesome patterns.  To save yourself some headaches, you
-may even want to make the warning a hard error:
+may even want to make the warnings into errors:
 
 ```rust,compile_fail
 #![deny(mismatched_lifetime_syntaxes)]
@@ -41,7 +41,7 @@ The first thing I do when taking on a borrow check error in someone else's code
 is to check these lints.  If you have not enabled the lints and are getting errors
 in your own code, try enabling the lints.  For every place that errors, take a moment
 to pause and consider what is going on with the lifetimes.  Sometimes there's only
-one possibility and you will just need to make a trivial change:
+one possibility and you will just need to make a trivial change to appease the lint:
 ```diff
 -    fn new(s: &str) -> Foo {
 +    fn new(s: &str) -> Foo<'_> {
@@ -52,17 +52,20 @@ you're dealing with.  (This may become less common in the future now that
 
 ## Be aware of `impl Trait` and `async fn` capturing
 
-[See this section](m-rpitit-alikes.md) which goes into the details.
-
-TL;DR: When you see `-> impl` or `async fn`:
+When you see an `async fn` or a `-> impl` function which has lifetimes in the
+arguments, such as these:
 ```rust,ignore
 fn example(s: &str) -> impl Iterator<Item = Result<String, io::Error>> { ... }
 
 async fn example(v: &mut Vec<String>) -> String { ... }
 ```
-The return types may contain a lifetime from the inputs, even though there
-was no `'_` or `&` to indicate it.
+The return type will by default contain all lifetimes from the inputs, even
+though there is no `'_` or `&` to indicate it.  (They will also effectively
+contain any type generics, which may themselves contain lifetimes.)
 
 So think of `-> impl` and `async fn` as a sign that there may be a borrowing
-relationship present, similarly to `-> Foo<'_>`.
+relationship present between the inputs and outputs, similarly to what
+`-> &_` and `-> Foo<'_>` indicate.
 
+[See this section](m-rpitit-alikes.md) for more details on how the borrowing
+relationships work and how you can refine them.

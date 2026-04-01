@@ -1,8 +1,8 @@
 # `async` and returning `impl Trait`
 
 A lot can be said about `async fn` and returning `impl Trait`; more than can be covered here.
-But something to be particularly aware of is how they nearly invisibly introduce borrow
-relationships in function signatures.
+But something to be particularly aware of is how they introduce borrowing relationships to
+function signatures in a nearly invisible way.
 
 ## About `-> impl Trait` and implicit capturing
 
@@ -34,9 +34,9 @@ fn example(s: &str) -> impl use<'_> + Iterator<Item = Result<String, io::Error>>
 ```
 
 This is called "capturing" the generic lifetime.  In this case it means that callers
-will treat the returned value as if it contains the `&str` which we passed in.
-However, we're not actually doing that!  So this may cause unexpected borrow checker
-errors, like so:
+will treat the returned value as if it contains the `&str` which we passed in (uses
+of the iterator will keep `*s` borrowed).  However, we're not actually doing that!
+So this may cause unexpected borrow checker errors, like so:
 ```rust,compile_fail
 # #![deny(elided_lifetimes_in_paths)]
 # use either::Either;
@@ -134,7 +134,7 @@ So you should view `async fn` similarly to how you view `-> impl`: a flag
 that the return type might be holding onto borrows from the inputs.
 
 If you run into a case where the capturing is unnecessary, you can rewrite the
-`async fn` as an `impl Trait` returning normal `fn` instead.
+`async fn` as a (normal) `fn` that returns an `impl Trait` instead:
 ```rust
 // Note the empty `use<>`...
 fn example(v: &mut Vec<String>) -> impl use<> + Future<Output = String> {

@@ -1,6 +1,6 @@
 # Advice to add bound which implies lifetime equality
 
-The example for this one is very contrived, but [consider the output here:](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=aad18e17e4308fc4e94c5fd039e64d90)
+The example for this one is very contrived, but [consider the output here:](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=a95884f863bc5e027479cae10ef21ca7)
 ```rust,compile_fail
 fn f<'a, 'b>(s: &'a mut &'b mut str) -> &'b str {
     *s

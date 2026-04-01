@@ -1,6 +1,6 @@
 # Practical suggestions for building intuition around borrow errors
 
-Ownership, borrowing, and lifetimes covers a lot of ground in Rust, and thus this section is somewhat long.
+Ownership, borrowing, and lifetimes cover a lot of ground in Rust, and thus this section is somewhat long.
 It is also hard to create a succinct overview of the topic, as what aspects of the topic a newcomer
 first encounters depends on what projects they take on in the process of learning Rust. The genesis of
 this guide was advice for someone who picked a zero-copy regular expression crate as their learning project,
@@ -9,7 +9,7 @@ more likely to run into issues around `Arc` and `Mutex`, those who start with `a
 run into many `async`-specific errors, and so on.
 
 Despite the length of this section, there are entire areas it doesn't yet touch on, such as destructor
-mechanics, shared ownership and shared mutability, and so on.
+mechanics, shared ownership and shared mutability, and more.
 
 Even so, it's not expected that anyone will absorb everything in this guide all at once.  Instead,
 it's intended to be a broad introduction to the topic.  Skim it on your first pass and take time on

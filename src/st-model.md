@@ -13,11 +13,12 @@ The exclusivity is key.
 are often called "immutable references".  However, I find it more accurate and consistent to call
 `&mut T` an exclusive reference and to call `&T` a shared reference.
 
-This guide doesn't yet cover shared mutability, more commonly called interior mutability, but you'll
-run into the concept sometime in your Rust journey.  The one thing I will mention here is that it
-enables mutation behind a `&T`, and thus "immutable reference" is a misleading name.
+This guide doesn't currently go into great depth on the topic of shared mutability (more commonly
+called interior mutability), but you'll run into the concept sometime in your Rust journey.  One
+thing I will highlight here is that it enables mutation behind a `&T`, and thus
+"immutable reference" is a misleading name.
 
-There are other situations where the important quality of a `&mut T` is the exclusivity that it
+There are also situations where the important quality of a `&mut T` is the exclusivity that it
 guarantees, and not the ability to mutate through it.  If you find yourself annoyed at getting
 borrow errors about `&mut T` when you performed no actual mutation, it may help to instead
 consider `&mut T` as a directive to the compiler to ensure *exclusive* access instead of
