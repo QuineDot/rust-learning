@@ -14,7 +14,7 @@ If you want, you can skip ahead to the [graphical layout.](#graphical-layout)
 The terminology around slices tends to be pretty loose.  I'll try to keep
 it more formal on this page, but when you read something about a "slice"
 elsewhere, keep in mind that it may be referring to any of `[T]`, `&[T]`,
-`&mut [T]`, or even other types of references to `[T]` (`Box<[T]>`, `Arc<[T]>`, ...).
+`&mut [T]`, or even other types of pointers to `[T]` (`Box<[T]>`, `Arc<[T]>`, ...).
 
 This is the case not just for casual material, but for
 [official documentation](https://doc.rust-lang.org/std/primitive.slice.html)
@@ -67,9 +67,9 @@ shared or exclusive slice.
 ## Other types
 
 A [`String`](https://doc.rust-lang.org/std/string/struct.String.html) is, under the hood,
-like a `Vec<u8>` which has additional guarantees -- namely, that the bytes are valid UTF8.
-A [`&str`](https://doc.rust-lang.org/std/primitive.str.html) is like a `&[u8]` that has the
-same guarantee.  You can index into a `String` with a range and get back a `&str`
+like a `Vec<u8>` which has additional guarantees -- namely, that the initialized bytes are
+valid UTF8. A [`&str`](https://doc.rust-lang.org/std/primitive.str.html) is like a `&[u8]`
+that has the same guarantee.  You can index into a `String` with a range and get back a `&str`
 (or `&mut str`). Like `[u8]`, a `str` is unsized, which is why you're almost always working
 with a `&str` or other pointer instead.
 
@@ -159,7 +159,7 @@ The layout of an array is the same as a slice, except the length is known.
 
 ```text
 +---+---+---+---+---+---+---+---+
-| Pointer       | Length        | &[T]
+| Pointer       | Length        | &[T] (or &str, ...)
 +---+---+---+---+---+---+---+---+
   |
   V

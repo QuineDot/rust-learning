@@ -22,35 +22,35 @@ some expression desugars to replacing all type (and `const`) parameters with inf
 variables, in combination with the fact that inference variables do not fall back to the
 defaults.
 
-What are inference variables?  For types, an inference variable is the same as the
-"wildcard type" `_`, which tells the compiler to infer the type for you.
-`_` can also be used for `const` parameters
-([since Rust 1.89](https://github.com/rust-lang/rust/pull/141610)).
+What are inference variables?  For type and `const` parameters, an inference variable is
+he same as the "wildcard" `_`, which tells the compiler to infer the type or `const` for
+you.
 
-(For most of this guide, we'll be focused on types;
-[there's a subsection about `const` parameters specifically later.](#const-parameters))
+(For most of this guide, we'll be focused on types.
+[There's a subsection about `const` parameters specifically later.](#const-parameters))
 
 Let's see some examples of compilation failures involving defaulted parameters:
 ```rust,compile_fail
 # use std::collections::HashSet;
 // `HashSet` will be our running example for a type with both required
-// (non-defaulted, non-lifetime) and defaulted parameters
+// (non-defaulted, non-lifetime) and defaulted parameters:
 // struct HashSet<Key, S = RandomState> { .. }
 
-// The `insert` is enough for the compiler to infer the `Key` parameter, but
-// not the `S` parameter
+// The following `insert` is enough for the compiler to infer the elided
+// `Key` parameter in the call to `HashSet::default`, but not the `S` parameter.
 let mut hs = HashSet::default();
 hs.insert(String::new());
 
 // This means the same thing: *all* type (and const) parameters became
-// inference variables
+// inference variables, including defaulted parameters.
 let mut hs = HashSet::<_, _>::default();
 hs.insert(String::new());
 ```
 This can be confusing because similar code just works:
 ```rust
 # use std::collections::HashSet;
-// This compiles, but the compiler can figure `Key` out on its own, so why?
+// This compiles, but the compiler can figure `Key` out on its own
+// (it was the `S` that it could not infer), so why?
 let mut hs = HashSet::<String>::default();
 hs.insert(String::new());
 
@@ -58,23 +58,24 @@ hs.insert(String::new());
 let mut hs = HashSet::<_>::default();
 hs.insert(String::new());
 
-// `new` doesn't have this problem, which may also be confusing
+// And `new` doesn't have the inference problem that `default` did,
+// which may also be confusing.
 let mut hs = HashSet::new();
 hs.insert(String::new());
 ```
-The errors can also arise when the type has defaults for of all the type (and `const`) parameters:
+The errors can also arise when the type has defaults for all of the type (and `const`) parameters:
 ```rust,compile_fail
 // This will be our running example for a type where all non-lifetime
-// parameters have defaults
+// parameters have defaults:
 pub enum Foo<T = String> {
     Bar(T),
     Baz,
 }
 
-// This fails because the elided parameter desugars to an inference variable
+// This fails because the elided parameter desugars to an inference variable.
 let foo = Foo::Baz;
 
-// So this means the exact same thing
+// So this means the exact same thing:
 let foo = Foo::<_>::Baz;
 ```
 And some of the workarounds may be even more confusing:
@@ -89,18 +90,17 @@ the workarounds solve the problem.
 
 ## The explanations in brief
 
-First let's tackle why just wrapping the type in `<>` worked for that last example.
+First let's tackle why just wrapping the type in `<>` worked for that last example:
 ```rust
 # pub enum Foo<T = String> { Bar(T), Baz }
 let foo = <Foo>::Baz;
 ```
-The leading `<Foo>::` notation is called a
-"[qualified path type](#more-about-qualified-path-expressions)".
-And the short answer to why it works is that, with respect to elided default
-parameters, types in `<>`s act the same as type ascription:
+The leading `<Foo>::` notation is called a "[qualified path type](#more-about-qualified-path-expressions)".
+And the short answer to why it works is that, with respect to elided defaulted parameters,
+types in `<>`s act the same as type ascription:
 ```rust
 # pub enum Foo<T = String> { Bar(T), Baz }
-// Also works
+// Also works:
 let foo: Foo = Foo::Baz;
 ```
 Type ascription uses default parameters in a way that's probably closer to your intuition.
@@ -111,7 +111,7 @@ within a turbofish, not just as a qualified path type.
 As for the difference here:
 ```rust
 # use std::collections::HashSet;
-// This fails if we change `HashSet::new()` to `HashSet::default()`
+// This fails if we change `HashSet::new()` to `HashSet::default()`.
 let mut hs = HashSet::new();
 hs.insert(String::new());
 ```
@@ -125,7 +125,7 @@ in a sense, this is a workaround on the side of the `HashSet` implementation!
 Finally, let's look at this workaround:
 ```rust
 # use std::collections::HashSet;
-// Remember, `HashSet::default()` fails
+// Remember, `HashSet::default()` fails.
 let mut hs = HashSet::<_>::default();
 hs.insert(String::new());
 ```
@@ -136,7 +136,7 @@ parameter is specified, it desugars to a qualified type path -- where default
 parameters act the same as they do in type ascription.
 ```rust,compile_fail
 # use std::collections::HashSet;
-// These are all the same and fail
+// These are all the same and fail:
 // let mut hs = HashSet::default();
 // let mut hs = HashSet::<>::default();
 // let mut hs = HashSet::<_, _>::default();
@@ -145,7 +145,7 @@ hs.insert(String::new());
 ```
 ```rust
 # use std::collections::HashSet;
-// These are the same and succeed.
+// These are the same and succeed:
 // let mut hs = HashSet::<_>::default();
 let mut hs = <HashSet<_>>::default();
 hs.insert(String::new());
@@ -161,7 +161,7 @@ By "type position", we mean contexts where the language expects a type specifica
 This includes variable type ascription, implementation headers, type parameter
 fields themselves, and qualified path types.
 
-In type position, you can only elide default parameters.  Elided default parameters are
+In type position, you can only elide defaulted parameters.  Elided defaulted parameters are
 replaced by their default types (or `const` values) specifically (i.e. not inference variables).
 
 Let's see some examples:
@@ -200,8 +200,8 @@ let e: Foo = Foo::Bar(0);
 ```
 
 The final example is the opposite situation from most of the examples we've seen:
-it's a case where you want inference to override defaults.  If you made the ascription
-`Foo<_>` it will compile (but a more trivial fix for this particular example is to
+it's a case where you want inference to override defaults.  If you change the ascription
+to `Foo<_>` it will compile (but a more trivial fix for this particular example is to
 just remove the redundant ascription).
 
 ## More about qualified path expressions
@@ -250,7 +250,7 @@ trait Trait<One, Two = String>: Sized {
 impl<T, U> Trait<T, U> for i32 {}
 impl<T, U> Trait<T, U> for f64 {}
 
-// Failing versions
+// Failing versions:
 //let _: (i32, (), _) = Trait::foo(0);
 //let _: (i32, (), _) = Trait::<_, _>::foo(0);
 let _: (i32, (), _) = <_ as Trait<_, _>>::foo(0);
@@ -264,7 +264,7 @@ let _: (i32, (), _) = <_ as Trait<_, _>>::foo(0);
 # }
 # impl<T, U> Trait<T, U> for i32 {}
 # impl<T, U> Trait<T, U> for f64 {}
-// Working versions
+// Working versions:
 let _: (i32, (), _) = Trait::<_>::foo(0);
 let _: (i32, (), _) = <_ as Trait<_>>::foo(0);
 //                    ^^^^^^^^^^^^^^^
@@ -283,14 +283,15 @@ For example:
 ```rust,ignore
 let _: i32 = Trait::name(0.0);
 
-// If `Trait` has a method called `name`, the above is
+// If `Trait` has a method called `name`, the above desugars to:
 let _: i32 = <_ as Trait>::name(0.0);
 
-// But if it does not, and `dyn Trait` has a method called `name`, the first line is
+// But if it does not, and `dyn Trait` has a method called `name`,
+// the first line instead desugars to:
 let _: i32 = <dyn Trait>::name(0.0)
 
 // And the following line is always referring to `dyn Trait`
-// (as traits aren't allowed in the `<>`)
+// (as traits aren't allowed in `<>` except after `as`).
 let _: i32 = <Trait>::name(0.0);
 ```
 
@@ -332,6 +333,7 @@ let _ = Two { t: (), u: Default::default() };
 // But this works
 let _ = Two::<_> { t: (), u: Default::default() };
 ```
+
 Qualified path types are not allowed in this postion, so not all of the
 workarounds we discussed for paths are applicable.
 ```rust,compile_fail
@@ -360,11 +362,11 @@ impl<const N: usize> Default for Pixel<N> {
 // Calling this will let Rust infer the `const` parameter is `3`
 fn drive_inference(_: Pixel<3>) {}
 
-// This has worked since before Rust 1.89
+// This has worked since before Rust 1.89.
 let pixel = Pixel::default();
 drive_inference(pixel);
 
-// These failed before Rust 1.89  because `_` was not allowed for
+// These failed before Rust 1.89 because `_` was not allowed for
 // const parameters, but they work today.
 let pixel = <Pixel<_>>::default();
 drive_inference(pixel);
@@ -386,12 +388,13 @@ Lifetime paramters can not be given defaults, and do not change any of the
 default parameter behavior we've discussed.
 
 I've tried to take care to use phrases like "specify one or more non-lifetime
-parameter" instead of phrase like "empty parameter list".  But just to make
+parameter" instead of phrases like "empty parameter list".  But just to make
 things more explicit: the inclusion or elision of lifetime parameters doesn't
 change how parameter defaults work.
 
 For example, the below are still cases of specifying no required parameters,
-and thus uses an inference variable (which then fails as ambiguous).
+and thus uses an inference variable for the type parameter (which then fails
+as ambiguous).
 ```rust,compile_fail
 pub enum Foo2<'a, T = String> {
     Bar(&'a T),
@@ -423,7 +426,7 @@ type parameters (especially since `_` for `const` was stabilized).
 Default type parameters work the same in implementation headers and
 function argument lists as they do in other
 "[type positions](#type-position-mechanics-in-more-detail)".  This
-may be surprising with compared to elided lifetime parameters.
+may be surprising when compared to elided lifetime parameters.
 
 In implementations and function argument lists, eliding a lifetime
 parameter introduces a new, independent generic lifetime parameter.
@@ -434,12 +437,12 @@ whether that type comes from inference or a default type.
 ```rust,compile_fail
 pub enum Foo<T = String> { Bar(T), Baz }
 
-// This is an implementation for `Foo<String>` only
+// This is an implementation for `Foo<String>` only:
 impl Foo {
     fn papers_please(&self) {}
 }
 
-// This is an implementation for all (`Sized`) `T`
+// This is an implementation for all (`Sized`) `T`:
 impl<T> Foo<T> {
     fn welcome(&self) {}
 }
@@ -459,10 +462,11 @@ day.  Lifetime *parameters* cannot have defaults.)
 
 ## A warning about extending structs with a defaulted parameter
 
-Part of the motivation of defaulted parameters is so that one can add
-a parameter to a type where it didn't exist before.  For example, as of
+Part of the motivation of having defaulted parameters in the language
+is so that one can add a parameter to a type where it didn't exist
+before without breaking all consumers of the type.  For example, as of
 this writing, [`Vec<T>` is really `Vec<T, Allocator>.`](https://doc.rust-lang.org/std/vec/struct.Vec.html)
-The `Allocator` type parameter did not always exist (and is currently
+But the `Allocator` type parameter did not always exist (and is currently
 only usable on unstable).
 
 By this point it's probably clear that more inference breakage than one
@@ -521,3 +525,4 @@ trait MyTrait {
     type Gat<T = String>;
 }
 ```
+
