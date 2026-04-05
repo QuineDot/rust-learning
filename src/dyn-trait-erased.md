@@ -98,8 +98,8 @@ pub mod erased {
         fn iter(&self) -> Box<dyn Iterator<Item = &Self::Item> + '_> {
             Box::new(useful::Iterable::iter(self))
         }
-        // By not using a default function body, we can avoid
-        // boxing up the iterator
+        // By not using a default function body just above,
+        // we can avoid boxing up the iterator.
         fn visit(&self, f: &mut dyn FnMut(&Self::Item)) {
             for item in <Self as useful::Iterable>::iter(self) {
                 f(item)
@@ -183,7 +183,7 @@ but isn't necessarily critical, so long as you avoid things like accidental
 infinite recursion.
 
 How well did we do on this front?
-[Let's take a look in the playground.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=31dbe5ae8a7a6b7677ed942962424e03)
+[Let's take a look in the playground.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=bee23c245ee60e4fa392921479a73105)
 
 Hmm, perhaps not as well as we hoped!  `<dyn erased::Iterable as useful::Iterable>::visit`
 avoids the boxing as designed, but `Box<dyn erased::Iterable>`'s `visit` still boxes the
@@ -191,7 +191,7 @@ iterator.
 
 Why is that?  It is because the implementation for the `Box` is supplied by the `useful`
 module, and that implementation uses the default body.  In order to avoid the boxing,
-[it would need to recurse to the underlying implementation instead.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=02ae6370cdd7f7b5b1586e0281e090d2)
+[it would need to recurse to the underlying implementation instead.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=f1e2e1f78dafc65a05c4c967b1d15f9f)
 That way, the call to `visit` will "drill down" until the implementation for
 `dyn erased::Iterable::visit`, which takes care to avoid the boxed iterator.  Or
 phrased another way, the recursive implementations "respects" any overrides of the
@@ -205,8 +205,6 @@ Or maybe it doesn't really matter enough to bother in practice for your use case
 
 ## Real world examples
 
-Perhaps the most popular crate to use this pattern is
-[the `erased-serde` crate.](https://crates.io/crates/erased-serde)
-
-Another use case is [working with `async`-esque traits,](https://smallcultfollowing.com/babysteps/blog/2021/10/15/dyn-async-traits-part-6/)
-which tends to involve a lot of type erasure and unnameable types.
+Perhaps the most popular crates to use this pattern are the [`erased-serde`](https://crates.io/crates/erased-serde)
+and [`async-trait`](https://docs.rs/async-trait/latest/async_trait/#explanation) crates. Working with `async`-esque
+traits in general [tends to involve a lot of type erasure and unnameable types.](https://smallcultfollowing.com/babysteps/blog/2021/10/15/dyn-async-traits-part-6/)

@@ -2,7 +2,7 @@
 
 ## What is `dyn Trait`?
 
-`dyn Trait` is a compiler-provided type which implements `Trait`.  Any `Sized` implementor
+`dyn Trait` is a compiler-provided type which implements `Trait`.  `Sized` implementors
 of `Trait` can be coerced to be a `dyn Trait`, erasing the original base type in the process.
 Different implementations of `Trait` may have different sizes, and as a result, `dyn Trait`
 has no statically known size.  That means it does not implement `Sized`, and we call such
@@ -30,7 +30,8 @@ implementations of `Trait`.
 You can also have objects such as `dyn Trait + Send + Sync`.  `Send` and `Sync` are
 [auto-traits,](https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits)
 and a trait object can include any number of these auto traits as additional bounds.
-Every distinct set of `Trait + AutoTraits` is a distinct type.
+Every distinct set of `Trait + AutoTraits` is a distinct type (but the order that they
+are named in does not matter).
 
 However, you can only have one *non*-auto trait in a trait object, which is also called
 the principal trait.  So this will not work:
@@ -93,7 +94,7 @@ fn bar<T: Trait + ?Sized>(t: &T) {
 You should consider using `+ ?Sized` to relax the implicit bound when your generics
 are only used behind indirections such as `&T` or `Box<T>`.  On the other hand,
 you may need to coerce the `T` to a `dyn Trait` yourself, which you cannot do if
-`T` is not `Sized`.  So it's not necessarily the correction choice every time!
+`T` is not `Sized`.  So it's not necessarily the correct choice every time!
 
 ### `dyn Trait` is neither a generic nor dynamically typed
 

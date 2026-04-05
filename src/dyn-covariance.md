@@ -58,13 +58,23 @@ fn foo<'l: 's, 's>(v: Cell<Box<Box<dyn Trait + 'l>>>) -> Cell<Box<Box<dyn Trait 
 Because this is an unsizing coercion and not a subtyping coercion, there
 may be situations where you must make the coercion explicitly, for example
 with a cast.
+```rust,compile_fail
+# trait Trait {}
+// This fails as the closure returns an `Option<&'a mut (dyn Trait + 'static)>`,
+// and the unsizing coercion cannot apply nested within `Option<&mut _>`.
+fn foo<'a>(arg: &'a mut Box<dyn Trait + 'static>) -> Option<&'a mut (dyn Trait + 'a)> {
+    true.then(move || arg.as_mut())
+}
+```
 ```rust
 # trait Trait {}
-// This fails without the `as _` cast.
+// Adding an explicit cast allows the example to compile.
 fn foo<'a>(arg: &'a mut Box<dyn Trait + 'static>) -> Option<&'a mut (dyn Trait + 'a)> {
     true.then(move || arg.as_mut() as _)
 }
 ```
+
+(Though arguably this particular example [is a bug](https://github.com/rust-lang/rust/issues/105699)).
 
 ### Why this is actually a critical feature
 
@@ -112,7 +122,7 @@ short-lived `'a`, and then coerce that to a `&'a mut (dyn Trait + 'a)`.
 The supertype coercion of going from `dyn Trait + 'a` to `dyn Trait + 'b`
 when `'a: 'b` *can* happen in deeply nested contexts, provided the trait
 object is still in a covariant context.  So unlike the `Cell` version
-above, this version compiles:
+above, this example compiles:
 ```rust
 # trait Trait {}
 fn foo<'l: 's, 's>(v: Vec<Box<Box<dyn Trait + 'l>>>) -> Vec<Box<Box<dyn Trait + 's>>> {

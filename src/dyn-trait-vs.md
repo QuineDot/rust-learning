@@ -27,12 +27,12 @@ APIT is, so far at least, mostly the same as a generic parameter:
 fn foo<D: Display>(d: D) { println!("{d}"); }
 ```
 
-The main difference is that generics allow
-- the function writer to refer to `D`
+The main difference is that generics
+- allow the function writer to refer to `D`
   - e.g. `D::to_string(&d)`
-- other utilizers to turbofish the function
+- allow function callers to turbofish the function
   - e.g. `let function_pointer = foo::<String>;`
-- is compatible with `impl use<..>` return types
+- are compatible with `impl use<..>` return types
   - whereas APIT is not:
   ```rust,compile_fail
   # use std::fmt::Display;
@@ -46,9 +46,9 @@ There may be more differences in the future, but for now at least,
 generics are the more flexible and thus superior form -- unless you
 have a burning hatred against the `<...>` syntax, anyway.
 
-At any rate, comparing `dyn Trait` against APIT is essentially the
-same as comparing `dyn Trait` against a function with a generic type
-parameter.
+Other than the above differences, comparing `dyn Trait` against APIT
+is essentially the same as comparing `dyn Trait` against a function
+with a generic type parameter.
 
 ### Tradeoffs between generic functions and `dyn Trait`
 
@@ -326,7 +326,7 @@ This clearly only applies when you have a fixed set of types that you
 expect to implement your trait.  The downside of using an `enum` is that
 it can involve a lot of boilerplate, since you're frequently having to check
 which variant you are instead of relying on dynamic dispatch to perform
-that function for you.
+that operation for you.
 
 The upside is avoiding practically all of the downsides of type erasure
 and the other alternatives such as opaque types.

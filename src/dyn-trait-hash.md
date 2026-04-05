@@ -124,8 +124,9 @@ impl Hash for dyn DynHash + '_ {
 }
 ```
 Now is a good time to point out a couple of things we're relying on:
-- [`Hasher`](https://doc.rust-lang.org/std/hash/trait.Hasher.html) *is* object safe
-    <br>If this wasn't the case, we couldn't take a `&mut dyn Hasher` in our `dyn_hash` method.
+- [`Hasher`](https://doc.rust-lang.org/std/hash/trait.Hasher.html) *is* object safe.
+
+    If this wasn't the case, we couldn't take a `&mut dyn Hasher` in our `dyn_hash` method.
 
 - The generic `H` in `Hash::hash<H: Hasher>` has an implicit `Sized` bound
     <br>If this wasn't the case, we couldn't coerce the `&mut H` to a `&mut dyn Hasher`
@@ -133,7 +134,7 @@ Now is a good time to point out a couple of things we're relying on:
     [this recursive definition](https://doc.rust-lang.org/std/hash/trait.Hasher.html#impl-Hasher-for-%26mut+H)
     means we could have coerced `&mut &mut H` to `&mut dyn Hasher` at the cost of some indirection.
 
-However, this does demonstrate that *relaxing* a `Sized` bound can be a breaking change!
+    However, this does demonstrate that *relaxing* a `Sized` bound can be a breaking change!
 
 
 Moving on, we still need to wire up this new functionality to our own trait.

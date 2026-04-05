@@ -96,7 +96,7 @@ There's an `Any: 'static` bound which applies to `dyn Any + '_`, so
 And due to the `Any` supertrait on `AsDynCompare`, the "always `'static`"
 property holds for `&dyn DynCompare` as well.  An upside of this is
 that we don't have to worry about being flexible with the `dyn` lifetime
-at all -- it is just always `'static`.
+at all -- it is always `'static`.
 
 The downside is that only base types that satisfy the `'static` bound
 can be supported, so there may be niche circumstances where you don't
@@ -328,7 +328,7 @@ There is more boilerplate, but arguably the method calls are more ergonomic:
 impl PartialEq<dyn Trait> for dyn Trait {
     fn eq(&self, other: &dyn Trait) -> bool {
         // (self as &dyn DynCompare) == (other as &dyn DynCompare)
-	self.as_dyn_compare() == other.as_dyn_compare()
+        self.as_dyn_compare() == other.as_dyn_compare()
     }
 }
 

@@ -79,7 +79,7 @@ Here we look at some simple examples of type erasing and downcasting concrete ty
 
 ### The basics
 
-Getting a `dyn Any` isn't any different than any other kind of type erasure:
+Getting a `dyn Any` works the same as it does for other traits:
 ```rust
 # use std::any::Any;
 let mut i = 0;
@@ -98,8 +98,8 @@ let _: &dyn Any = &borrow;
 On the upside, [`dyn Any` is *always* `dyn Any + 'static`,](dyn-elision-trait-bounds.md#the-static-case)
 which makes many trait object related borrow check errors impossible.
 
-Although `Any` is implemented for unsized types, and unsized types can
-have `TypeId`s too, the `Sized` restriction for type erasure still applies:
+Although `Any` is implemented for unsized types (i.e. unsized types have
+`TypeId`s too), the `Sized` restriction for type erasure still applies:
 ```rust,compile_fail
 # use std::any::Any;
 // fails because `str` is not `Sized`
@@ -204,7 +204,7 @@ impl Visitor {
     //
     // It would be sound to `panic` if the parameter was not
     // `T` even if we let the closures escape, but it would
-    // not be sound to use the unstable `downcast_ref_unchecked`
+    // not be sound to use the unstable `downcast_unchecked`
     // so long as we're letting the closure escape.
     pub fn register<T, F>(&mut self, mut callback: F) -> Option<Box<dyn FnMut(&dyn Any)>>
     where
@@ -266,7 +266,7 @@ by having a method in our trait that returns the `TypeId` of the implementing ty
 ```rust
 # use core::any::TypeId;
 pub trait Trait {
-    // Heads up: We'll need to revisit this definition in just a bit
+    // Heads up: We'll need to revisit this definition in just a bit!
     fn type_id(&self) -> TypeId
     where
         Self: 'static
@@ -307,12 +307,12 @@ of boilerplate.)
 However, there's a large soundness hole in this example.  Implementors of `Trait`
 can supply their own implementation of the `type_id` method!  They can override
 the default body and return a `TypeId` that is not the implementing type.  That
-makes our `unsafe` produce UB; since `type_id` isn't an `unsafe` method, our
+makes our `unsafe` produce UB.  And since `type_id` isn't an `unsafe` method, our
 implementation is to blame.
 
-We could make the method `unsafe`.  In this example, we will instead make it
-impossible to override the default body.  To do this, we need that method
-to be `final`.  Well, Rust doesn't have `final` yet.  However, we can
+We could make the method `unsafe` and tell the trait consumers "don't do that".  But in this
+example, we will instead make it impossible to override the default body.  To do this, we
+need that method to be `final`.  Well, Rust doesn't have `final` yet.  However, we can
 [*seal*](https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed)
 the method by giving it a parameter which can only be named within our module.
 
@@ -352,9 +352,11 @@ and its own custom downcasting implementation.
 ## The representation of `TypeId`
 
 `TypeId` is intentionally opaque and subject to change.  It was internally represented
-by a `u64` for quite some time; as of Rust 1.72
-[the representation is a `u128`.](https://github.com/rust-lang/rust/pull/109953)
-At some future time it could be [something more exotic.](https://github.com/rust-lang/rust/pull/95845)
+by a `u64` for quite some time; then in Rust 1.72
+[the representation changed to be a `u128`.](https://github.com/rust-lang/rust/pull/109953)
+In Rust 1.78 that was [changed to a tuple of `u64`s,](https://github.com/rust-lang/rust/pull/121358)
+and in Rust 1.90 [it became an array of pointers.](https://github.com/rust-lang/rust/pull/143696)
+At some future point it could become [something even more exotic.](https://github.com/rust-lang/rust/pull/95845)
 
 Long story short, you're not meant to rely on the exact representation of `TypeId`,
 only it's type comparing properties.
@@ -508,7 +510,7 @@ The PR resolved that disagreement in favor of the syntactic interpretation.
 
 The code example just above still compiles, so internally the types are either
 still subtypes of each other, or some other coercion is possible even though
-they are not subtypes of each other.  In either case, it is unintuitive that
+they are not subtypes of each other.  In either case, it may be unintuitive that
 they are nonetheless distinct types.
 
 ## Built-in `dyn` implementation precedence considerations
@@ -529,7 +531,8 @@ the entire point of the trait -- getting the `TypeId` of the *erased* type.
 In other words, for `dyn Any` ([and the `dyn` of any subtraits of `Any`](https://github.com/rust-lang/rust/issues/57893#issuecomment-2888905443))
 it is crucial that the built-in implementation continues to take precedence.
 
-And in fact, it even goes beyond that.  Consider our (and `Error`'s) built-in downcasting approach:
+And in fact, the issue even goes beyond that.  Consider our (and `std::error::Error`'s!)
+built-in downcasting approach:
 ```rust,ignore
 pub trait Trait {
     // SAFETY: This method must return the base type's `TypeId` to ensure
@@ -560,4 +563,4 @@ Or in other words, if `final` methods are never in the vtable,
 [making `Trait::type_id` a `final` method](https://github.com/rust-lang/rust/pull/153598)
 as an alternative to sealing the method [cannot work.](https://github.com/rust-lang/rust/pull/153696#issuecomment-4042092817)
 
-Where the feature goes is still an open question.
+How these issues impact the `final` feature before stabilization is still an open question.

@@ -1,7 +1,7 @@
 # Combining traits
 
-Rust has no support for directly combining multiple non-auto traits
-into one `dyn Trait1 + Trait2`:
+Rust has no support for directly combining multiple principal (non-auto)
+traits into one `dyn Trait1 + Trait2`:
 ```rust,compile_fail
 trait Foo { fn foo(&self) {} }
 trait Bar { fn bar(&self) {} }
@@ -62,7 +62,7 @@ section walks through how to supply the implementation yourself, as
 - the general pattern of a supertrait with a blanket implementation is common
 - having methods for upcasting can be more ergonomic than coercions
 
-But if compatibility or compatibility isn't a concern, you can skip the rest of this page.
+But if compatibility or ergonomics isn't a concern, you can skip the rest of this page.
 The language level supertrait upcasting is probably adequate for your needs.
 
 On to the manual implementation!  For a start, we could build upcasting directly into our traits like so:

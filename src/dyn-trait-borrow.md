@@ -32,7 +32,7 @@ some static value or similar, which is rarely what you want).
 However, sometimes you have a custom borrowing type which is *not*
 actually contained within your owning type:
 ```rust
-// We wish we could implement `Borrow<DataRef<'?>>`, but we can't
+// We wish we could implement `Borrow<DataRef<'?>>`, but we can't.
 pub struct Data {
     first: usize,
     others: Vec<usize>,
@@ -186,7 +186,7 @@ However, we haven't derived the traits that are semantically important
 to `Borrow` for our other types.  We technically could have in
 this case, because
 - our fields are in the same order as they are in the borrowed type
-- every field is present
+- every field is present in both types
 - every field has a `Borrow` relationship when comparing with the borrowed type's field
 - we understand how the `derive` works
 
@@ -221,6 +221,7 @@ And in fact, this is exactly the approach we want to take for
 ```rust
 # pub struct DataRef<'a> { first: usize, others: &'a [usize] }
 # pub trait Lend { fn lend(&self); }
+// (Note how we don't require the `dyn` lifetime to be the same.)
 impl std::cmp::PartialEq<dyn Lend + '_> for dyn Lend + '_ {
     fn eq(&self, other: &(dyn Lend + '_)) -> bool {
         self.lend() == other.lend()

@@ -84,7 +84,7 @@ trait AssocAndParams<T, U> { type Assoc1; type Assoc2; }
 
 // The trait's ordered type parameters must be in declaration order
 // (here, `String` then `usize`).  After that come the named associated
-// type parameters, which can be reordered arbitrary amongst themselves.
+// type parameters, which can be reordered arbitrarily amongst themselves.
 fn foo(d: Box<dyn AssocAndParams<String, usize, Assoc1 = i32, Assoc2 = u32>>)
 ->
     Box<dyn AssocAndParams<String, usize, Assoc2 = u32, Assoc1 = i32>>
@@ -127,7 +127,7 @@ a = &0_u64;
 // let _: <dyn Trait as Trait>::Foo = todo!();
 ```
 
-Although it produces is awarning, you can still *optionally* specify the
+Although it produces a warning, you can still *optionally* specify the
 associated type, even though it's not usable by the `dyn Trait` itself.
 Note also that this does result in incompatible types and limits the
 possible coercions:
@@ -176,8 +176,8 @@ impl<T: Default> Trait for Box<dyn Trait<Foo = T>> {
 ```
 
 The warning currently says "while the associated type can be specified, it cannot
-be used in any way," but this example shows that is not technically true.  I think
-this sort of usage was just not anticipated.
+be used", but this example shows that is not technically true.  I think this sort
+of usage was just not anticipated.
 
 The reason it's not an error to specify non-`dyn`-usable associated types in this
 manner is that there was a period where you could add `Self: Sized` bounds to
@@ -193,7 +193,7 @@ An unsizing coercion needs to happen behind a layer of indirection (such as a
 reference or in a `Box`) in order to accomodate the wide pointer to the erased
 type's vtable (and because moving unsized types is not supported).
 
-However, the unsizing coercion can only happen behind a *single* layer of
+However, the unsizing coercion can typically only happen behind a *single* layer of
 indirection.  For example, you can't coerce a `Vec<Box<T>>` to a `Vec<Box<dyn Trait>>`.
 Why not?  `Box<T>` and `Box<dyn Trait>` have different layouts!  The former
 is the size of one pointer, while the second is the size of two pointers.
@@ -291,7 +291,8 @@ let _: &dyn Display = &"hi";
 [which we explore later.](dyn-safety.md#the-sized-constraints)
 
 There is one broad exception to the `Sized` limitation: coercing between
-forms of `dyn Trait` itself, which we look at immediately below.
+forms of `dyn Trait` itself, which we look at in the subsections
+immediately below.
 
 ## Discarding auto traits
 
@@ -316,8 +317,9 @@ Although no change to the vtable is required, this coercion can still
 [As of Rust 1.84,](https://github.com/rust-lang/rust/pull/131857) you can also
 drop the principal trait to create something like a `dyn Send`, should you want
 to do that for some reason.  This could be implemented by changing the pointer,
-or it could be implemented by leaving the pointer alone; the only callable method
-after such a coercion has been performed is calling the destructor.
+or it could be implemented by leaving the pointer alone; the only method which
+can be dynamically dispatched after such a coercion has been performed is calling
+the destructor.
 
 ## The reflexive case
 
@@ -349,7 +351,7 @@ with dropping auto traits or the reflexive case).
 [You can also write your own "manual" supertrait upcasts](./dyn-trait-combining.md#manual-supertrait-upcasting)
 (which was more important before trait upcasting stabilized).
 
-## Object-safe traits only
+## `dyn` compatible traits only
 
 There are other restrictions on the *trait* which we have not discussed here,
 such as not (yet) supporting traits with generic associated types (GATs).

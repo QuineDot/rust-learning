@@ -64,7 +64,7 @@ fn foo<'a, 'b>(mr: MultiRef<'a, 'b>) {
 }
 ```
 
-In this case, the compiler computes some lifetime, let's call it `'c`,
+In this case, the compiler infers some lifetime, let's call it `'c`,
 such that `'a` and `'b` are both valid for the entirety of `'c`.
 
 That is, `'c` is contained in an intersection of `'a` and `'b`.

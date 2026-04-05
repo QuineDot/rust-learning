@@ -201,9 +201,10 @@ trait Trait {}
 impl Trait for dyn Trait + '_ {}
 ```
 
-And if you have a blanket implementation to implement `Trait` and `dyn Trait`
-happens to meet the bounds on the implementation, it will be ignored and the
-compiler defined implementation will still be used:
+Additionally, if you have a blanket implementation to implement `Trait`,
+and `dyn Trait` happens to meet the bounds on the implementation, your
+implementation will generally be ignored; instead the compiler-defined
+defined implementation for `dyn Trait` will still be used:
 ```rust
 # use std::any::type_name;
 #
@@ -223,7 +224,7 @@ dt.hi();
 <dyn Trait as Trait>::hi(dt);
 ```
 
-[This even applies with more complicated implementations,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=66a0de00d42d915134f206ee73291136)
+[This even applies with more complicated implementations,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=480659d8a8ed93615be8b7b988a09178)
 and applies to the supertrait implementations for `dyn Trait` as well.
 
 [We'll see that this can be useful later.](./dyn-trait-erased.md)  But
@@ -233,9 +234,10 @@ How those bugs are dealt with is yet to be determined; it's possible
 that certain blanket implementations will be disallowed, or that
 some traits will no longer be `dyn` compatible, or that the user-supplied
 implementation will take precendence instead of the compiler-supplied
-implementation.  (The *general* pattern, such as the simple example
-above, is almost surely too widespread to be deprecated.  And the
-compiler-supplied implementation [*must* take precedence for `dyn Any`](./dyn-any.md#built-in-dyn-implementation-precedence-considerations)
+implementation for some or most cases.  (The *general* pattern, such
+as the simple example above, is almost surely too widespread to be
+deprecated. And the compiler-supplied implementation
+[*must* take precedence for `dyn Any`](./dyn-any.md#built-in-dyn-implementation-precedence-considerations)
 in particular.)
 
 ## The implementation cannot be indirectly bypassed
@@ -280,7 +282,7 @@ fn foo(d: &dyn Trait) {
 
 Moreover, there is no syntax to call the inherent methods specifically
 like there is for normal `struct`s.
-[Even if you try to hide the trait,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=6f55d2ebb8b44349034fc4df120e152f)
+[Even if you try to hide the trait,](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=453af5108359352fcde7a4b0d3af9250)
 the inherent methods are unreachable, dead code.
 
 Apparently the idea is that the trait methods "are" the inherent methods of
@@ -305,7 +307,7 @@ fn bar(d: &dyn Trait) {
 ## A niche exception to `dyn Trait: Trait`
 
 Some bounds on traits aren't checked until you try to utilize the trait,
-even when the trait is considered object safe.  As a result, [it is
+even when the trait is considered `dyn` compatible.  As a result, [it is
 actually sometimes possible to create a `dyn Trait` that does not implement
 `Trait`!](https://github.com/rust-lang/rust/issues/88904)
 
@@ -343,6 +345,6 @@ fn example(v: Vec<String>) {
 ```
 
 With this particular example, [it's possible to provide an implementation such that
-`dyn Iterable` meets the bounds.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=7b897bcb453c6d8b7b8e3461f70db7a6)
+`dyn Iterable` meets the bounds.](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=727331529fbfd13261d7d50f030eca43)
 If that's not possible, you probably need to drop the bound or give up
 on the trait being `dyn` compatible.
