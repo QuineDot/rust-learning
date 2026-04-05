@@ -16,7 +16,7 @@ The only safe way to construct this to be self-referential is to take a `&'a mut
 #     // Like if you want this to point to the `owned` field
 #     borrowed: &'a str,
 # }
-# 
+#
 impl<'a> Snek<'a> {
     fn bite(&'a mut self) {
         self.borrowed = &self.owned;
