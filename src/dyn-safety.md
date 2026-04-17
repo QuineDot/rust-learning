@@ -1,4 +1,4 @@
-# `dyn` compatiability (object safety, `dyn` safety)
+# `dyn` compatibility (object safety, `dyn` safety)
 
 There exists traits for which you cannot create a `dyn Trait`:
 ```rust,compile_fail
