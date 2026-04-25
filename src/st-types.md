@@ -18,12 +18,12 @@ definition of "lifetimes" in Rust is surprisingly complicated and beyond the sco
 of this guide, but here are a few examples of `&str`s and their concrete types.
 
 ```rust
-// The exact lifetime of `'a` is determined at each call site.  We'll explore
-// what this means in more depth later.
+// The exact lifetime `'a` is determined at each call site.  We'll explore what
+// this means in more depth later.
 //
-// The lifetime of `b` works the same, we just didn't give it a name.
+// The lifetime in the type of `b` works the same, we just didn't give it a name.
 fn example<'a>(a: &'a str, b: &str) {
-    // Literal strings are `&'static str`
+    // Literal strings are `&'static str`.
     let s = "literal";
 
     // The lifetime of local borrows are determined by compiler analysis
