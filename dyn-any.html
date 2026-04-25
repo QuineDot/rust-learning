@@ -1,0 +1,738 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn Any - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="more-about-dyn-any"><a class="header" href="#more-about-dyn-any">More about <code>dyn Any</code></a></h1>
+<p>We’ve taken a lot of care to emphasize that <code>dyn Trait</code> isn’t
+a supertype nor a form of dynamic typing, but
+<a href="dyn-trait-eq.html#downcasting-with-dyn-any-to-emulate-dynamic-typing">in one of the examples</a>
+we saw that <code>dyn Any</code> <em>can</em> “downcast” back to the erased
+base type.  Or <a href="https://doc.rust-lang.org/std/any/trait.Any.html">to quote the official documentation,</a>
+<code>Any</code> is</p>
+<blockquote>
+<p>A trait to emulate dynamic typing.</p>
+</blockquote>
+<p>Here we take a closer look at <code>dyn Any</code> specifically.</p>
+<h2 id="the-general-idea"><a class="header" href="#the-general-idea">The general idea</a></h2>
+<p>The <code>Any</code> trait is implemented for all types which satisfy a <code>'static</code> bound.
+It supplies a method <code>type_id</code>, which returns
+<a href="https://doc.rust-lang.org/std/any/struct.TypeId.html">an opaque but unique identifier</a>
+of the implementing type.  We also have
+<a href="https://doc.rust-lang.org/std/any/struct.TypeId.html#method.of"><code>TypeId::of::&lt;T&gt;</code>,</a>
+which lets us look up the <code>TypeId</code> of any <code>'static</code> type.</p>
+<p>Together, this allows fallible downcasting by doing <a href="https://doc.rust-lang.org/src/core/any.rs.html">things along these lines:</a></p>
+<pre><code class="language-rust ignore">    pub fn downcast_ref&lt;T: Any&gt;(&amp;self) -&gt; Option&lt;&amp;T&gt; {
+        if self.is::&lt;T&gt;() {
+            // SAFETY: just checked whether we are pointing to the correct type, and we can rely on
+            // that check for memory safety because we have implemented Any for all types; no other
+            // impls can exist as they would conflict with our impl.
+            unsafe { Some(self.downcast_ref_unchecked()) }
+        } else {
+            None
+        }
+    }</code></pre>
+<p>And <a href="https://doc.rust-lang.org/std/any/trait.Any.html#method.is"><code>is</code></a> simply compares
+<code>TypeId::of::&lt;T&gt;()</code> to <code>self.type_id()</code>.</p>
+<p>Details of specific downcasts aside, that’s pretty much it!  All that was
+needed is the global identifier (<code>TypeId</code>).  The standard library provides
+the various downcasting methods in order to encapsulate the required
+<code>unsafe</code>ty.</p>
+<p><a href="dyn-trait-eq.html#downcasting-with-dyn-any-to-emulate-dynamic-typing">As a reminder from before,</a>
+the vtable pointers themselves are not suitable to use as a global identifier
+of erased types.  The same trait can have multiple vtables due to codegen
+units and linker implementations, and different traits can have the same
+vtable due to deduplication optimizations.</p>
+<p><a href="https://github.com/rust-lang/rust/issues/106447">Where exactly the language goes with respect to comparing vtable pointers
+is an open question.</a>  It’s
+not unimaginable that all vtables will gain some lifetime-erased version of
+<code>TypeId</code>, but <a href="#why-static">related to some discussion below,</a> this may not
+be as straightforward as it may sound.</p>
+<h2 id="downcasting-methods-are-not-trait-methods"><a class="header" href="#downcasting-methods-are-not-trait-methods">Downcasting methods are not trait methods</a></h2>
+<p>Note that the <em>only</em> method available in the <code>Any</code> trait is <code>type_id</code>.
+<a href="https://doc.rust-lang.org/std/any/trait.Any.html#implementations">All of the downcasting methods</a>
+are implemented on the erased <code>dyn Any</code> directly, or on <code>Box&lt;dyn Any&gt;</code>, or
+on <code>dyn Any + Send</code>, etc.  Downcasting doesn’t generally make sense for a
+non-erased base type – you already know what it is!</p>
+<p>Another good reason for this is that
+<a href="https://doc.rust-lang.org/std/any/index.html#smart-pointers-and-dyn-any">types like <code>Box&lt;dyn Any&gt;</code> implement <code>Any</code>,</a>
+making easy to accidentally call the <code>Box&lt;dyn Any&gt;</code> implementation instead of
+the <code>dyn Any</code> implementation in the case of <code>type_id</code>.  It would be much more
+fraught if <code>downcast_ref</code> worked like this, for example.</p>
+<p>However, this does mean that having <code>Any</code> as a supertrait does not allow
+downcasting for your own <code>dyn Trait</code>s.  Instead you have to first upcast
+to <code>dyn Any</code>, and then downcast, <a href="./dyn-trait-eq.html#comparison-with-manual-supertrait-upcasting">as we’ve seen before.</a></p>
+<p>But note that a supertrait <code>Any</code> bound is not the only solution for custom downcasting!
+<a href="#custom-downcasting">We explore another approach below.</a></p>
+<h2 id="some-brief-examples"><a class="header" href="#some-brief-examples">Some brief examples</a></h2>
+<p>Here we look at some simple examples of type erasing and downcasting concrete types directly.</p>
+<h3 id="the-basics"><a class="header" href="#the-basics">The basics</a></h3>
+<p>Getting a <code>dyn Any</code> works the same as it does for other traits:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span>let mut i = 0;
+let rf: &amp;dyn Any = &amp;();
+let mt: &amp;mut dyn Any = &amp;mut i;
+let bx: Box&lt;dyn Any&gt; = Box::new(String::new());
+<span class="boring">}</span></code></pre>
+<p>You have to keep in mind the <code>'static</code> requirement though:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span>let local = ();
+let borrow = &amp;local;
+// fails because `borrow` is not `'static`
+let _: &amp;dyn Any = &amp;borrow;
+<span class="boring">}</span></code></pre>
+<p>On the upside, <a href="dyn-elision-trait-bounds.html#the-static-case"><code>dyn Any</code> is <em>always</em> <code>dyn Any + 'static</code>,</a>
+which makes many trait object related borrow check errors impossible.</p>
+<p>Although <code>Any</code> is implemented for unsized types (i.e. unsized types have
+<code>TypeId</code>s too), the <code>Sized</code> restriction for type erasure still applies:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span>// fails because `str` is not `Sized`
+let _: &amp;dyn Any = "";
+<span class="boring">}</span></code></pre>
+<p>Fallible downcasting is pretty straightforward as well.  For references
+the return is an <code>Option</code>:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">let mut i = 0;
+</span><span class="boring">let rf: &amp;dyn Any = &amp;();
+</span><span class="boring">let mt: &amp;mut dyn Any = &amp;mut i;
+</span>assert_eq!( rf.downcast_ref::&lt;()&gt;(), Some(&amp;()) );
+assert_eq!( rf.downcast_ref::&lt;String&gt;(), None );
+
+assert!( mt.downcast_mut::&lt;i32&gt;().is_some() );
+assert_eq!( mt.downcast_mut::&lt;String&gt;(), None );
+<span class="boring">}</span></code></pre>
+<p>For <code>Box</code>es, the return type is a <code>Result</code> so that the you can keep
+ownership of the <code>Box&lt;dyn Any&gt;</code> if the downcast is not applicable.
+The <code>Ok</code> variant is a <code>Box&lt;T&gt;</code> so that you can choose whether it’s
+appropriate to unbox the type or not.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">let bx: Box&lt;dyn Any&gt; = Box::new(String::new());
+</span>if let Err(bx) = bx.downcast::&lt;i32&gt;() {
+    println!("Hmm, not an `i32`.");
+    if let Ok(bx) = bx.downcast::&lt;String&gt;() {
+        let s: String = *bx;
+        println!("Yep, it was a `String`.");
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>That’s it for the basics!</p>
+<h3 id="the-typemap-pattern"><a class="header" href="#the-typemap-pattern">The <code>TypeMap</code> pattern</a></h3>
+<p>For an example with a more practical bent, let’s say you wanted to store a distinct
+value for each distinct type you may encounter, for some reason.  Maybe you’re
+storing callbacks for types which are likewise type erased, say, and the callback
+for a <code>Dog</code> would be different than that for a <code>Cat</code>, and you might not even have
+a callback for the <code>Mouse</code>.</p>
+<p>One way to do this would be to have a data structure that maps a <code>TypeId</code> to the
+values.  A “type map”, if you will:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">use std::any::TypeId;
+</span><span class="boring">use std::collections::HashMap;
+</span>pub struct TypeMap&lt;V&gt; {
+    map: HashMap&lt;TypeId, V&gt;,
+}
+
+impl&lt;V&gt; TypeMap&lt;V&gt; {
+    pub fn insert&lt;T: Any&gt;(&amp;mut self, value: V) -&gt; Option&lt;V&gt; {
+        let id = TypeId::of::&lt;T&gt;();
+        self.map.insert(id, value)
+    }
+    pub fn get_mut&lt;T: Any&gt;(&amp;mut self) -&gt; Option&lt;&amp;mut V&gt; {
+        self.get_mut_of(&amp;TypeId::of::&lt;T&gt;())
+    }
+    pub fn get_mut_of(&amp;mut self, id: &amp;TypeId) -&gt; Option&lt;&amp;mut V&gt; {
+        self.map.get_mut(id)
+    }
+    // ...
+}
+<span class="boring">}</span></code></pre>
+<p>This could be used for the callback idea:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::Any;
+</span><span class="boring">use std::any::TypeId;
+</span><span class="boring">use std::collections::HashMap;
+</span><span class="boring">pub struct TypeMap&lt;V&gt; {
+</span><span class="boring">    map: HashMap&lt;TypeId, V&gt;,
+</span><span class="boring">}
+</span><span class="boring">impl&lt;V&gt; TypeMap&lt;V&gt; {
+</span><span class="boring">    pub fn insert&lt;T: Any&gt;(&amp;mut self, value: V) -&gt; Option&lt;V&gt; {
+</span><span class="boring">        let id = TypeId::of::&lt;T&gt;();
+</span><span class="boring">        self.map.insert(id, value)
+</span><span class="boring">    }
+</span><span class="boring">    pub fn get_mut&lt;T: Any&gt;(&amp;mut self) -&gt; Option&lt;&amp;mut V&gt; {
+</span><span class="boring">        self.get_mut_of(&amp;TypeId::of::&lt;T&gt;())
+</span><span class="boring">    }
+</span><span class="boring">    pub fn get_mut_of(&amp;mut self, id: &amp;TypeId) -&gt; Option&lt;&amp;mut V&gt; {
+</span><span class="boring">        self.map.get_mut(id)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span>pub struct Visitor {
+    map: TypeMap&lt;Box&lt;dyn FnMut(&amp;dyn Any)&gt;&gt;,
+}
+
+impl Visitor {
+    // Because we return closures we have previously created,
+    // we should take care to not *assume* that the parameter
+    // in the callback is of the correct type.  If we never
+    // let our closures escape to the outside world, we could
+    // safely assume that the parameter was, in fact, `T`.
+    //
+    // It would be sound to `panic` if the parameter was not
+    // `T` even if we let the closures escape, but it would
+    // not be sound to use the unstable `downcast_unchecked`
+    // so long as we're letting the closure escape.
+    pub fn register&lt;T, F&gt;(&amp;mut self, mut callback: F) -&gt; Option&lt;Box&lt;dyn FnMut(&amp;dyn Any)&gt;&gt;
+    where
+        T: Any,
+        F: 'static + FnMut(&amp;T),
+    {
+        let callback = Box::new(move |any: &amp;dyn Any| {
+            if let Some(t) = any.downcast_ref::&lt;T&gt;() {
+                callback(t);
+            }
+        });
+
+        self.map.insert::&lt;T&gt;(callback)
+    }
+
+    pub fn get_callback&lt;T: Any&gt;(&amp;mut self) -&gt; Option&lt;impl FnMut(&amp;T) + '_&gt; {
+        self.map
+            .get_mut::&lt;T&gt;()
+            .map(|f| {
+                |t: &amp;T| f(t)
+            })
+    }
+
+    pub fn visit&lt;T: Any&gt;(&amp;mut self, value: &amp;T) -&gt; bool {
+        if let Some(mut callback) = self.get_callback::&lt;T&gt;() {
+            callback(value);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn visit_erased(&amp;mut self, value: &amp;dyn Any) -&gt; bool {
+        if let Some(callback) = self.map.get_mut_of(&amp;value.type_id()) {
+            callback(value);
+            true
+        } else {
+            false
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>Above we have also type erased our callback signatures, since we needed
+a single type for our values.  This is somewhat the data structure version
+of <a href="./dyn-trait-erased.html">erasing a trait.</a></p>
+<p>For whatever reason you might want to map by types, this is
+<a href="https://lib.rs/keywords/typemap">an existing pattern in the ecosystem.</a></p>
+<h3 id="custom-downcasting"><a class="header" href="#custom-downcasting">Custom downcasting</a></h3>
+<p>In this example, we explore how you can add (emulated) downcasting to your own
+traits, without an <code>Any</code> supertrait bound and without a <code>'static</code> bound on your
+entire <em>trait,</em> either.  The implementation does still depend on the <code>TypeId</code>,
+so the actual downcasting is still limited to types which satisfy a <code>'static</code> bound.</p>
+<p>The approach is to make implementing <a href="#the-general-idea">the general idea</a> possible
+by having a method in our trait that returns the <code>TypeId</code> of the implementing type.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::any::TypeId;
+</span>pub trait Trait {
+    // Heads up: We'll need to revisit this definition in just a bit!
+    fn type_id(&amp;self) -&gt; TypeId
+    where
+        Self: 'static
+    {
+        TypeId::of::&lt;Self&gt;()
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>Recall that the compiler’s implementation of <code>Trait for dyn Trait</code> will implicitly
+downcast the receiver and call this method.  Therefore, we now have a way to get
+the <code>TypeId</code> of the base type out of <code>dyn Trait</code>.</p>
+<p>Then we can implement our own downcast methods:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::any::TypeId;
+</span><span class="boring">pub trait Trait { fn type_id(&amp;self) -&gt; TypeId where Self: 'static { TypeId::of::&lt;Self&gt;() } }
+</span>// n.b. this is `dyn Trait + 'static` :-)
+impl dyn Trait {
+    pub fn is&lt;T: 'static&gt;(&amp;self) -&gt; bool {
+        TypeId::of::&lt;T&gt;() == self.type_id()
+    }
+
+    pub fn downcast&lt;T: 'static&gt;(self: Box&lt;Self&gt;) -&gt; Result&lt;Box&lt;T&gt;, Box&lt;Self&gt;&gt; {
+        if (*self).is::&lt;T&gt;() {
+            let ptr = Box::into_raw(self) as *mut T;
+            // SAFETY: Keep reading :-)
+            unsafe { Ok(Box::from_raw(ptr)) }
+        } else {
+            Err(self)
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>…and similarly for <code>downcast_ref</code>, <code>downcast_mut</code>, and more implementations for
+<code>dyn Trait + Send</code>, <code>dyn Trait + Send + Sync</code>, and so on.  (Yes, it can be a lot
+of boilerplate.)</p>
+<p>However, there’s a large soundness hole in this example.  Implementors of <code>Trait</code>
+can supply their own implementation of the <code>type_id</code> method!  They can override
+the default body and return a <code>TypeId</code> that is not the implementing type.  That
+makes our <code>unsafe</code> produce UB.  And since <code>type_id</code> isn’t an <code>unsafe</code> method, our
+implementation is to blame.</p>
+<p>We could make the method <code>unsafe</code> and tell the trait consumers “don’t do that”.  But in this
+example, we will instead make it impossible to override the default body.  To do this, we
+need that method to be <code>final</code>.  Well, Rust doesn’t have <code>final</code> yet.  However, we can
+<a href="https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed"><em>seal</em></a>
+the method by giving it a parameter which can only be named within our module.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// A private module (no `pub`)
+mod private {
+    // Containing a `pub` type (to avoid errors on our public trait method)
+    pub struct Seal;
+}
+<span class="boring">}</span></code></pre>
+<pre><code class="language-diff"> pub trait Trait {
+-    fn type_id(&amp;self) -&gt; TypeId
++    #[doc(hidden)]
++    fn type_id(&amp;self, _: private::Seal) {
+     where
+         Self: 'static
+     {
+         TypeId::of::&lt;Self&gt;()
+     }
+ }
+
+ impl dyn Trait {
+     pub fn is&lt;T: 'static&gt;(&amp;self) -&gt; bool {
+-        TypeId::of::&lt;T&gt;() == self.type_id()
++        TypeId::of::&lt;T&gt;() == self.type_id(private::Seal)
+     }
+</code></pre>
+<p>Now if an implementor tries to write out the signature of the <code>type_id</code> method,
+they’ll get a privacy error.</p>
+<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=6df13500be32478b8dbed5e11cf29e3a">Here’s a playground with a couple more methods.</a>
+This example is based on <a href="https://doc.rust-lang.org/std/error/trait.Error.html"><code>std::error::Error</code></a>
+and its own custom downcasting implementation.</p>
+<h2 id="the-representation-of-typeid"><a class="header" href="#the-representation-of-typeid">The representation of <code>TypeId</code></a></h2>
+<p><code>TypeId</code> is intentionally opaque and subject to change.  It was internally represented
+by a <code>u64</code> for quite some time; then in Rust 1.72
+<a href="https://github.com/rust-lang/rust/pull/109953">the representation changed to be a <code>u128</code>.</a>
+In Rust 1.78 that was <a href="https://github.com/rust-lang/rust/pull/121358">changed to a tuple of <code>u64</code>s,</a>
+and in Rust 1.90 <a href="https://github.com/rust-lang/rust/pull/143696">it became an array of pointers.</a>
+At some future point it could become <a href="https://github.com/rust-lang/rust/pull/95845">something even more exotic.</a></p>
+<p>Long story short, you’re not meant to rely on the exact representation of <code>TypeId</code>,
+only it’s type comparing properties.</p>
+<h2 id="why-static"><a class="header" href="#why-static">Why <code>'static</code>?</a></h2>
+<p>The <code>Any</code> trait is implemented for all types which satisfy a <code>'static</code> bound,
+but no other types; in fact, it has a <code>'static</code> bound and thus <em>cannot</em> be implemented
+for types that do not meet a <code>'static</code> bound.  This means that emulating dynamic
+typing with <code>Any</code> cannot be done for borrowing types (except those that borrow for
+<code>'static</code>), for example.</p>
+<p>Why such a harsh restriction?  In short, lifetimes are erased before runtime, types
+with different lifetimes would have to have the same <code>TypeId</code> identifier, and thus
+downcasting based on the <code>TypeId</code> would ignore lifetimes and be <em>wildly unsound</em>.
+Lifetimes are a part of types and certain relationships must be preserved for
+soundness, but as the lifetimes have been erased before runtime, it’s not possible
+to preserve the relationships dynamically.</p>
+<p>Thus there is just no sound way to use <code>TypeId</code> or any similar lifetime-unaware
+identifier to perform non-<code>'static</code> downcasts directly.</p>
+<p><a href="https://github.com/rust-lang/rfcs/pull/1849">There is more information in this RFC PR,</a>
+for the curious.  Note that the PR was accepted but then later removed, and was never
+about non-<code>'static</code> downcasting; it was about a non-<code>'static</code> <code>type_id</code> method.  The
+idea was to get a “type” identifier that ignored lifetimes.</p>
+<p>It was withdrawn in large part because if such a thing existed, <a href="https://internals.rust-lang.org/t/pre-rfc-non-footgun-non-static-typeid/17079/10">the chances of it
+being abused in some wildly unsound way are about 100%.</a></p>
+<p>An alternative (as presented in that thread) is to have some way to dynamically check
+if two types (which are perhaps generic) are equal without imposing a <code>'static</code> bound.
+The check could only be meaningful for types that were “inherently <code>'static</code>”, that is,
+types that do not involve any lifetime parameters at all.  That would be possible
+without actually exposing a non-<code>'static</code> <code>TypeId</code> or otherwise enabling downcasting.</p>
+<p>The tradeoff results in pretty unintuitive behavior: <code>&amp;'static str</code> cannot be
+compared to <code>&amp;'static str</code> with this approach, because there <em>is</em> a lifetime parameter
+involved with <code>&amp;str</code>!</p>
+<p>Another alternative is to provide some sort of “type lambda” which is itself <code>'static</code>,
+but can soundly map erased lifetimes back to their proper position.  <a href="https://github.com/sagebind/castaway/pull/6#issuecomment-1150952050">A sketch is
+provided here,</a>
+but an in-depth exploration is out of scope for this guide.</p>
+<h2 id="higher-ranked-type-considerations"><a class="header" href="#higher-ranked-type-considerations">Higher-ranked type considerations</a></h2>
+<p>Let’s take a minute to talk about types that <em>do</em> have a sub and supertype
+relationship in Rust!  Types which are <a href="./dyn-hr.html">higher-ranked</a> have this
+relationship.  For example:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// More explicitly, this is a `for&lt;'any&gt; fn(&amp;'any str)` function pointer.
+// The type is higher-ranked over the lifetime.
+let fp: fn(&amp;str) = |_| {};
+
+// This type is a supertype of the higher-ranked type.
+let fp: fn(&amp;'static str) = fp;
+
+// This errors because you can't soundly downcast the types.
+// let fp: fn(&amp;str) = fp;
+<span class="boring">}</span></code></pre>
+<p>And as we mentioned before, this sub/supertype relationship applies to <code>dyn Trait</code>
+types as well:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Look&lt;'s&gt; {}
+type HR = dyn for&lt;'any&gt; Look&lt;'any&gt; + 'static;
+type ST = dyn Look&lt;'static&gt; + 'static;
+<span class="boring">}</span></code></pre>
+<p>Here, <code>HR</code> is a <em>subtype</em> of <code>ST</code>, but not <em>the same type</em>.  However, they both satisfy a <code>'static</code> bound:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Look&lt;'s&gt; {}
+</span><span class="boring">type HR = dyn for&lt;'any&gt; Look&lt;'any&gt; + 'static;
+</span><span class="boring">type ST = dyn Look&lt;'static&gt; + 'static;
+</span>fn assert_static&lt;T: ?Sized + 'static&gt;() {}
+
+assert_static::&lt;HR&gt;();
+assert_static::&lt;ST&gt;();
+<span class="boring">}</span></code></pre>
+<p>As <code>'static</code> types, they have <code>TypeId</code>s.  As distinct types, their
+<code>TypeId</code>s are different, even though one is a subtype of the other.</p>
+<p>And this in turn means that you can’t stop thinking about sub-and-super types
+by simply applying a <code>'static</code> bound.  If you need to “disable” sub/super type
+coercions in a generic context for soundness, you must make that context invariant
+or take other steps to avoid a soundness hole, even if you have a <code>'static</code> bound.</p>
+<p><a href="https://github.com/rust-lang/rust/issues/85863">See this issue</a> for a real-life
+example of such a soundness hole, and
+<a href="https://github.com/rust-lang/rust/issues/85863#issuecomment-872536139">this comment in particular</a>
+exploring the sub/super type relationships of higher-ranked function pointers.</p>
+<p>The fact that the sub-and-super types are still distinct types means that it’s
+also possible for them to have differing implementations of a trait other than
+<code>Any</code>, as well:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Look&lt;'s&gt; {}
+</span><span class="boring">type HR = dyn for&lt;'any&gt; Look&lt;'any&gt; + 'static;
+</span><span class="boring">type ST = dyn Look&lt;'static&gt; + 'static;
+</span><span class="boring">
+</span><span class="boring">trait Trait {
+</span><span class="boring">    fn say(&amp;self);
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Trait for HR {
+    fn say(&amp;self) {
+        println!("Meow");
+    }
+}
+
+impl Trait for ST {
+    fn say(&amp;self) {
+        println!("Woof");
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>While this does currently give a future compatibility warning,
+<a href="https://github.com/rust-lang/rust/issues/56105#issuecomment-633038069">the plan is to keep accepting this pattern.</a></p>
+<h3 id="history-around-const-typeidof"><a class="header" href="#history-around-const-typeidof">History around <code>const</code> <code>TypeId::of</code></a></h3>
+<p><a href="https://github.com/rust-lang/rust/pull/144133">As of Rust 1.91, <code>TypeId::of</code> is a <code>const fn</code>.</a>
+(<code>Any::type_id</code> is still not <code>const</code> as trait methods in general cannot yet be <code>const</code>.)</p>
+<p>The stabilization was a long time coming due to how different parts of the
+compiler considered type equality.  When different parts of the compiler
+disagreed, the results could be unsound in a <code>const</code> context.</p>
+<p>To briefly describe the historical disagreement, consider the following example.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let one: for&lt;'a    &gt; fn(&amp;'a str, &amp;'a str) = |_, _| {};
+let two: for&lt;'a, 'b&gt; fn(&amp;'a str, &amp;'b str) = |_, _| {};
+let mut fp = one;
+fp = two;
+let mut fp = two;
+fp = one;
+<span class="boring">}</span></code></pre>
+<p>Due to covariance, it’s always possible to call either of the functions from
+the other.  They can be considered subtypes of one another.  However, similar
+to what we explored above, they are distinct types with distinct <code>TypeId</code>s.</p>
+<p>Before <a href="https://github.com/rust-lang/rust/pull/118247">PR 118247,</a> parts of
+the compiler would consider the two types to be subtypes of each other, and
+consider types which are subtypes of each other to be <em>equal</em> types – let’s
+call them <em>semantically equal</em>.  However, <a href="https://github.com/rust-lang/rust/issues/97156">this was unsound</a>
+as <code>TypeId</code> is based on <em>syntactic equality</em>.</p>
+<p>The PR resolved that disagreement in favor of the syntactic interpretation.</p>
+<p>The code example just above still compiles, so internally the types are either
+still subtypes of each other, or some other coercion is possible even though
+they are not subtypes of each other.  In either case, it may be unintuitive that
+they are nonetheless distinct types.</p>
+<h2 id="built-in-dyn-implementation-precedence-considerations"><a class="header" href="#built-in-dyn-implementation-precedence-considerations">Built-in <code>dyn</code> implementation precedence considerations</a></h2>
+<p><a href="./dyn-trait-impls.html#the-implementation-cannot-be-directly-overrode">We noted before</a>
+that even if you have a blanket implementation which should cover <code>dyn Trait</code>, the
+built-in implementation of <code>Trait</code> for <code>dyn Trait</code> usually takes precedence.  And we
+<a href="https://github.com/rust-lang/rust/issues/57893">linked to this issue</a> about how this
+is currently sometimes unsound.</p>
+<p>Based on the conversation around that issue, the language developers would prefer to
+give precedence to the user implementation in most cases.  However, this would break
+the <code>Any</code> trait!  <a href="https://doc.rust-lang.org/std/any/trait.Any.html#implementors">Its implementation</a>
+is a blanket implementation which overlaps with the built-in <code>dyn Any</code> implementation.
+But returning the <code>TypeId</code> for <code>dyn Any</code> from <code>&lt;dyn Any as Any&gt;::type_id</code> would negate
+the entire point of the trait – getting the <code>TypeId</code> of the <em>erased</em> type.</p>
+<p>In other words, for <code>dyn Any</code> (<a href="https://github.com/rust-lang/rust/issues/57893#issuecomment-2888905443">and the <code>dyn</code> of any subtraits of <code>Any</code></a>)
+it is crucial that the built-in implementation continues to take precedence.</p>
+<p>And in fact, the issue even goes beyond that.  Consider our (and <code>std::error::Error</code>’s!)
+built-in downcasting approach:</p>
+<pre><code class="language-rust ignore">pub trait Trait {
+    // SAFETY: This method must return the base type's `TypeId` to ensure
+    // soundness in the `is` and downcasting methods of this module.  The
+    // method is therefore sealed so that the default body below is the
+    // only possible body.
+    #[doc(hidden)]
+    fn type_id(&amp;self, _: private::Seal) -&gt; TypeId
+    where
+        Self: 'static,
+    {
+        TypeId::of::&lt;Self&gt;()
+    }
+}</code></pre>
+<p>If there’s any situation where the built-in implementation does not take
+precedence, <code>&lt;dyn Trait&gt;::type_id</code> will return the <code>TypeId</code> for <code>dyn Trait</code>
+and not the erased type – <em>even though there is no supertrait relationship here.</em></p>
+<p>There is such a situation under active development as of this writing –
+<a href="https://github.com/rust-lang/rust/issues/131179"><code>final</code> methods.</a>  One of the
+possible implementations for that feature is that <code>final</code> methods could be excluded
+from the vtable of the trait.  But in effect, that would mean that the default
+method body takes precedence over the built-in vtable based implementation.</p>
+<p>Or in other words, if <code>final</code> methods are never in the vtable,
+<a href="https://github.com/rust-lang/rust/pull/153598">making <code>Trait::type_id</code> a <code>final</code> method</a>
+as an alternative to sealing the method <a href="https://github.com/rust-lang/rust/pull/153696#issuecomment-4042092817">cannot work.</a></p>
+<p>How these issues impact the <code>final</code> feature before stabilization is still an open question.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-any-examples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-any-examples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn Trait implementations - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="dyn-trait-implementations"><a class="header" href="#dyn-trait-implementations"><code>dyn Trait</code> implementations</a></h1>
+<p>In order for <code>dyn Trait</code> to be useful for abstracting over the base
+types which implement <code>Trait</code>, <code>dyn Trait</code> itself needs to implement
+<code>Trait</code>.  The compiler supplies that implementation.  Here we look at
+how this notionally works, and also touch on how this leads to some
+related limitations around <code>dyn Trait</code>.</p>
+<p>We also cover a few surprising corner-cases related to how the
+implementation of <code>Trait</code> for <code>dyn Trait</code> works… or doesn’t.</p>
+<h2 id="how-dyn-trait-implements-trait"><a class="header" href="#how-dyn-trait-implements-trait">How <code>dyn Trait</code> implements <code>Trait</code></a></h2>
+<p>Let us note upfront: this is a rough sketch, and not normative.  What the
+compiler actually does is an implementation detail.  But by providing a
+sketch of how it <em>could</em> be implemented, we hope to provide some intuition
+for <code>dyn Trait</code> being a concrete type, and some explanation of the
+limitations that <code>dyn Trait</code> has.</p>
+<p>With that disclaimer out of the way, let’s look at what the compiler
+implementation might look like for this trait:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    fn look(&amp;self);
+    fn add(&amp;mut self, s: String) -&gt; i32;
+}
+<span class="boring">}</span></code></pre>
+<p>Recall that when dealing with <code>dyn Trait</code>, you’ll be dealing with
+a pointer to the erased base type, and with a vtable.  For example,
+we could imagine a <code>&amp;dyn Trait</code> looks something like this:</p>
+<pre><code class="language-rust ignore">#[repr(C)]
+struct DynTraitRef&lt;'a&gt; {
+    _lifetime: PhantomData&lt;&amp;'a ()&gt;,
+    base_type: *const (),
+    vtable: &amp;'static DynTraitVtable,
+}
+
+// Pseudo-code
+type &amp;'a dyn Trait = DynTraitRef&lt;'a&gt;;</code></pre>
+<p>Here we’re using a thin <code>*const ()</code> to point to the erased base type.
+Similarly, you can imagine a <code>DynTraitMut&lt;'a&gt;</code> for <code>&amp;'a mut dyn Trait</code>
+that uses <code>*mut ()</code>.</p>
+<p>And the vtable might look something like this:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[repr(C)]
+struct DynTraitVtable {
+    fn_drop: fn(*mut ()),
+    type_size: usize,
+    type_alignment: usize,
+    fn_look: fn(*const ()),
+    fn_add: fn(*mut (), s: String) -&gt; i32,
+}
+<span class="boring">}</span></code></pre>
+<p>And the implementation itself could look something like this:</p>
+<pre><code class="language-rust ignore">impl Trait for dyn Trait + '_ {
+    fn look(&amp;self) {
+        (self.vtable.fn_look)(self.base_type)
+    }
+    fn add(&amp;mut self, s: String) -&gt; i32 {
+        (self.vtable.fn_add)(self.base_type, s)
+    }
+}</code></pre>
+<p>In summary, we’ve erased the base type by replacing references to the
+base type with the appropriate type of pointer to the same data, both
+in the wide references (<code>&amp;dyn Trait</code>, <code>&amp;mut dyn Trait</code>), and also in
+the vtable function pointers.  The compiler guarantees there’s no ABI
+mismatch.</p>
+<p><em>Reminder:</em> This is just a rough sketch on how <code>dyn Trait</code> can be
+implemented to aid the high-level understanding and discussion, and
+not necessary exactly how they <em>are</em> implemented.</p>
+<p><a href="https://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/">Here’s another blog post on the topic.</a>
+Note that it was written in 2015, and some things in Rust have changed
+since that time.  For example, <a href="https://rust-lang.github.io/rfcs/2113-dyn-trait-syntax.html">trait objects used to be “spelled” just
+<code>Trait</code> instead of <code>dyn Trait</code>.</a>
+You’ll have to figure out if they’re talking about the trait or the
+<code>dyn Trait</code> type from context.</p>
+<h2 id="other-receivers"><a class="header" href="#other-receivers">Other receivers</a></h2>
+<p>Let’s look at one other function signature:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    fn eat_box(self: Box&lt;Self&gt;);
+}
+<span class="boring">}</span></code></pre>
+<p>How does this work?  Internally, a <code>Box&lt;BaseType /* : Sized */&gt;</code> is
+a thin pointer, while a <code>Box&lt;dyn Trait&gt;</code> is wide pointer, very similar
+to <code>&amp;mut dyn Trait</code> for example (although the <code>Box</code> pointer implies ownership and
+not just exclusivity).  The implementation for this method would be
+similar to that of <code>&amp;mut dyn Trait</code> as well:</p>
+<pre><code class="language-rust ignore">// Still just for illustrative purpose
+impl Trait for dyn Trait + '_ {
+    fn eat_box(self: Box&lt;Self&gt;) {
+        let BoxRepresentation { base_type, vtable } = self;
+        let boxed_type = Box::from_raw(base_type);
+        (vtable.fn_eat_box)(boxed_type);
+    }
+}</code></pre>
+<p>In short, the compiler knows how to go from the type-erased form
+(like <code>Box&lt;Self&gt;</code>) into something ABI compatible for the base type
+(<code>Box&lt;BaseType&gt;</code>) for every supported receiver type.</p>
+<p>It’s an implementation detail, but currently the way the compiler
+knows how to do the conversion is via the
+<a href="https://doc.rust-lang.org/std/ops/trait.DispatchFromDyn.html"><code>DispatchFromDyn</code></a>
+trait.  The documentation lists the current limitations of supported
+types (some of which are only available under the unstable
+<a href="https://github.com/rust-lang/rust/issues/44874"><code>arbitrary_self_types</code> feature</a>).</p>
+<h2 id="supertraits-are-also-implemented"><a class="header" href="#supertraits-are-also-implemented">Supertraits are also implemented</a></h2>
+<p><a href="./dyn-trait-combining.html">We’ll look at supertraits in more detail later,</a> but
+here we’ll briefly note that when you have a supertrait:</p>
+<pre><code>trait SuperTrait { /* ... */ }
+trait Trait: SuperTrait { /* ... */ }
+</code></pre>
+<p>The vtable for <code>dyn Trait</code> includes the methods of <code>SuperTrait</code> and the compiler
+supplies an implementation of <code>SuperTrait</code> for <code>dyn Trait</code>, just as it supplies
+an implementation of <code>Trait</code>.</p>
+<h2 id="boxdyn-trait-and-dyn-trait-do-not-automatically-implement-trait"><a class="header" href="#boxdyn-trait-and-dyn-trait-do-not-automatically-implement-trait"><code>Box&lt;dyn Trait&gt;</code> and <code>&amp;dyn Trait</code> do not automatically implement <code>Trait</code></a></h2>
+<p>It may come as a surprise that neither <code>Box&lt;dyn Trait&gt;</code> nor
+<code>&amp;dyn Trait</code> automatically implement <code>Trait</code>.  Why not?</p>
+<p>In short, because it’s not always possible.</p>
+<p><a href="dyn-safety.html#the-sized-constraints">As we’ll cover later,</a> a trait
+may have methods which are not dispatchable by <code>dyn Trait</code>, but must
+be implemented for any <code>Sized</code> type. One example is associated
+functions that have no receiver:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    fn no_receiver() -&gt; String where Self: Sized;
+}
+<span class="boring">}</span></code></pre>
+<p>There’s no way for the compiler to generate the body of such an associated
+function, and it can’t provide a complete <code>Trait</code> implementation without
+one.</p>
+<p>Additionally, the receivers of dispatchable methods don’t always make
+sense:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    fn takes_mut(&amp;mut self);
+}
+<span class="boring">}</span></code></pre>
+<p>A <code>&amp;dyn Trait</code> can produce a <code>&amp;BaseType</code>, but not a <code>&amp;mut BaseType</code>, so
+there is no way to implement <code>Trait::takes_mut</code> for <code>&amp;dyn Trait</code> when
+the only pre-existing implementation is for <code>BaseType</code>.</p>
+<p>Similarly, an <code>Arc&lt;dyn Trait&gt;</code> has no way to call a <code>Box&lt;dyn Trait&gt;</code>
+or vice-versa, and so on.</p>
+<h3 id="implementing-these-yourself"><a class="header" href="#implementing-these-yourself">Implementing these yourself</a></h3>
+<p>If <code>Trait</code> is a local trait, you can implement it for <code>Box&lt;dyn Trait + '_&gt;</code>
+and so on just like you would for any other type.  Take care though, as it
+can be easy to accidentally write a recursive definition!</p>
+<p><a href="./dyn-trait-box-impl.html">We walk through an example of this later on.</a></p>
+<p>Moreover, <code>&amp;T</code>, <code>&amp;mut T</code>, and <code>Box&lt;T&gt;</code> are
+<a href="https://rust-lang.github.io/rfcs/2451-re-rebalancing-coherence.html#definitions"><em>fundamental</em>,</a>
+which means that when it comes to the orphan rules (which gate which trait
+implementations you can write), they act the same as <code>T</code>.  Additionally,
+if <code>Trait</code> is a local trait, then <code>dyn Trait + '_</code> is a local type.</p>
+<p>Together that means that <em>you can even implement <strong>other</strong> traits</em> for
+<code>Box&lt;dyn Trait + '_&gt;</code> (and other fundamental wrappers)!</p>
+<p><a href="dyn-trait-clone.html">We also have an example of this later on.</a></p>
+<p>Unfortunately, <code>Rc</code>, <code>Arc</code>, and so on are not fundamental, so this doesn’t
+cover every possible use case.</p>
+<h2 id="the-implementation-cannot-be-directly-overrode"><a class="header" href="#the-implementation-cannot-be-directly-overrode">The implementation cannot be directly overrode</a></h2>
+<p>The compiler provided implementation of <code>Trait</code> for <code>dyn Trait</code> cannot be
+overrode by an implementation in your code.  If you attempt to define your
+own definition directly, you’ll get a compiler error:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {}
+impl Trait for dyn Trait + '_ {}
+<span class="boring">}</span></code></pre>
+<p>Additionally, if you have a blanket implementation to implement <code>Trait</code>,
+and <code>dyn Trait</code> happens to meet the bounds on the implementation, your
+implementation will generally be ignored; instead the compiler-defined
+defined implementation for <code>dyn Trait</code> will still be used:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::any::type_name;
+</span><span class="boring">
+</span>trait Trait {
+    fn hi(&amp;self) {
+        println!("Hi from {}!", type_name::&lt;Self&gt;());
+    }
+}
+
+// The simplest example is an implementation for absolutely everything
+impl&lt;T: ?Sized&gt; Trait for T {}
+
+let dt: &amp;dyn Trait = &amp;();
+// Prints "Hi from ()!" and not "Hi from dyn Trait!"
+dt.hi();
+// Same thing
+&lt;dyn Trait as Trait&gt;::hi(dt);
+<span class="boring">}</span></code></pre>
+<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=480659d8a8ed93615be8b7b988a09178">This even applies with more complicated implementations,</a>
+and applies to the supertrait implementations for <code>dyn Trait</code> as well.</p>
+<p><a href="./dyn-trait-erased.html">We’ll see that this can be useful later.</a>  But
+unfortunately, <a href="https://github.com/rust-lang/rust/issues/57893#issuecomment-510690333">there are some compiler bugs around the compiler
+implementation taking precedence over your blanket implementations.</a>
+How those bugs are dealt with is yet to be determined; it’s possible
+that certain blanket implementations will be disallowed, or that
+some traits will no longer be <code>dyn</code> compatible, or that the user-supplied
+implementation will take precendence instead of the compiler-supplied
+implementation for some or most cases.  (The <em>general</em> pattern, such
+as the simple example above, is almost surely too widespread to be
+deprecated. And the compiler-supplied implementation
+<a href="./dyn-any.html#built-in-dyn-implementation-precedence-considerations"><em>must</em> take precedence for <code>dyn Any</code></a>
+in particular.)</p>
+<h2 id="the-implementation-cannot-be-indirectly-bypassed"><a class="header" href="#the-implementation-cannot-be-indirectly-bypassed">The implementation cannot be indirectly bypassed</a></h2>
+<p>You may be aware that when a concrete type has an inherent method with
+the same name and receiver as a trait method, the inherent method usually
+takes precedence when performing method lookup:</p>
+<pre class="playground"><code class="language-rust edition2024">trait Trait { fn method(&amp;self) { println!("In trait Trait"); } }
+
+struct S;
+impl Trait for S {}
+impl S { fn method(&amp;self) { println!("In impl S"); } }
+
+fn main() {
+    let s = S;
+    s.method();
+    // If you wanted to use the trait, you can do this
+    &lt;S as Trait&gt;::method(&amp;s);
+}</code></pre>
+<p>Unfortunately, this functionality is not available for <code>dyn Trait</code>.
+You can write the implementation, but unlike the example above, they
+will be considered ambiguous with the trait methods:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    fn method(&amp;self) {}
+    fn non_dyn_dispatchable(&amp;self) where Self: Sized {}
+}
+
+impl dyn Trait + '_ {
+    fn method(&amp;self) {}
+    fn non_dyn_dispatchable(&amp;self) {}
+}
+
+fn foo(d: &amp;dyn Trait) {
+    d.method();
+    d.non_dyn_dispatchable();
+}
+<span class="boring">}</span></code></pre>
+<p>Moreover, there is no syntax to call the inherent methods specifically
+like there is for normal <code>struct</code>s.
+<a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=453af5108359352fcde7a4b0d3af9250">Even if you try to hide the trait,</a>
+the inherent methods are unreachable, dead code.</p>
+<p>Apparently the idea is that the trait methods “are” the inherent methods of
+<code>dyn Trait</code>, but this is rather unfortunate as it prevents directly providing
+something like the <code>non_dyn_dispatchable</code> override attempted above.
+See <a href="https://github.com/rust-lang/rust/issues/51402">issue 51402</a> for more
+information.</p>
+<p>Implementing methods on <code>dyn Trait</code> that don’t attempt to shadow the
+methods of <code>Trait</code> does work, however.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span>impl dyn Trait + '_ {
+    fn some_other_method(&amp;self) {}
+}
+
+fn bar(d: &amp;dyn Trait) {
+    d.some_other_method();
+}
+<span class="boring">}</span></code></pre>
+<h2 id="a-niche-exception-to-dyn-trait-trait"><a class="header" href="#a-niche-exception-to-dyn-trait-trait">A niche exception to <code>dyn Trait: Trait</code></a></h2>
+<p>Some bounds on traits aren’t checked until you try to utilize the trait,
+even when the trait is considered <code>dyn</code> compatible.  As a result, <a href="https://github.com/rust-lang/rust/issues/88904">it is
+actually sometimes possible to create a <code>dyn Trait</code> that does not implement
+<code>Trait</code>!</a></p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Iterable
+where
+    for&lt;'a&gt; &amp;'a Self: IntoIterator&lt;
+        Item = &amp;'a &lt;Self as Iterable&gt;::Borrow,
+    &gt;,
+{
+    type Borrow;
+    fn iter(&amp;self) -&gt; Box&lt;dyn Iterator&lt;Item = &amp;Self::Borrow&gt; + '_&gt; {
+        Box::new(self.into_iter())
+    }
+}
+
+impl&lt;I: ?Sized, Borrow&gt; Iterable for I
+where
+    for&lt;'a&gt; &amp;'a Self: IntoIterator&lt;Item = &amp;'a Borrow&gt;,
+{
+    type Borrow = Borrow;
+}
+
+fn example(v: Vec&lt;String&gt;) {
+    // This compiles, demonstrating that we can create `dyn Iterable`
+    // (i.e. the trait is object safe and `v` can be coerced)
+    let dt: &amp;dyn Iterable&lt;Borrow = String&gt; = &amp;v;
+
+    // But this gives an error as `&amp;dyn Iterable` doesn't meet the trait
+    // bound, and thus `dyn Iterable` does not implement `Iterable`!
+    for item in dt.iter() {
+        println!("{item}");
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>With this particular example, <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2024&amp;gist=727331529fbfd13261d7d50f030eca43">it’s possible to provide an implementation such that
+<code>dyn Iterable</code> meets the bounds.</a>
+If that’s not possible, you probably need to drop the bound or give up
+on the trait being <code>dyn</code> compatible.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-trait-overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-trait-coercions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-trait-overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-trait-coercions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn Trait coercions - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="dyn-trait-coercions"><a class="header" href="#dyn-trait-coercions"><code>dyn Trait</code> coercions</a></h1>
+<p>Some <code>dyn Trait</code> coercions which are typical (in terms of what is being coerced) look like so:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::sync::Arc;
+</span><span class="boring">trait Trait {}
+</span>fn coerce_ref&lt;'a, T: Trait + Sized + 'a&gt;(t:    &amp;T ) -&gt; &amp;(  dyn Trait + 'a) { t }
+fn coerce_box&lt;'a, T: Trait + Sized + 'a&gt;(t: Box&lt;T&gt;) -&gt; Box&lt;dyn Trait + 'a&gt; { t }
+fn coerce_arc&lt;'a, T: Trait + Sized + 'a&gt;(t: Arc&lt;T&gt;) -&gt; Arc&lt;dyn Trait + 'a&gt; { t }
+// etc
+<span class="boring">}</span></code></pre>
+<p>These are more <em>syntactically noisy</em> than you will typically see in practice, as
+I have included some explicit lifetimes and bounds which are normally implied
+or not used.  For example the <code>Sized</code> bound on generic type parameters
+<a href="https://doc.rust-lang.org/reference/special-types-and-traits.html#sized">is usually implied,</a>
+but I’ve made it explicit to emphasize that we’re talking about <code>Sized</code> base types.</p>
+<p>The key point is that given a <a href="dyn-safety.html"><code>dyn</code> compatible <code>Trait</code>,</a> and when
+<code>T: 'a + Trait + Sized</code>, you can coerce a <code>Ptr&lt;T&gt;</code> to a <code>Ptr&lt;dyn Trait + 'a&gt;</code>
+for the supported <code>Ptr</code> pointer types such as <code>&amp;_</code> and <code>Box&lt;_&gt;</code>.</p>
+<p>If we had wanted a <code>dyn Trait + Send + 'a</code>, naturally we would need <code>T: Send</code>
+as well, and similarly for any other auto trait.</p>
+<p>In the rest of this section, we look at cases beyond these typical examples,
+as well as some limitations of coercions.</p>
+<h2 id="associated-types"><a class="header" href="#associated-types">Associated types</a></h2>
+<p>When a trait has one or more non-generic associated type, every concrete implementor of
+the trait chooses a single, statically-known type for each associated type.  For base
+types, this means the associated types are “outputs” of the implementing type and the
+implemented trait: if you know the latter two, you can statically determine the
+associated types as well.</p>
+<p>So what should the associated types be in the implementation of <code>Trait</code> for
+<code>dyn Trait</code>?</p>
+<p>There is no single answer; they would need to vary based on the erased base types.</p>
+<p>However, <code>dyn Trait</code> for traits with associated types is just too useful to
+make traits with associated types ineligible for <code>dyn Trait</code>.  Instead, associated
+types in the trait become, in essence, named <em>type parameters</em> of the <code>dyn Trait</code>
+type constructor. (Recall it’s already a type constructor due to the trait object lifetime.)</p>
+<p>So given</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Iterator {
+    type Item;
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}</span></code></pre>
+<p>We have</p>
+<pre><code class="language-rust ignore">dyn Iterator&lt;Item = String&gt; + '_
+dyn Iterator&lt;Item = i32&gt; + '_
+dyn Iterator&lt;Item = f64&gt; + '_</code></pre>
+<p>and so on.  The associated types in <code>dyn Trait&lt;...&gt;</code> must be resolved to
+concrete types in order for the <code>dyn Trait&lt;...&gt;</code> to be a concrete type.</p>
+<p>Naturally, you can only coerce to <code>dyn Iterator&lt;Item = String&gt;</code> if you
+both implement <code>Iterator</code>, and in your implementation, <code>type Item = String</code>.
+The syntax mirrors that of associated type trait bounds:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn takes_string_iter&lt;Iter&gt;(i: Iter)
+where
+    Iter: Iterator&lt;Item = String&gt;,
+{
+   // ...
+}
+<span class="boring">}</span></code></pre>
+<p>The parameters being named has a number of benefits.  For one, it’s
+usually quite relevant, such as what <code>Item</code> an <code>Iterator</code> returns
+(especially if the associated types are well named).  It also removes
+the need to order the associated types in a well-defined way, such as
+lexicographically or especially declaration order (which would be too fragile).</p>
+<p>The named parameters must be specified after all ordered parameters, however.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait AssocAndParams&lt;T, U&gt; { type Assoc1; type Assoc2; }
+
+// The trait's ordered type parameters must be in declaration order
+// (here, `String` then `usize`).  After that come the named associated
+// type parameters, which can be reordered arbitrarily amongst themselves.
+fn foo(d: Box&lt;dyn AssocAndParams&lt;String, usize, Assoc1 = i32, Assoc2 = u32&gt;&gt;)
+-&gt;
+    Box&lt;dyn AssocAndParams&lt;String, usize, Assoc2 = u32, Assoc1 = i32&gt;&gt;
+{
+   d
+}
+<span class="boring">}</span></code></pre>
+<h3 id="opting-out-of-dyn-usability"><a class="header" href="#opting-out-of-dyn-usability">Opting out of <code>dyn</code>-usability</a></h3>
+<p><a href="https://github.com/rust-lang/rust/pull/112319/">As of Rust 1.72,</a> if you add
+a <code>where Self: Sized</code> bound to an associated type, it is considered
+<a href="dyn-safety.html#the-sized-constraints">non-<code>dyn</code>-usable.</a>  The associated type
+becomes unusable by <code>dyn Trait</code>, and you no longer need to constrain the
+associated type with the named parameter.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait {
+    type Foo where Self: Sized;
+    fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+    fn bar(&amp;self) {}
+}
+
+impl Trait for i32 {
+    type Foo = ();
+    fn foo(&amp;self) -&gt; Self::Foo {}
+}
+
+impl Trait for u64 {
+    type Foo = f32;
+    fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+}
+
+// No need for `dyn Trait&lt;Foo = ()&gt;`!
+let mut a: &amp;dyn Trait = &amp;0_i32;
+
+// No need for associated type equality between base types!
+a = &amp;0_u64;
+
+// This fails because the type is not defined (`dyn Trait` is not `Sized`)
+// let _: &lt;dyn Trait as Trait&gt;::Foo = todo!();
+<span class="boring">}</span></code></pre>
+<p>Although it produces a warning, you can still <em>optionally</em> specify the
+associated type, even though it’s not usable by the <code>dyn Trait</code> itself.
+Note also that this does result in incompatible types and limits the
+possible coercions:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {
+</span><span class="boring">   type Foo where Self: Sized;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+</span><span class="boring">   fn bar(&amp;self) {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for i32 {
+</span><span class="boring">   type Foo = ();
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for u64 {
+</span><span class="boring">   type Foo = f32;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+</span><span class="boring">}
+</span>let mut a: &amp;dyn Trait&lt;Foo = ()&gt; = &amp;0_i32;
+
+// Fails!
+a = &amp;0_u64;
+<span class="boring">}</span></code></pre>
+<p>This introduces some interesting possibilities around
+<a href="dyn-trait-box-impl.html">implementing <code>trait</code> for <code>Box&lt;dyn Trait&gt;</code>:</a></p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {
+</span><span class="boring">   type Foo where Self: Sized;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo where Self: Sized;
+</span><span class="boring">   fn bar(&amp;self) {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for i32 {
+</span><span class="boring">   type Foo = ();
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo {}
+</span><span class="boring">}
+</span><span class="boring">impl Trait for u64 {
+</span><span class="boring">   type Foo = f32;
+</span><span class="boring">   fn foo(&amp;self) -&gt; Self::Foo { 0.0 }
+</span><span class="boring">}
+</span>impl&lt;T: Default&gt; Trait for Box&lt;dyn Trait&lt;Foo = T&gt;&gt; {
+    type Foo = T;
+    fn foo(&amp;self) -&gt; Self::Foo {
+        T::default()
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>The warning currently says “while the associated type can be specified, it cannot
+be used”, but this example shows that is not technically true.  I think this sort
+of usage was just not anticipated.</p>
+<p>The reason it’s not an error to specify non-<code>dyn</code>-usable associated types in this
+manner is that there was a period where you could add <code>Self: Sized</code> bounds to
+associated types, but were still <em>required</em> to name the associated type in
+<code>dyn Trait&lt;..&gt;</code>.  Thus it would be a breaking change to make the warning an error.</p>
+<p>Given the potential utility, I would argue that the warning should at a minimum
+be reworded, and perhaps renamed.</p>
+<h2 id="no-nested-coercions"><a class="header" href="#no-nested-coercions">No nested coercions</a></h2>
+<p>An unsizing coercion needs to happen behind a layer of indirection (such as a
+reference or in a <code>Box</code>) in order to accomodate the wide pointer to the erased
+type’s vtable (and because moving unsized types is not supported).</p>
+<p>However, the unsizing coercion can typically only happen behind a <em>single</em> layer of
+indirection.  For example, you can’t coerce a <code>Vec&lt;Box&lt;T&gt;&gt;</code> to a <code>Vec&lt;Box&lt;dyn Trait&gt;&gt;</code>.
+Why not?  <code>Box&lt;T&gt;</code> and <code>Box&lt;dyn Trait&gt;</code> have different layouts!  The former
+is the size of one pointer, while the second is the size of two pointers.
+The entire <code>Vec</code> would need to be reallocated to accomodate such a change:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span>fn convert_vec&lt;'a, T: Trait + 'a&gt;(v: Vec&lt;Box&lt;T&gt;&gt;) -&gt; Vec&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+    v.into_iter().map(|bx| bx as _).collect()
+}
+<span class="boring">}</span></code></pre>
+<p>In general, unsizing coercions consume the original pointer (reference, <code>Box</code>,
+etc) and produce a new one, and this cannot happen in a nested context.</p>
+<p>Internally, which coercions are possible are determined by the
+<a href="https://doc.rust-lang.org/std/ops/trait.CoerceUnsized.html"><code>CoerceUnsized</code></a>
+trait, and the (compiler-implemented) <code>Unsize</code> trait, as discussed in the
+documentation.</p>
+<h3 id="except-when-you-can"><a class="header" href="#except-when-you-can">Except when you can</a></h3>
+<p>There are some material and some apparent exceptions where unsizing coercion
+can occur in a nested context.</p>
+<p>If you follow the link above, you’ll see that <a href="https://doc.rust-lang.org/std/ops/trait.CoerceUnsized.html#impl-CoerceUnsized%3CCell%3CU%3E%3E-for-Cell%3CT%3E">some types such as <code>Cell</code>
+implement <code>CoerceUnsized</code> in a recursive manner.</a>
+The idea is that <code>Cell</code> and the others have the same layout as their
+generic type parameter.  As a result, outer layers of <code>Cell</code> don’t count
+as “nesting”.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::cell::Cell;
+</span><span class="boring">trait Trait {}
+</span>// Fails :-(
+//fn coerce_vec&lt;'a, T: Trait + 'a&gt;(v: Vec&lt;Box&lt;T&gt;&gt;) -&gt; Vec&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+//    v
+//}
+
+// Works! :-)
+fn coerce_cell&lt;'a, T: Trait + 'a&gt;(c: Cell&lt;Box&lt;T&gt;&gt;) -&gt; Cell&lt;Box&lt;dyn Trait + 'a&gt;&gt; {
+    c
+}
+<span class="boring">}</span></code></pre>
+<p>We’ll cover some other apparent exceptions (which are actually just supertype
+coercions) <a href="./dyn-covariance.html#variance-in-nested-context">in an upcoming section.</a></p>
+<h2 id="the-sized-limitation"><a class="header" href="#the-sized-limitation">The <code>Sized</code> limitation</a></h2>
+<p>Base types must meet a <code>Sized</code> bound in order to be able to be coerced to
+<code>dyn Trait</code>.  For example, <code>&amp;str</code> cannot be coerced to <code>&amp;dyn Display</code>
+even though <code>str</code> implements <code>Display</code>, because <code>str</code> is unsized.</p>
+<p>Why is this limitation in place?  <code>&amp;str</code> is also a wide pointer; it consists
+of a pointer to the UTF8 bytes, and a <code>usize</code> which is the number of bytes.
+Similarly a slice reference <code>&amp;[T]</code> is a pointer to the contiguous data, and
+a count of the number of items.</p>
+<p>A <code>&amp;dyn Trait</code> created from a <code>&amp;str</code> or <code>&amp;[T]</code> would thus naively need to be
+a “super-wide pointer”, with a pointer to the data, the element count, <em>and</em>
+the vtable pointer.  But <code>&amp;dyn Trait</code> is a concrete type with a static layout
+– two pointers – so this naive approach can’t work.  Moreover, what if I
+wanted to coerce a super-wide pointer?  Each recursive coercion requires
+another pointer, making the size unbounded.</p>
+<p>A non-naive approach would require special-casing how dynamic dispatch
+works for erased non-<code>Sized</code> base types.  For example, once you’ve type
+erased <code>str</code>, you’ve lost the information that <code>&amp;str</code> is also a wide pointer,
+and how to create that wide pointer.  However, the code would need to recreate
+a wide pointer in order to perform dynamic dispatch.</p>
+<p>So for <code>dyn Trait</code> to non-naively support unsized types, it would need
+to examine at run-time how to construct a pointer to the erased base type:
+one possibility for thin pointers, and an additional possibility for each type
+of wide pointer supported.  Not only that, but the metadata required (such as
+the length of the <code>str</code>) has to be stored <em>somewhere</em>, and that can’t be in
+static memory like the vtable is.</p>
+<p>Instead, unsized base types are simply not supported.</p>
+<p>Sometimes you can work around the limitation by, for example, implementing
+the trait for <code>&amp;str</code> instead of <code>str</code>, and then coercing a <code>&amp;'_ str</code> to
+<code>dyn Trait + '_</code> (since references are always <code>Sized</code>).</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>// This fails as we cannot coerce `str` to `dyn Display`, so we cannot coerce
+// `&amp;str` to `&amp;dyn Display`.
+// let _: &amp;dyn Display = "hi";
+
+// However, `&amp;str` also implements `Display`.  (If `T: Display`, then `&amp;T: Display`.)
+// Because `&amp;str` is `Sized`, we can instead coerce `&amp;&amp;str` to `&amp;dyn Display`:
+let _: &amp;dyn Display = &amp;"hi";
+<span class="boring">}</span></code></pre>
+<p><code>Sized</code> is also used as a sort of “not-<code>dyn</code>” marker,
+<a href="dyn-safety.html#the-sized-constraints">which we explore later.</a></p>
+<p>There is one broad exception to the <code>Sized</code> limitation: coercing between
+forms of <code>dyn Trait</code> itself, which we look at in the subsections
+immediately below.</p>
+<h2 id="discarding-auto-traits"><a class="header" href="#discarding-auto-traits">Discarding auto traits</a></h2>
+<p>You can coerce a <code>dyn Trait + Send</code> to a <code>dyn Trait</code>, and similarly discard
+any other auto trait.</p>
+<p>Although
+<a href="./dyn-trait-overview.html#dyn-trait-is-not-a-supertype"><code>dyn Trait</code> isn’t a supertype of <code>dyn Trait + Send</code>,</a>
+this is nonetheless referred to as <em>upcasting</em> <code>dyn Trait + Send</code> to <code>dyn Trait</code>.</p>
+<p>Note that auto traits have no methods, and thus no change to the vtable is
+required for these coercions.  They allow one to call a less restricted
+function (that takes <code>dyn Trait</code>) from a more restrictive one (e.g. one that
+requires <code>dyn Trait + Send</code>).  The coercion is necessary as, again, these are
+(distinct) concrete types, and not generics nor subtypes nor dynamic types.</p>
+<p>Although no change to the vtable is required, this coercion can still
+<a href="#no-nested-coercions">not happen in a nested context.</a></p>
+<h2 id="discarding-the-principal-trait"><a class="header" href="#discarding-the-principal-trait">Discarding the principal trait</a></h2>
+<p><a href="https://github.com/rust-lang/rust/pull/131857">As of Rust 1.84,</a> you can also
+drop the principal trait to create something like a <code>dyn Send</code>, should you want
+to do that for some reason.  This could be implemented by changing the pointer,
+or it could be implemented by leaving the pointer alone; the only method which
+can be dynamically dispatched after such a coercion has been performed is calling
+the destructor.</p>
+<h2 id="the-reflexive-case"><a class="header" href="#the-reflexive-case">The reflexive case</a></h2>
+<p>You can cast <code>dyn Trait</code> to <code>dyn Trait</code>.</p>
+<p>Sorry, we’re being too imprecise again.  You can cast a <code>dyn Trait + 'a</code> to a <code>dyn Trait + 'b</code>,
+where <code>'a: 'b</code>.  This is important for
+<a href="./dyn-covariance.html#unsizing-coercions-in-invariant-context">how borrowing works with <code>dyn Trait + '_</code>.</a></p>
+<p>As lifetimes are erased during compilation, the vtable is the same regardless of the lifetime.
+Despite that, this unsizing coercion can still <a href="#no-nested-coercions">not happen in a nested context.</a></p>
+<p>However, <a href="./dyn-covariance.html">in a future section</a> we’ll see
+how variance can allow shortening the trait object lifetime even in nested context,
+provided that context is also covariant.  <a href="./dyn-hr.html">The section after that about higher-ranked
+types</a> explores another lifetime-related coercion which could also be
+considered reflexive.</p>
+<h2 id="supertrait-upcasting"><a class="header" href="#supertrait-upcasting">Supertrait upcasting</a></h2>
+<p><a href="https://github.com/rust-lang/rust/pull/134367">Since Rust 1.86</a> you can also
+coerce (“upcast”) from a <code>dyn SubTrait</code> to a <code>dyn SuperTrait</code>.</p>
+<p>It is, once again, explicitly a coercion and not an actual sub/super type
+relationship, despite the terminology.  Although this is an implementation
+detail, the conversion may involve replacing the vtable pointer (in contrast
+with dropping auto traits or the reflexive case).</p>
+<p><a href="./dyn-trait-combining.html#manual-supertrait-upcasting">You can also write your own “manual” supertrait upcasts</a>
+(which was more important before trait upcasting stabilized).</p>
+<h2 id="dyn-compatible-traits-only"><a class="header" href="#dyn-compatible-traits-only"><code>dyn</code> compatible traits only</a></h2>
+<p>There are other restrictions on the <em>trait</em> which we have not discussed here,
+such as not (yet) supporting traits with generic associated types (GATs).
+<a href="dyn-safety.html">We cover those in the next section.</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-trait-impls.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-safety.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-trait-impls.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-safety.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

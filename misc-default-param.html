@@ -1,0 +1,737 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Default parameter mechanics - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="default-parameter-mechanics"><a class="header" href="#default-parameter-mechanics">Default parameter mechanics</a></h1>
+<p>Default parameters in Rust are not as convenient as one might wish.
+<a href="https://rust-lang.github.io/rfcs/0213-defaulted-type-params.html">The RFC for default type parameters</a>
+was never fully completed; in particular, the “inference falls back to defaults”
+parts have been delayed indefinitely.  As a result, there are times where default
+parameters don’t kick in, and you have to either be explicit or use other
+workarounds.  It can also be unclear why the workarounds act differently.</p>
+<p><a href="https://github.com/rust-lang/reference/issues/24">Default parameters are also not in the reference yet.</a></p>
+<p>This page exists to explain the mechanics behind default parameters as they
+exist today, and to clear up exactly what the workarounds mean.  For an exploration
+on how the interaction between inference and default parameters could be defined
+in the future, I recommend
+<a href="https://faultlore.com/blah/defaults-affect-inference/">this wonderful blog post by Gankra.</a></p>
+<h2 id="motivation"><a class="header" href="#motivation">Motivation</a></h2>
+<p>The most likely reason you’ll run into default parameters not “working” is because
+some expression desugars to replacing all type (and <code>const</code>) parameters with inference
+variables, in combination with the fact that inference variables do not fall back to the
+defaults.</p>
+<p>What are inference variables?  For type and <code>const</code> parameters, an inference variable is
+he same as the “wildcard” <code>_</code>, which tells the compiler to infer the type or <code>const</code> for
+you.</p>
+<p>(For most of this guide, we’ll be focused on types.
+<a href="#const-parameters">There’s a subsection about <code>const</code> parameters specifically later.</a>)</p>
+<p>Let’s see some examples of compilation failures involving defaulted parameters:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// `HashSet` will be our running example for a type with both required
+// (non-defaulted, non-lifetime) and defaulted parameters:
+// struct HashSet&lt;Key, S = RandomState&gt; { .. }
+
+// The following `insert` is enough for the compiler to infer the elided
+// `Key` parameter in the call to `HashSet::default`, but not the `S` parameter.
+let mut hs = HashSet::default();
+hs.insert(String::new());
+
+// This means the same thing: *all* type (and const) parameters became
+// inference variables, including defaulted parameters.
+let mut hs = HashSet::&lt;_, _&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<p>This can be confusing because similar code just works:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// This compiles, but the compiler can figure `Key` out on its own
+// (it was the `S` that it could not infer), so why?
+let mut hs = HashSet::&lt;String&gt;::default();
+hs.insert(String::new());
+
+// And in fact... this compiles too!
+let mut hs = HashSet::&lt;_&gt;::default();
+hs.insert(String::new());
+
+// And `new` doesn't have the inference problem that `default` did,
+// which may also be confusing.
+let mut hs = HashSet::new();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<p>The errors can also arise when the type has defaults for all of the type (and <code>const</code>) parameters:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This will be our running example for a type where all non-lifetime
+// parameters have defaults:
+pub enum Foo&lt;T = String&gt; {
+    Bar(T),
+    Baz,
+}
+
+// This fails because the elided parameter desugars to an inference variable.
+let foo = Foo::Baz;
+
+// So this means the exact same thing:
+let foo = Foo::&lt;_&gt;::Baz;
+<span class="boring">}</span></code></pre>
+<p>And some of the workarounds may be even more confusing:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>// This works!
+let foo = &lt;Foo&gt;::Baz;
+<span class="boring">}</span></code></pre>
+<p>We want to explain exactly which expressions end up being problematic, and why
+the workarounds solve the problem.</p>
+<h2 id="the-explanations-in-brief"><a class="header" href="#the-explanations-in-brief">The explanations in brief</a></h2>
+<p>First let’s tackle why just wrapping the type in <code>&lt;&gt;</code> worked for that last example:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>let foo = &lt;Foo&gt;::Baz;
+<span class="boring">}</span></code></pre>
+<p>The leading <code>&lt;Foo&gt;::</code> notation is called a “<a href="#more-about-qualified-path-expressions">qualified path type</a>”.
+And the short answer to why it works is that, with respect to elided defaulted parameters,
+types in <code>&lt;&gt;</code>s act the same as type ascription:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+</span>// Also works:
+let foo: Foo = Foo::Baz;
+<span class="boring">}</span></code></pre>
+<p>Type ascription uses default parameters in a way that’s probably closer to your intuition.
+(<a href="#type-position-mechanics-in-more-detail">We explore the details below.</a>)
+Note that types act like type ascription in <code>&lt;&gt;</code> elsewhere too, such as
+within a turbofish, not just as a qualified path type.</p>
+<p>As for the difference here:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// This fails if we change `HashSet::new()` to `HashSet::default()`.
+let mut hs = HashSet::new();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<p>The example only works because <a href="https://doc.rust-lang.org/std/collections/struct.HashSet.html#implementations">HashSet::new</a>
+(and a number of other methods) is only defined for <code>HashSet&lt;_, RandomState&gt;</code>.
+In contrast, <code>Default</code> is implemented for all possible <code>HashSet&lt;_, _&gt;</code>.  So
+in a sense, this is a workaround on the side of the <code>HashSet</code> implementation!
+<a href="https://faultlore.com/blah/defaults-affect-inference/">If inference and default parameters worked together,</a>
+<code>new</code> would presumably be defined for all possible hashers, too.</p>
+<p>Finally, let’s look at this workaround:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// Remember, `HashSet::default()` fails.
+let mut hs = HashSet::&lt;_&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<p>The key difference here is that <em>if no required parameters are specified,</em>
+then <em>all</em> the type (and <code>const</code>) parameters – <em>including defaulted parameters</em>
+– are filled in with inference variables.  But if one or more non-lifetime
+parameter is specified, it desugars to a qualified type path – where default
+parameters act the same as they do in type ascription.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// These are all the same and fail:
+// let mut hs = HashSet::default();
+// let mut hs = HashSet::&lt;&gt;::default();
+// let mut hs = HashSet::&lt;_, _&gt;::default();
+let mut hs = &lt;HashSet::&lt;_, _&gt;&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span>// These are the same and succeed:
+// let mut hs = HashSet::&lt;_&gt;::default();
+let mut hs = &lt;HashSet&lt;_&gt;&gt;::default();
+hs.insert(String::new());
+<span class="boring">}</span></code></pre>
+<p>As is clear from the example, using <code>_</code> explicitly counts as specifying a type
+parameter.  Also note that the desugaring to “all parameters are inference
+variables” only happens when the type is not inside <code>&lt;&gt;</code>s.</p>
+<h2 id="type-position-mechanics-in-more-detail"><a class="header" href="#type-position-mechanics-in-more-detail">Type position mechanics in more detail</a></h2>
+<p>By “type position”, we mean contexts where the language expects a type specifically.
+This includes variable type ascription, implementation headers, type parameter
+fields themselves, and qualified path types.</p>
+<p>In type position, you can only elide defaulted parameters.  Elided defaulted parameters are
+replaced by their default types (or <code>const</code> values) specifically (i.e. not inference variables).</p>
+<p>Let’s see some examples:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span><span class="boring">use std::hash::RandomState;
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// These ascriptions mean the same thing
+//     vvvvvvvvvvv
+let e: Foo         = Foo::Baz;
+let e: Foo&lt;&gt;       = Foo::Baz;
+let e: Foo&lt;String&gt; = Foo::Baz;
+
+// These ascriptions mean the same thing
+//      vvvvvvvvvvvvvvvvvvvvvvvvvvvv
+let hs: HashSet&lt;String&gt;              = Default::default();
+let hs: HashSet&lt;String, RandomState&gt; = Default::default();
+<span class="boring">}</span></code></pre>
+<p>The following errors demonstrate that elided parameters aren’t inference variables,
+and that inference variables don’t fall back to the defaults.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// Fails due to ambiguity
+let e: Foo&lt;_&gt; = Foo::Baz;
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::HashSet;
+</span><span class="boring">use std::hash::RandomState;
+</span>// Fails due to ambiguity
+let hs: HashSet&lt;String, _&gt; = Default::default();
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Foo&lt;T = String&gt; { Bar(T), Baz, }
+</span>// Fails because the elided type is exactly the default type (`String`)
+let e: Foo = Foo::Bar(0);
+<span class="boring">}</span></code></pre>
+<p>The final example is the opposite situation from most of the examples we’ve seen:
+it’s a case where you want inference to override defaults.  If you change the ascription
+to <code>Foo&lt;_&gt;</code> it will compile (but a more trivial fix for this particular example is to
+just remove the redundant ascription).</p>
+<h2 id="more-about-qualified-path-expressions"><a class="header" href="#more-about-qualified-path-expressions">More about qualified path expressions</a></h2>
+<p>Types inside of <code>&lt;&gt;</code>s are in type position, and that includes qualified path expressions.</p>
+<p>A <a href="https://doc.rust-lang.org/reference/paths.html#qualified-paths">qualified path expressions</a>
+is when you have some path expression that starts with a segment contained in
+<code>&lt;&gt;</code>.  They were defined in <a href="https://rust-lang.github.io/rfcs/0132-ufcs.html">RFC 0132</a>
+and they come in two different forms:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>//      vvvvvvvv `&lt;T&gt;` where `T` is a type
+let s = &lt;String&gt;::default();
+
+//      vvvvvvvvvvvvvvvvvvv `&lt;T as Tr&gt;` where `T` is a type and `Tr` is a trait
+let s = &lt;String as Default&gt;::default();
+<span class="boring">}</span></code></pre>
+<p>The first form can resolve to inherent functions or trait methods, whereas
+the second form can only resolve to the named trait’s methods.  Rust doesn’t
+have “trait inference variables”, so the trait must be named; you can’t use
+<code>_</code> in place of the trait, for example.  (You can still use it in place of
+the trait’s type parameters.)</p>
+<p>Note also that while this works:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>//              vvvvvvv A trait name
+let s: String = Default::default();
+<span class="boring">}</span></code></pre>
+<p>This is not allowed:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let s: String = &lt;Default&gt;::default();
+<span class="boring">}</span></code></pre>
+<h2 id="traits"><a class="header" href="#traits">Traits</a></h2>
+<p>Default parameters for traits work the same as default parameters for types,
+both inside and outside of “type position”.  When thinking of traits in paths
+as sugar for qualified paths, the notional desugaring is like so:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Trait&lt;One, Two = String&gt;: Sized {
+    fn foo(self) -&gt; (Self, One, Two) where One: Default, Two: Default {
+        (self, One::default(), Two::default())
+    }
+}
+
+impl&lt;T, U&gt; Trait&lt;T, U&gt; for i32 {}
+impl&lt;T, U&gt; Trait&lt;T, U&gt; for f64 {}
+
+// Failing versions:
+//let _: (i32, (), _) = Trait::foo(0);
+//let _: (i32, (), _) = Trait::&lt;_, _&gt;::foo(0);
+let _: (i32, (), _) = &lt;_ as Trait&lt;_, _&gt;&gt;::foo(0);
+//                    ^^^^^^^^^^^^^^^^^^
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait&lt;One, Two = String&gt;: Sized {
+</span><span class="boring">   fn foo(self) -&gt; (Self, One, Two) where One: Default, Two: Default {
+</span><span class="boring">       (self, One::default(), Two::default())
+</span><span class="boring">   }
+</span><span class="boring">}
+</span><span class="boring">impl&lt;T, U&gt; Trait&lt;T, U&gt; for i32 {}
+</span><span class="boring">impl&lt;T, U&gt; Trait&lt;T, U&gt; for f64 {}
+</span>// Working versions:
+let _: (i32, (), _) = Trait::&lt;_&gt;::foo(0);
+let _: (i32, (), _) = &lt;_ as Trait&lt;_&gt;&gt;::foo(0);
+//                    ^^^^^^^^^^^^^^^
+<span class="boring">}</span></code></pre>
+<p>The only new thing of note is that the implementing type is an inference variable
+in this case.</p>
+<h3 id="mostly-historical-side-note"><a class="header" href="#mostly-historical-side-note">Mostly historical side note</a></h3>
+<p>Before edition 2021, it’s possible to leave the <code>dyn</code> off of <code>dyn Trait</code> types
+(although it does fire a lint).  This means that the same name can refer to either
+a trait, or a type (the trait object type).  Which one is used depends on the
+context.</p>
+<p>For example:</p>
+<pre><code class="language-rust ignore">let _: i32 = Trait::name(0.0);
+
+// If `Trait` has a method called `name`, the above desugars to:
+let _: i32 = &lt;_ as Trait&gt;::name(0.0);
+
+// But if it does not, and `dyn Trait` has a method called `name`,
+// the first line instead desugars to:
+let _: i32 = &lt;dyn Trait&gt;::name(0.0)
+
+// And the following line is always referring to `dyn Trait`
+// (as traits aren't allowed in `&lt;&gt;` except after `as`).
+let _: i32 = &lt;Trait&gt;::name(0.0);</code></pre>
+<h2 id="more-about-types-in-expressions"><a class="header" href="#more-about-types-in-expressions">More about types in expressions</a></h2>
+<p>In this section, “types in expressions” refers to types which are in expressions
+but not within <code>&lt;&gt;</code> (e.g. not a qualified path type or a type parameter).  These
+are the positions where it is <em>required</em> to use turbofish (e.g. <code>Vec::&lt;String&gt;</code>)
+instead of just appending the parameter list (e.g. <code>Vec&lt;String&gt;</code>).</p>
+<p>In these positions, it is always allowed to elide all the type and <code>const</code>
+parameters, even if there are required (i.e. non-defaulted, non-lifetime)
+parameters.  When you do so – even if all the type and <code>const</code> parameters
+have defaults – the behavior is the same as using type inference variables
+(<code>_</code>) for <em>all</em> the parameters.</p>
+<p>If you do not elide all non-lifetime parameters – that is, if you specify one or
+more type parameter or <code>const</code> parameter – then you must specify all required
+parameters. Or in other words: if you specify at least one type or <code>const</code>
+parameter, you can only elide defaulted parameters (and lifetimes).</p>
+<p>The behavior of elided defaulted parameters is as follows:</p>
+<ul>
+<li>If you specify zero non-lifetime parameters
+<ul>
+<li>Inference variables are used for <em>all</em> type and <code>const</code> parameters</li>
+</ul>
+</li>
+<li>If you specify one or more non-lifetime parameters
+<ul>
+<li>Defaults are used for elided type and <code>const</code> parameters</li>
+</ul>
+</li>
+</ul>
+<p>Above, we phrased the different default parameter behavior for types in expressions in
+terms of desugaring to <a href="#more-about-qualified-path-expressions">qualified type paths.</a>
+However, the behavior applies in other contexts too, such as <code>struct</code> expression syntax:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Two&lt;T, U = String&gt; { t: T, u: U }
+
+// This is ambiguous
+let _ = Two { t: (), u: Default::default() };
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct Two&lt;T, U = String&gt; { t: T, u: U }
+</span>// But this works
+let _ = Two::&lt;_&gt; { t: (), u: Default::default() };
+<span class="boring">}</span></code></pre>
+<p>Qualified path types are not allowed in this postion, so not all of the
+workarounds we discussed for paths are applicable.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct One&lt;T = String&gt; { t: T }
+
+// Ambiguous
+let _ = One { t: Default::default() };
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct One&lt;T = String&gt; { t: T }
+</span>// Not accepted grammatically
+let _ = &lt;One&gt; { t: Default::default() };
+<span class="boring">}</span></code></pre>
+<p>As of Rust 1.89, you can also use <code>_</code> to represent inferred,
+non-defaulted <code>const</code> parameters in qualified path types (or any
+other type-annotation-like position).</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Pixel&lt;const N: usize&gt;([u8; N]);
+impl&lt;const N: usize&gt; Default for Pixel&lt;N&gt; {
+    fn default() -&gt; Self {
+        Self([0; N])
+    }
+}
+
+// Calling this will let Rust infer the `const` parameter is `3`
+fn drive_inference(_: Pixel&lt;3&gt;) {}
+
+// This has worked since before Rust 1.89.
+let pixel = Pixel::default();
+drive_inference(pixel);
+
+// These failed before Rust 1.89 because `_` was not allowed for
+// const parameters, but they work today.
+let pixel = &lt;Pixel&lt;_&gt;&gt;::default();
+drive_inference(pixel);
+
+let pixel: Pixel&lt;_&gt; = Default::default();
+drive_inference(pixel);
+<span class="boring">}</span></code></pre>
+<h2 id="non-type-generic-parameters"><a class="header" href="#non-type-generic-parameters">Non-type generic parameters</a></h2>
+<p>This guide has mostly concentrated on type parameters.  We’ve tried to
+be careful with our wording throughout the guide, but let’s take a moment
+to talk specifically at how non-type parameters work with regards to
+defaults.</p>
+<h3 id="lifetime-parameters"><a class="header" href="#lifetime-parameters">Lifetime parameters</a></h3>
+<p>Lifetime paramters can not be given defaults, and do not change any of the
+default parameter behavior we’ve discussed.</p>
+<p>I’ve tried to take care to use phrases like “specify one or more non-lifetime
+parameter” instead of phrases like “empty parameter list”.  But just to make
+things more explicit: the inclusion or elision of lifetime parameters doesn’t
+change how parameter defaults work.</p>
+<p>For example, the below are still cases of specifying no required parameters,
+and thus uses an inference variable for the type parameter (which then fails
+as ambiguous).</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum Foo2&lt;'a, T = String&gt; {
+    Bar(&amp;'a T),
+    Baz,
+}
+
+let foo = Foo2::&lt;'_&gt;::Bar;
+let foo = Foo2::&lt;'static&gt;::Bar;
+<span class="boring">}</span></code></pre>
+<p>You can think of generic lists as really being <em>two</em> lists: lifetimes (which must
+come first when not elided) and non-lifetimes.  For example: if you annotate one
+lifetime, you must annotate all lifetimes, but you can still elide the non-lifetime
+parameters.  And if you annotate some non-lifetimes, you can still elide the lifetimes.</p>
+<h3 id="const-parameters"><a class="header" href="#const-parameters"><code>const</code> parameters</a></h3>
+<p><a href="https://github.com/rust-lang/rust/pull/90207"><code>const</code> parameters defaults were stabilized in Rust 1.59,</a>
+along with the ability to intermix <code>const</code> and type parameters
+in the parameter list (as otherwise the presence of a defaulted
+type parameter would force all <code>const</code> parameters to also have
+defaults, for example). <a href="https://github.com/rust-lang/rust/pull/141610"><code>_</code> for <code>const</code> parameters were stabilized in Rust 1.89.</a></p>
+<p>Generally speaking, defaulted <code>const</code> parameters act just like defaulted
+type parameters (especially since <code>_</code> for <code>const</code> was stabilized).</p>
+<h2 id="a-warning-about-implementations-and-function-arguments"><a class="header" href="#a-warning-about-implementations-and-function-arguments">A warning about implementations and function arguments</a></h2>
+<p>Default type parameters work the same in implementation headers and
+function argument lists as they do in other
+“<a href="#type-position-mechanics-in-more-detail">type positions</a>”.  This
+may be surprising when compared to elided lifetime parameters.</p>
+<p>In implementations and function argument lists, eliding a lifetime
+parameter introduces a new, independent generic lifetime parameter.
+But eliding a type parameter <em>never</em> means “introduce a new generic”.
+Elided type parameters always resolve to a single type (or error),
+whether that type comes from inference or a default type.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum Foo&lt;T = String&gt; { Bar(T), Baz }
+
+// This is an implementation for `Foo&lt;String&gt;` only:
+impl Foo {
+    fn papers_please(&amp;self) {}
+}
+
+// This is an implementation for all (`Sized`) `T`:
+impl&lt;T&gt; Foo&lt;T&gt; {
+    fn welcome(&amp;self) {}
+}
+
+let foo = Foo::Bar(0);
+
+// Works
+foo.welcome();
+
+// Fails
+foo.papers_please();
+<span class="boring">}</span></code></pre>
+<p>(Eliding lifetimes in other positions sometimes means <code>'static</code> and
+sometimes means “infer this for me”, but that’s a topic for another
+day.  Lifetime <em>parameters</em> cannot have defaults.)</p>
+<h2 id="a-warning-about-extending-structs-with-a-defaulted-parameter"><a class="header" href="#a-warning-about-extending-structs-with-a-defaulted-parameter">A warning about extending structs with a defaulted parameter</a></h2>
+<p>Part of the motivation of having defaulted parameters in the language
+is so that one can add a parameter to a type where it didn’t exist
+before without breaking all consumers of the type.  For example, as of
+this writing, <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec&lt;T&gt;</code> is really <code>Vec&lt;T, Allocator&gt;.</code></a>
+But the <code>Allocator</code> type parameter did not always exist (and is currently
+only usable on unstable).</p>
+<p>By this point it’s probably clear that more inference breakage than one
+hoped may happen despite providing a default when adding a parameter.  It’s
+generally not considered a major breaking change, but it still may be
+significant.</p>
+<p>And in particular, if your struct had <em>no</em> type or <code>const</code> parameters
+before adding one, the fallout will likely be much worse – because
+consumers of your type had no way to specify any non-lifetime parameters
+(which would “activate” the defaults).</p>
+<p><a href="https://github.com/rust-lang/rust/pull/149328#issuecomment-4071450073">See the comments starting here</a>
+for a real-life example: adding an allocator to <code>String</code> requires more
+involved changes than adding one to <code>Vec&lt;_&gt;</code> did.  (That PR is also the
+third attempt to add the parameter.)</p>
+<h2 id="default-type-parameters-elsewhere"><a class="header" href="#default-type-parameters-elsewhere">Default type parameters elsewhere</a></h2>
+<p>Declaring default parameters that are not on types, traits, or trait
+aliases either results in an error, or fires a deny-by-default lint stating that
+<a href="https://github.com/rust-lang/rust/issues/36887">support will be removed.</a></p>
+<p>Despite the lint, default parameters on functions work the same as default
+parameters on type declarations.  However, every function has a unique type
+(a “function item type”) which cannot be named.  Because the function item
+type cannot be named, most of the workarounds we’ve talked about cannot be
+applied.</p>
+<p>That being said, the case where you use a turbofish with one or more
+non-elided type parameter still works:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[expect(invalid_type_param_default)]
+fn example&lt;X, Y: Default = String&gt;() -&gt; Y {
+    Y::default()
+}
+
+let s = example::&lt;()&gt;();
+println!("{}", std::any::type_name_of_val(&amp;s));
+<span class="boring">}</span></code></pre>
+<p>Default parameters on <code>impl</code> headers do not serve any purpose as far as I’m
+aware.  Implementations don’t have names at all (which is why the parameters
+are on the <code>impl</code> keyword).</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct MyStruct;
+</span><span class="boring">trait WhyThough&lt;T, U&gt; { }
+</span>#[expect(invalid_type_param_default)]
+impl&lt;T = String&gt; WhyThough&lt;i32, T&gt; for MyStruct {}
+<span class="boring">}</span></code></pre>
+<p>Default parameters on GATs are currently just denied, even if the lint is allowed.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span>#![allow(invalid_type_param_default)]
+<span class="boring">fn main() {
+</span>trait MyTrait {
+    type Gat&lt;T = String&gt;;
+}
+<span class="boring">}</span></code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="misc-slice.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-trait.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="misc-slice.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-trait.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Trait bound interactions - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="influences-from-trait-lifetime-bounds"><a class="header" href="#influences-from-trait-lifetime-bounds">Influences from trait lifetime bounds</a></h1>
+<p>When the trait itself has lifetime bounds, those bounds may influence the
+behavior of <code>dyn Trait</code> lifetime elision.  Where and how the influence does
+or does not take place is not properly documented, but we’ll cover some
+cases here.</p>
+<p>The way trait object lifetime defaults behave in these scenarios is not
+intuitive, and perhaps even arbitrary.  But to be clear, you will probably
+never need to actually know the exact rules.  Traits with exotic lifetime
+bounds are rare, and should you actually encounter one, you can usually
+choose to be explicit instead of trying to figure out what lifetime is
+the default when elided.</p>
+<p>Which is to say, this subsection is more of an exploration of the
+compiler’s current behavior than something useful to learn.  If you’re
+trying to learn practical Rust, you should probably just skip it.</p>
+<p>A very high level summary is:</p>
+<ul>
+<li>Trait bounds introduce implied bounds on the trait object lifetimes</li>
+<li>Elision in the presence of non-<code>'static</code> trait lifetime bounds is arbitrary, so prefer to be explicit</li>
+<li>Prefer not to add non-<code>'static</code> lifetime bounds to your own object safe traits
+<ul>
+<li>Avoid multiple lifetime bounds in particular</li>
+</ul>
+</li>
+</ul>
+<p>This section is also non-exhaustive.  Given how many exceptions I have ran across,
+take my assertive statements in this section with a grain of salt.</p>
+<h2 id="trait-lifetime-bounds-create-an-implied-bound"><a class="header" href="#trait-lifetime-bounds-create-an-implied-bound">Trait lifetime bounds create an implied bound</a></h2>
+<p>The trait bound creates an implied bound on the <code>dyn Trait</code> lifetime:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait LifetimeTrait&lt;'a, 'b&gt;: 'a {}
+
+pub fn f&lt;'b&gt;(_: Box&lt;dyn LifetimeTrait&lt;'_, 'b&gt; + 'b&gt;) {}
+
+fn fp&lt;'a, 'b, 'c&gt;(t: Box&lt;dyn LifetimeTrait&lt;'a, 'b&gt; + 'c&gt;) {
+    // This compiles which indicates an implied `'c: 'a` bound
+    let c: &amp;'c [()] = &amp;[];
+    let _: &amp;'a [()] = c;
+
+    // This does not, demonstrating that `'c: 'b` is not implied
+    // (i.e. the implied bound is on the trait object lifetime only, and
+    // not on the other parameters.)
+    //let _: &amp;'b [()] = c;
+
+    // This does not as it requires `'c: 'b` and `'b: 'a`
+    //f(t);
+}
+<span class="boring">}</span></code></pre>
+<p>This is similar to how <code>&amp;'b &amp;'a _</code> creates an implied <code>'a: 'b</code> bound.
+It only applies to the trait object lifetime, and not the entirety
+of the <code>dyn Trait</code> (e.g. it does not apply to trait parameters).</p>
+<h2 id="the-static-case"><a class="header" href="#the-static-case">The <code>'static</code> case</a></h2>
+<p>We’ve already summarized the behavior of trait object lifetime elision when
+the trait itself has a <code>'static</code> bound as part of our basic guidelines: the
+lifetime in this case is always <code>'static</code>.</p>
+<p>This applies even to</p>
+<ul>
+<li>types with ambiguous (more than one) lifetime bounds</li>
+<li>types with a single lifetime bound like <code>&amp;_</code>
+<ul>
+<li>i.e. the trait object lifetime (which is <code>'static</code>) becomes independent of the outer lifetime</li>
+</ul>
+</li>
+<li>situations where a non-<code>'static</code> bound does <em>not</em> override the <code>&amp;_</code> trait object lifetime default, as in some of the examples further below</li>
+</ul>
+<p>This case applies even if there are multiple bounds and only one of them is
+<code>'static</code>, in contrast with
+<a href="./dyn-elision-advanced.html#ambiguous-bounds">bounds considered ambiguous from the struct definition.</a></p>
+<h2 id="a-single-trait-lifetime-bound-does-not-always-apply"><a class="header" href="#a-single-trait-lifetime-bound-does-not-always-apply">A single trait lifetime bound does not always apply</a></h2>
+<p>According to the reference, the default trait object lifetime for a trait
+with a single lifetime bound in the context of a generic struct with no
+lifetime bounds is always the lifetime in the trait’s bound.</p>
+<p>That’s a mouthful, but the implication is that here:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+<span class="boring">}</span></code></pre>
+<p>The elided lifetime of <code>Box&lt;dyn Single&lt;'a&gt;&gt;</code> is always <code>'a</code>.</p>
+<p>However, this is not actually the case:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>// The elided lifetime was `'static`, not `'a`, so this compiles
+fn foo&lt;'a&gt;(s: Box&lt;dyn Single&lt;'a&gt;&gt;) {
+    let s: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = s;
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>// In this case it *is* `'a`, so compilation fails
+fn bar&lt;'a: 'a&gt;(s: Box&lt;dyn Single&lt;'a&gt;&gt;) {
+    let s: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = s;
+}
+<span class="boring">}</span></code></pre>
+<h2 id="when-they-apply-trait-lifetime-bounds-override-struct-bounds"><a class="header" href="#when-they-apply-trait-lifetime-bounds-override-struct-bounds">When they apply, trait lifetime bounds override struct bounds</a></h2>
+<p>According to the reference, bounds on the trait never override bounds on
+the struct.  But based on my testing, the opposite is true: <em>when</em> bounds
+on the trait apply, they <em>always</em> override the bounds on the struct.</p>
+<p>The complicated part is figuring out when they apply.</p>
+<p>For example, the following compiles, but according to the reference it
+should be ambiguous due to the multiple lifetime bounds on the struct.
+It does not compile without the lifetime bound on the trait; the bound
+on the trait is overriding the ambiguous bounds on the struct.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use core::marker::PhantomData;
+
+// Remove `: 'a` to see the compile error
+pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+
+pub struct Over&lt;'a, T: 'a + 'static + ?Sized&gt;(&amp;'a T);
+
+pub struct Invariant&lt;T: ?Sized&gt;(*mut PhantomData&lt;T&gt;);
+unsafe impl&lt;T: ?Sized&gt; Sync for Invariant&lt;T&gt; {}
+
+pub static OS: Invariant&lt;Over&lt;'_, dyn LifetimeTrait&gt;&gt; = Invariant(std::ptr::null_mut());
+<span class="boring">}</span></code></pre>
+<p>Further below are some examples where the trait bound overrides the
+<code>&amp;_</code> bounds as well, so it is not just ambiguous struct bounds which can
+be overridden by trait bounds.</p>
+<h2 id="multiple-trait-bounds-can-be-ambiguous-or-can-apply"><a class="header" href="#multiple-trait-bounds-can-be-ambiguous-or-can-apply">Multiple trait bounds can be ambiguous or can apply</a></h2>
+<p>The following is considered ambiguous due to the multiple lifetime bounds
+on the trait.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+fn f&lt;'a, 'b, T: Double&lt;'a, 'b&gt; + 'static&gt;(t: T) {
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt; = Box::new(t);
+
+    // This version works:
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = Box::new(t);
+}
+<span class="boring">}</span></code></pre>
+<p>The current documentation is silent on this point, but a multiple-bound
+trait can still apply in such a way that it provides the default trait
+object lifetime.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+fn x1&lt;'a: 'a, 'b&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;) {
+    // This fails (the lifetime is not `'static`)
+    //let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = bx;
+
+    // This also fails (the lifetime is not `'b` nor `'a + 'b`)
+    //let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'b&gt; = bx;
+
+    // But this succeeds and we can conclude the lifetime is `'a`
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + 'a&gt; = bx;
+}
+<span class="boring">}</span></code></pre>
+<p>There’s a subtle point here: the elided trait object lifetime is <code>'a</code>,
+but there’s an implied <code>: 'a + 'b</code> bound on the trait object lifetime
+due to the trait bounds.  Therefore the function signature has an
+implied <code>'a: 'b</code> bound, similar to when you have a <code>&amp;'b &amp;'a _</code>
+argument.</p>
+<h2 id="trait-bounds-always-apply-in-function-bodies"><a class="header" href="#trait-bounds-always-apply-in-function-bodies">Trait bounds <em>always</em> apply in function bodies</a></h2>
+<p>Based on my testing, the default trait object lifetime for annotations
+of <code>dyn Trait</code> in function bodies is <em>always</em> the trait bound.  And in
+fact, this bound <em>even overrides the wildcard <code>'_</code> lifetime annotation</em>.</p>
+<p>This is a surprising exception to the <code>'_</code> annotation restoring “normal”
+lifetime elision behavior.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+
+fn baz&lt;'long: 'a, 'a, T: 'long + Single&lt;'a&gt;&gt;(s: T) {
+    // This compiles with the assignment at the end:
+    //let s: Box&lt;dyn Single&lt;'a&gt; + 'long&gt; = Box::new(s);
+
+    // But none of these compile because `'a: 'long` does not hold:
+    //let s: Box&lt;dyn Single&lt;'a&gt;&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'_&gt;&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'a&gt; + '_&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single&lt;'_&gt; + '_&gt; = Box::new(s);
+    //let s: Box&lt;dyn Single + '_&gt; = Box::new(s);
+    let s: Box&lt;dyn Single&gt; = Box::new(s);
+
+    let s: Box&lt;dyn Single&lt;'_&gt; + 'long&gt; = s;
+}
+<span class="boring">}</span></code></pre>
+<h2 id="when-and-how-to-trait-lifetime-bounds-apply"><a class="header" href="#when-and-how-to-trait-lifetime-bounds-apply">When and how to trait lifetime bounds apply?</a></h2>
+<p>Now that we’ve seen a number of examples, we can theorize when and how
+trait lifetime bounds apply.  As the examples have already illustrated,
+there are very different rules for different contexts.</p>
+<h3 id="in-function-signatures"><a class="header" href="#in-function-signatures">In function signatures</a></h3>
+<p>This appears to be the most complex and arbitrary context for trait object lifetime elision.</p>
+<p>If you were paying close attention, you may have noticed that we occasionally had
+trivial bounds like <code>'a: 'a</code> in the examples above, and that affected whether the
+trait bounds applied or not.  A lifetime parameter of a function with no
+<em>explicit</em> bounds is known as a late-bound parameter, and
+<a href="https://github.com/rust-lang/rust/issues/47078">whether or not a lifetime is late-bound influences when the trait bounds apply
+in function signatures.</a>
+Parameters which are not late-bound are early-bound.</p>
+<p>Let us call a lifetime parameter of a trait which is also a bound of the trait
+a “bounding parameter”.  My hypothesis on the behavior is as follows:</p>
+<ul>
+<li>if any trait bound is <code>'static</code>, the default lifetime is <code>'static</code></li>
+<li>if any bounding parameter is explicitly <code>'static</code>, the default lifetime is <code>'static</code></li>
+<li>if exactly one bounding parameter is early-bound, the default lifetime is that lifetime
+<ul>
+<li>including if it is in multiple positions, such as <code>dyn Double&lt;'a, 'a&gt;</code></li>
+</ul>
+</li>
+<li>if more than one bounding parameter is early-bound, the default lifetime is ambiguous</li>
+<li>if no bounding parameters are early-bound, the default lifetime depends on the <code>struct</code>
+bounds (the same as they do for a trait without bounds)</li>
+</ul>
+<p>Note that in any case, the implied bounds on the trait object lifetime
+that exist due to the trait bounds are still in effect.</p>
+<p>The requirement that exactly one of the bounding parameters is early-bound
+or that any of them are <code>'static</code> are syntactical requirements, rather than
+semantic ones.  For example:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+// Semantically, `'a` and `'b` must be `'static`.  However the
+// parameters were not explicitly `'static` and thus this
+// trait object lifetime is considered ambiguous (even though,
+// due to the implied bounds, it must be `'static` too).
+fn foo&lt;'a: 'static, 'b: 'static&gt;(d: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;) {}
+
+// Semantically, `'a` and `'b` must be the same.  They are also
+// early-bound parameters due to the bounds.  However the parameters
+// are not syntatically the same lifetime and thus this trait
+// object lifetime is considered ambiguous.
+fn bar&lt;'a: 'b, 'b: 'a&gt;(d: &amp;dyn Double&lt;'a, 'b&gt;) {}
+<span class="boring">}</span></code></pre>
+<p>But if you change either example to <code>Double&lt;'a, 'a&gt;</code>, then
+exactly one of the bounding parameters is early-bound, and they
+will compile:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+</span>fn foo&lt;'a: 'static, 'b: 'static&gt;(d: Box&lt;dyn Double&lt;'a, 'a&gt;&gt;) {}
+fn bar&lt;'a: 'b, 'b: 'a&gt;(d: &amp;dyn Double&lt;'a, 'a&gt;) {}
+<span class="boring">}</span></code></pre>
+<h4 id="implicit-bounds-do-not-negate-being-late-bound"><a class="header" href="#implicit-bounds-do-not-negate-being-late-bound">Implicit bounds do not negate being late-bound</a></h4>
+<p>Note that when considering <code>&amp;dyn Trait</code> there is always an <em>implied</em> bound between the
+outer reference’s lifetime and the <code>dyn Trait</code> (in addition to the implied bound from
+the trait itself).  However, these implied bounds are not enough to make the trait
+bound apply on their own.  A lifetime can be late-bound even when there are implied bounds.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+impl LifetimeTrait&lt;'_&gt; for () {}
+
+// All of these compile with the `fp` function below, indicating that
+// the trait bound does in fact apply and results in a trait object
+// lifetime independent of the reference lifetime
+pub fn f&lt;'a: 'a&gt;(_: &amp;dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'a: 'a&gt;(_: &amp;'_ dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a: 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a: 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a: 'r + 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a: 'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+
+// However none of these compile with `fp`, indicating that the elided trait
+// object lifetime is defaulting to the reference lifetime "per normal".
+//pub fn f(_: &amp;dyn LifetimeTrait) {}
+//pub fn f(_: &amp;'_ dyn LifetimeTrait) {}
+//pub fn f&lt;'r&gt;(_: &amp;'r dyn LifetimeTrait) {}
+//pub fn f&lt;'r: 'r&gt;(_: &amp;'r dyn LifetimeTrait) {}
+
+//pub fn f(_: &amp;dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f(_: &amp;'_ dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f&lt;'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'_&gt;) {}
+//pub fn f&lt;'r: 'r&gt;(_: &amp;'r dyn LifetimeTrait&lt;'_&gt;) {}
+
+//pub fn f&lt;'a&gt;(_: &amp;dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'a&gt;(_: &amp;'_ dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r, 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+//pub fn f&lt;'r: 'r, 'a&gt;(_: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {}
+
+// n.b. `'a` is invariant due to being a trait parameter
+fn fp&lt;'a&gt;(t: &amp;(dyn LifetimeTrait&lt;'a&gt; + 'a)) {
+    f(t);
+}
+<span class="boring">}</span></code></pre>
+<p>The above examples also demonstrate that when trait bounds apply,
+they do override non-ambiguous struct bounds (such as those of <code>&amp;_</code>).</p>
+<h4 id="implied-bounds-and-default-object-bounds-interact"><a class="header" href="#implied-bounds-and-default-object-bounds-interact">Implied bounds and default object bounds interact</a></h4>
+<p>The interaction between what the default object lifetime is for a given
+signature can interact in potentially surprising ways.  Consider this example:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait LifetimeTrait&lt;'a&gt;: 'a {}
+</span>// The implied bounds in `&amp;'outer (dyn Lifetime&lt;'param&gt; + 'trait)` are:
+// - `'param: 'outer` (validity of the reference)
+// - `'trait: 'outer` (validity of the reference)
+// - `'trait: 'param` (from the trait bound)
+//
+// And as the trait bound does not apply to the elided parameter in this
+// case, we also have `'outer = 'trait` due to the "normal" default
+// lifetime behavior of `&amp;_`.  Adding that equality to the above bounds
+// results in a requirement that *all three lifetimes are the same*.
+//
+// And thus this compiles:
+pub fn g&lt;'r, 'a&gt;(d: &amp;'r dyn LifetimeTrait&lt;'a&gt;) {
+    let r: [&amp;'r (); 1] = [&amp;()];
+    let a: [&amp;'a (); 1] = [&amp;()];
+    let _: [&amp;'a (); 1] = r;
+    let _: [&amp;'r (); 1] = a;
+    let _: &amp;'r (dyn LifetimeTrait&lt;'r&gt; + 'r) = d;
+    let _: &amp;'a (dyn LifetimeTrait&lt;'a&gt; + 'a) = d;
+}
+<span class="boring">}</span></code></pre>
+<p>The results can be even more surprising with more complex bounds:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+fn h&lt;'a, 'b, T&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt;&gt;, t: &amp;'a T)
+where
+    &amp;'a T: Send, // this makes `'a` early-bound
+{
+    // `bx` is `Box&lt;dyn Double&lt;'a, 'b&gt; + 'a&gt;` as per the rules above,
+    // so this does not compile:
+    //let _: Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt; = bx;
+
+    // However, the implied bounds still apply, which means:
+    // - `'a: 'a + 'b`
+    // - So `'a: 'b`
+    //
+    // Which is why this can compile even though that bound
+    // is not declared anywhere!
+    let t: &amp;'b T = t;
+
+    // The lifetimes are still not the same, so this fails
+    let _: &amp;'a T = t;
+}
+<span class="boring">}</span></code></pre>
+<p>The only reason that <code>'a: 'b</code> is an implied bound in the above example
+is the interaction between</p>
+<ul>
+<li>the implied <code>: 'a + 'b</code> bound on the trait object lifetime</li>
+<li>the default trait object lifetime being <code>'a</code>
+<ul>
+<li>due to <code>'a</code> being early-bound and <code>'b</code> being late-bound</li>
+</ul>
+</li>
+</ul>
+<p>If <code>'b</code> was also early-bound, the default trait object lifetime would
+be ambiguous.  If <code>'a</code> wasn’t early-bound, the default trait object
+lifetime would be <code>'static</code> and there would be no implied <code>'a: 'b</code>
+bound.</p>
+<h4 id="the-wildcard-lifetime-still-introduces-a-fresh-inference-lifetime"><a class="header" href="#the-wildcard-lifetime-still-introduces-a-fresh-inference-lifetime">The wildcard lifetime still introduces a fresh inference lifetime</a></h4>
+<p>Based on my testing, using <code>'_</code> will behave like typical lifetime elision,
+introducing a fresh inference lifetime in input position, and following
+the function signature elision rules in output position.</p>
+<h4 id="higher-ranked-lifetimes-are-late-bound"><a class="header" href="#higher-ranked-lifetimes-are-late-bound">Higher-ranked lifetimes are late-bound</a></h4>
+<p>Based on my testing, <code>for&lt;'a&gt; dyn Trait...</code> lifetimes act the same as
+late-bound lifetimes.</p>
+<h3 id="function-bodies"><a class="header" href="#function-bodies">Function bodies</a></h3>
+<p>As mentioned above, trait object bounds always apply in function bodies,
+similar to function signatures where every lifetime is early-bound.  This
+is true regardless of whether the lifetimes are early or late bound in
+the function signature.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+
+fn foo&lt;'r, 'a&gt;(bx: Box&lt;dyn Single&lt;'a&gt; + 'static&gt;, rf: &amp;'r (dyn Single&lt;'a&gt; + 'static)) {
+    // Here it is `'a`, and not `'static` nor inferred
+    let bx: Box&lt;dyn Single&lt;'a&gt;&gt; = bx;
+    // So this fails
+    //let _: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = bx;
+
+    // Here it is `'a`, and not the same as the reference lifetime nor inferred
+    let a: &amp;dyn Single&lt;'a&gt; = rf;
+    // So this succeeds
+    let _: &amp;(dyn Single&lt;'a&gt; + 'a) = a;
+    // And this fails
+    //let _: &amp;(dyn Single&lt;'a&gt; + 'static) = a;
+
+    // Same behavior when the reference lifetime is explicit
+    let a: &amp;'r dyn Single&lt;'a&gt; = rf;
+    let _: &amp;'r (dyn Single&lt;'a&gt; + 'a) = a;
+    //let _: &amp;'r (dyn Single&lt;'a&gt; + 'static) = a;
+
+    // This also fails, demonstrating that `'r` is not `'a`
+    //let _: &amp;'a &amp;'r () = &amp;&amp;();
+}
+<span class="boring">}</span></code></pre>
+<p>And unlike elsewhere, using <code>'_</code> in place of complete trait object
+lifetime elision in the function body does not restore the normal
+lifetime elision behavior (which would be inferring the lifetime).
+All three of the examples above behave identically if <code>'_</code> is used.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span>fn foo&lt;'r, 'a&gt;(bx: Box&lt;dyn Single&lt;'a&gt; + 'static&gt;, rf: &amp;'r (dyn Single&lt;'a&gt; + 'static)) {
+    let bx: Box&lt;dyn Single&lt;'a&gt; + '_&gt; = bx;
+    // Fails
+    //let _: Box&lt;dyn Single&lt;'a&gt; + 'static&gt; = bx;
+
+    let a: &amp;(dyn Single&lt;'a&gt; + '_) = rf;
+    let _: &amp;(dyn Single&lt;'a&gt; + 'a) = a;
+    // Fails
+    //let _: &amp;(dyn Single&lt;'a&gt; + 'static) = a;
+
+    let a: &amp;'r (dyn Single&lt;'a&gt; + '_) = rf;
+    let _: &amp;'r (dyn Single&lt;'a&gt; + 'a) = a;
+    // Fails
+    //let _: &amp;'r (dyn Single&lt;'a&gt; + 'static) = a;
+}
+<span class="boring">}</span></code></pre>
+<p>In combination with the behavior of function signatures, this can
+lead to some awkward situations.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+// Here in the signature, `'_` acts like "normal" and creates an
+// independent lifetime for the trait object lifetime; let us call
+// it `'c`.  Though independent, it is related due to the implied
+// bounds: `'c: 'a + 'b`
+fn foo&lt;'a, 'b&gt;(bx: Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt;) {
+    // Here in the body, the default trait object lifetime is
+    // considered ambiguous, and `'_` does not override this.
+    //
+    // Moreover, there is no way to name `'c` since it was
+    // elided in the signature.  We could annotate this as
+    // either `'a` or `'b`, but cannot "preserve" the full
+    // lifetime unless we change the function signature to
+    // give the lifetime a name.
+    let bx: Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt; = bx;
+}
+<span class="boring">}</span></code></pre>
+<h3 id="static-contexts"><a class="header" href="#static-contexts">Static contexts</a></h3>
+<p>In most static contexts, any elided lifetimes (not just trait object
+lifetimes) default to the <code>'static</code> lifetime.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span>trait Single&lt;'a&gt;: 'a + Send + Sync {}
+trait Halfie&lt;'a, 'b&gt;: 'a + Send + Sync {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b + Send + Sync {}
+
+static BS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+static BH: PhantomData&lt;Box&lt;dyn Halfie&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+static BD: PhantomData&lt;Box&lt;dyn Double&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+
+static S_BS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = BS;
+static S_BH: PhantomData&lt;Box&lt;dyn Halfie&lt;'static, 'static&gt; + 'static&gt;&gt; = BH;
+static S_BD: PhantomData&lt;Box&lt;dyn Double&lt;'static, 'static&gt; + 'static&gt;&gt; = BD;
+
+const CS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+const CH: PhantomData&lt;Box&lt;dyn Halfie&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+const CD: PhantomData&lt;Box&lt;dyn Double&lt;'_, '_&gt;&gt;&gt; = PhantomData;
+
+const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = CS;
+const S_CH: PhantomData&lt;Box&lt;dyn Halfie&lt;'static, 'static&gt; + 'static&gt;&gt; = CH;
+const S_CD: PhantomData&lt;Box&lt;dyn Double&lt;'static, 'static&gt; + 'static&gt;&gt; = CD;
+<span class="boring">}</span></code></pre>
+<p>However, from Rust 1.64 forward, associated <code>const</code>s were allowed to use general
+elided lifetimes and the wildcard lifetime (as opposed to only elided
+trait object lifetimes).  <a href="https://github.com/rust-lang/rust/issues/115010">This was an accidental stabilization which
+will probably be removed or modified.</a></p>
+<p>In the meanwhile, elided lifetimes act like independent lifetime
+variables on the <code>impl</code> block.  Those in turn act like early-bound
+lifetimes in function signatures.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span>struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt; = PhantomData;
+
+    // Fails
+    //const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'static&gt;&gt; = Self::CS;
+    const S_CS: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt; = Self::CS;
+}
+<span class="boring">}</span></code></pre>
+<p>Elided lifetimes can be inferred to be <code>'static</code> elsewhere…</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span>#![allow(elided_lifetimes_in_associated_constant)]
+<span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span><span class="boring">struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+</span>impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const ECS: PhantomData&lt;Box&lt;dyn Single&lt;'_&gt;&gt;&gt; = PhantomData;
+    const SCS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt;&gt;&gt; = PhantomData;
+
+    const S_ECS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = Self::ECS;
+    const S_SCS: PhantomData&lt;Box&lt;dyn Single&lt;'static&gt; + 'static&gt;&gt; = Self::SCS;
+}
+<span class="boring">}</span></code></pre>
+<p><em>…however,</em> it’s really a free variable.  Therefore, cases such
+as this are considered ambiguous:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span>#![allow(elided_lifetimes_in_associated_constant)]
+<span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Double&lt;'a, 'b&gt;: 'a + 'b + Send + Sync {}
+</span><span class="boring">struct L&lt;'l, 'm&gt;(&amp;'l str, &amp;'m str);
+</span>impl&lt;'a, 'b&gt; L&lt;'a, 'b&gt; {
+    const EBCD: PhantomData&lt;Box&lt;dyn Double&lt;'a, '_&gt;&gt;&gt; = PhantomData;
+}
+<span class="boring">}</span></code></pre>
+<p>…and cases such this are considered to be a borrow check violation,
+as there are no outlives relationships between the anonymously
+introduced lifetime parameters:</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span>#![allow(elided_lifetimes_in_associated_constant)]
+<span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span><span class="boring">trait Single&lt;'a&gt;: 'a + Send + Sync {}
+</span>struct R&lt;'l, 'm, 'r&gt;(&amp;'l str, &amp;'m str, &amp;'r ());
+impl&lt;'a, 'b, 'r&gt; R&lt;'a, 'b, 'r&gt; where 'a: 'r, 'b: 'r {
+    const ECS: PhantomData&lt;&amp;dyn Single&lt;'_&gt;&gt; = PhantomData;
+    const RECS: PhantomData&lt;&amp;'r dyn Single&lt;'_&gt;&gt; = PhantomData;
+}
+<span class="boring">}</span></code></pre>
+<p>(There is no implicit bound due to nesting the lifetimes because
+the nesting occurs in the body of the <code>impl</code> block and not the header.)</p>
+<p>As of the latest update to this subsection, examples with
+<code>allow(elided_lifetimes_in_associated_constant)</code> fire a deny-by-default
+forward compatibility lint, and will likely be entirely disallowed at some
+point.</p>
+<h3 id="impl-headers"><a class="header" href="#impl-headers"><code>impl</code> headers</a></h3>
+<p>Trait bounds always apply in <code>impl</code> headers.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Single&lt;'a&gt;: 'a {}
+trait Halfie&lt;'a, 'b&gt;: 'a {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+struct S&lt;T&gt;(T);
+
+// The trait bounds apply
+impl&lt;'a&gt; S&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt; { fn f01() {} } // 'a (not 'static)
+impl&lt;'a, 'r&gt; S&lt;&amp;'r dyn Single&lt;'a&gt;&gt; { fn f02() {} } // 'a (not 'r)
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt;&gt;&gt; { fn f03() {} } // 'a (not 'static)
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r dyn Halfie&lt;'a, 'b&gt;&gt; { fn f04() {} } // 'a (not 'r)
+// Ambiguous (uncomment for error)
+// impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Double&lt;'a, 'b&gt;&gt;&gt; { fn f05() {} }
+// impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r dyn Double&lt;'a, 'b&gt;&gt; { fn f05() {} }
+
+// Try `+ 'static` or `+ 'r` for errors
+fn f&lt;'a, 'b, 'r&gt;(_: &amp;'r &amp;'a str, _: &amp;'r &amp;'b str) {
+    S::&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt;::f01();
+    S::&lt;&amp;'r (dyn Single&lt;'a&gt; + 'a)&gt;::f02();
+    S::&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'a&gt;&gt;::f03();
+    S::&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'a)&gt;::f04();
+}
+<span class="boring">}</span></code></pre>
+<p>As in function signatures, but unlike function bodies, the wildcard lifetime
+<code>'_</code> acts like normal elision (introducing a new anonymous lifetime variable).</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Single&lt;'a&gt;: 'a {}
+</span><span class="boring">trait Halfie&lt;'a, 'b&gt;: 'a {}
+</span><span class="boring">trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+</span><span class="boring">struct S&lt;T&gt;(T);
+</span>// The wildcard lifetime `'_` introduces an independent lifetime
+// (covering all cases including `'static`) as per normal
+impl&lt;'a&gt; S&lt;Box&lt;dyn Single&lt;'a&gt; + '_&gt;&gt; { fn f26() {} }
+impl&lt;'a, 'r&gt; S&lt;&amp;'r (dyn Single&lt;'a&gt; + '_)&gt; { fn f27() {} }
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + '_&gt;&gt; { fn f28() {} }
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + '_)&gt; { fn f29() {} }
+impl&lt;'a, 'b&gt; S&lt;Box&lt;dyn Double&lt;'a, 'b&gt; + '_&gt;&gt; { fn f30() {} }
+impl&lt;'a, 'b, 'r&gt; S&lt;&amp;'r (dyn Double&lt;'a, 'b&gt; + '_)&gt; { fn f31() {} }
+
+fn f&lt;'a, 'b, 'r&gt;(_: &amp;'r &amp;'a str, _: &amp;'r &amp;'b str) {
+    S::&lt;Box&lt;dyn Single&lt;'a&gt; + 'static&gt;&gt;::f26();
+    S::&lt;&amp;'r (dyn Single&lt;'a&gt; + 'static)&gt;::f27();
+    S::&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'static&gt;&gt;::f28();
+    S::&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'static)&gt;::f29();
+    S::&lt;Box&lt;dyn Double&lt;'a, 'b&gt; + 'static&gt;&gt;::f30();
+    S::&lt;&amp;'r (dyn Double&lt;'a, 'b&gt; + 'static)&gt;::f31();
+}
+<span class="boring">}</span></code></pre>
+<h3 id="associated-types"><a class="header" href="#associated-types">Associated types</a></h3>
+<p>Similar to <code>impl</code> headers, trait bounds always apply to associated types.</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use core::marker::PhantomData;
+</span>trait Single&lt;'a&gt;: 'a {}
+trait Halfie&lt;'a, 'b&gt;: 'a {}
+trait Double&lt;'a, 'b&gt;: 'a + 'b {}
+
+trait Assoc {
+    type A01: ?Sized + Default;
+    type A02: ?Sized + Default;
+    //type A03: ?Sized + Default;
+    type A04: ?Sized + Default;
+    type A05: ?Sized + Default;
+    //type A06: ?Sized + Default;
+}
+
+impl&lt;'r, 'a, 'b&gt; Assoc for (&amp;'r &amp;'a (), &amp;'r &amp;'b ()) {
+    // '_ is not allowed here
+    // &amp; /* elided */ is not allowed here
+    type A01 = PhantomData&lt;Box&lt;dyn Single&lt;'a&gt;&gt;&gt;;
+    type A02 = PhantomData&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt;&gt;&gt;;
+    // ambiguous
+    // type A03 = PhantomData&lt;Box&lt;dyn Double&lt;'a, 'b&gt;&gt;&gt;;
+    type A04 = PhantomData&lt;&amp;'r dyn Single&lt;'a&gt;&gt;;
+    type A05 = PhantomData&lt;&amp;'r dyn Halfie&lt;'a, 'b&gt;&gt;;
+    // ambiguous
+    // type A06 = PhantomData&lt;&amp;'r dyn Double&lt;'a, 'b&gt;&gt;;
+}
+
+fn f&lt;'r, 'a: 'r, 'b: 'r&gt;() {
+    // 'a (not `'static`, `'r`, `'b`)
+    let _: PhantomData&lt;Box&lt;dyn Single&lt;'a&gt; + 'a&gt;&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A01::default();
+    let _: PhantomData&lt;Box&lt;dyn Halfie&lt;'a, 'b&gt; + 'a&gt;&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A02::default();
+    let _: PhantomData&lt;&amp;'r (dyn Single&lt;'a&gt; + 'a)&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A04::default();
+    let _: PhantomData&lt;&amp;'r (dyn Halfie&lt;'a, 'b&gt; + 'a)&gt; = &lt;(&amp;'r &amp;'a (), &amp;'r &amp;'b ()) as Assoc&gt;::A05::default();
+}
+<span class="boring">}</span></code></pre>
+<p>Note: I have not performed extensive tests with GATs or associated types which themselves
+have lifetime bounds in combination with bounded traits.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-elision-advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-elision-citations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-elision-advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-elision-citations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

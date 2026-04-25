@@ -1,0 +1,585 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dyn Trait vs. alternatives - Learning Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Advice for learning Rust">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-1ba92b06.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-9a79905f.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Learning Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/QuineDot/rust-learning" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="dyn-trait-vs-alternatives"><a class="header" href="#dyn-trait-vs-alternatives"><code>dyn Trait</code> vs. alternatives</a></h1>
+<p>When getting familiar with Rust, it can be hard at first to
+recognize when you should use <code>dyn Trait</code> versus some other
+type mechanism, such as <code>impl Trait</code> or generics.</p>
+<p>In this section we look at some tradeoffs, depending on the
+use case.</p>
+<h2 id="generic-functions-and-argument-position-impl-trait"><a class="header" href="#generic-functions-and-argument-position-impl-trait">Generic functions and argument position <code>impl Trait</code></a></h2>
+<h3 id="preliminaries-what-is-argument-position-impl-trait"><a class="header" href="#preliminaries-what-is-argument-position-impl-trait">Preliminaries: What is argument position <code>impl Trait</code>?</a></h3>
+<p>When we talk about argument position <code>impl Trait</code>, aka APIT,
+we’re talking about functions such as this:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>fn foo(d: impl Display) { println!("{d}"); }
+// APIT:  ^^^^^^^^^^^^
+<span class="boring">}</span></code></pre>
+<p>That is, <code>impl Trait</code> as an argument type of a function.</p>
+<p>APIT is, so far at least, mostly the same as a generic parameter:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>fn foo&lt;D: Display&gt;(d: D) { println!("{d}"); }
+<span class="boring">}</span></code></pre>
+<p>The main difference is that generics</p>
+<ul>
+<li>allow the function writer to refer to <code>D</code>
+<ul>
+<li>e.g. <code>D::to_string(&amp;d)</code></li>
+</ul>
+</li>
+<li>allow function callers to turbofish the function
+<ul>
+<li>e.g. <code>let function_pointer = foo::&lt;String&gt;;</code></li>
+</ul>
+</li>
+<li>are compatible with <code>impl use&lt;..&gt;</code> return types
+<ul>
+<li>whereas APIT is not:</li>
+</ul>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>fn works&lt;D: Display&gt;(_: &amp;D) -&gt; impl Sized + use&lt;D&gt; {}
+fn fails(_: &amp;impl Display) -&gt; impl Sized + use&lt;&gt; {}
+<span class="boring">}</span></code></pre>
+</li>
+</ul>
+<p>These differences are due to the <code>impl Display</code> parameter being unnameable
+both inside and outside of the function.</p>
+<p>There may be more differences in the future, but for now at least,
+generics are the more flexible and thus superior form – unless you
+have a burning hatred against the <code>&lt;...&gt;</code> syntax, anyway.</p>
+<p>Other than the above differences, comparing <code>dyn Trait</code> against APIT
+is essentially the same as comparing <code>dyn Trait</code> against a function
+with a generic type parameter.</p>
+<h3 id="tradeoffs-between-generic-functions-and-dyn-trait"><a class="header" href="#tradeoffs-between-generic-functions-and-dyn-trait">Tradeoffs between generic functions and <code>dyn Trait</code></a></h3>
+<p>Here, we’re talking about choosing between signatures like so:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">trait Trait {}
+</span>// Owned or borrowed generics
+fn foo1&lt;T: Trait&gt;(t: T) {}
+fn bar1&lt;T: Trait + ?Sized&gt;(t: &amp;T) {}
+
+// Owned or borrowed `dyn Trait`
+fn foo2(t: Box&lt;dyn Trait + '_&gt;) {}
+fn bar2(t: &amp;dyn Trait) {}
+<span class="boring">}</span></code></pre>
+<p>When a function has a generic parameter, the parameter is <em>monomorphized</em>
+for every concrete type which is used to call the function (after lifetime
+erasure).  That is, every type the parameter takes on results in a distinct
+function in the compiled code.  (Some of the resulting functions may be
+eliminated or combined by optimization if possible).  There could be many
+copies of <code>foo1</code> and <code>bar1</code>, depending on how it’s called.</p>
+<p>But (after lifetime erasure), <code>dyn Trait</code> is a singular concrete type.
+There will only be one copy of <code>foo2</code> and <code>bar2</code>.</p>
+<p>Yet in your typical Rust program, generic arguments are preferred over
+<code>dyn Trait</code> arguments.  Why is that?  There are a number of reasons:</p>
+<ul>
+<li>Each monomorphized function can typically be optimized better</li>
+<li>Trait bounds are more general than <code>dyn Trait</code>
+<ul>
+<li>No <code>dyn</code> compatibility concerns (<code>T: Clone</code> is possible)</li>
+<li>No single trait restriction (<code>T: Trait1 + Trait2</code> is allowed)</li>
+</ul>
+</li>
+<li>Less indirection through dynamic dispatch</li>
+<li>No need for boxing in the owned case
+<ul>
+<li><code>Box</code> isn’t even available in <code>#![no_std]</code> programs</li>
+</ul>
+</li>
+</ul>
+<p>The <code>dyn Trait</code> versions do have the following advantages:</p>
+<ul>
+<li>Smaller code size</li>
+<li>Faster code generation</li>
+<li><a href="./dyn-trait-erased.html">Do not make traits <code>dyn</code> incompatible</a></li>
+</ul>
+<p>In general, you should prefer generics unless you have a specific
+reason to opt for <code>dyn Trait</code> in argument position.</p>
+<h2 id="return-position-impl-trait-and-tait"><a class="header" href="#return-position-impl-trait-and-tait">Return position <code>impl Trait</code> and TAIT</a></h2>
+<h3 id="preliminaries-what-are-return-position-impl-trait-and-tait"><a class="header" href="#preliminaries-what-are-return-position-impl-trait-and-tait">Preliminaries: What are return position <code>impl Trait</code> and TAIT?</a></h3>
+<p>When we talk about return position <code>impl Trait</code>, aka RPIT, we’re talking
+about functions such as this:</p>
+<pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// RPIT:                vvvvvvvvvvvvvvvvvvvvvvv
+fn foo&lt;T&gt;(v: Vec&lt;T&gt;) -&gt; impl Iterator&lt;Item = T&gt; {
+    v.into_iter().inspect(|t| println!("{t:p}"))
+}
+<span class="boring">}</span></code></pre>
+<p>Unlike <abbr title="argument position impl trait">APIT</abbr>,
+RPITs are not the same as a generic type parameter.  They are instead
+opaque type aliases or opaque type alias constructors.  In the above
+example, the RPIT is an opaque type alias constructor which depends
+on the input type parameter of the function (<code>T</code>).  For every concrete
+<code>T</code>, the RPIT is also an alias of a <em><strong>singular</strong></em> concrete type.</p>
+<p>The function body and the compiler still know what the concrete type is,
+but that is opaque to the caller and other code.  Instead, the only ways
+you can use the type are those which are compatible with the trait or
+traits in the <code>impl Trait</code>, plus any auto traits which the concrete type
+happens to implement.  (Or things provable from such properties, such
+as blanket trait implementations.)</p>
+<p>The singular part is key: the following code does not compile because
+it is trying to return two distinct types.  Rust is strictly and
+statically typed, so this is not possible – the opacity of the RPIT
+does not and cannot change that.</p>
+<pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::Display;
+</span>fn foo(b: bool) -&gt; impl Display {
+    if b { 0 } else { "hi!" }
+}
+<span class="boring">}</span></code></pre>
+<p><code>type</code> alias <code>impl Trait</code>, or TAIT, is a generalization of RPIT which
+<a href="https://github.com/rust-lang/rust/issues/63063">is not yet stable,</a>
+but will probably become stable before <em>too</em> much longer.  TAIT allows
+one to define aliases for opaque types, which allows them to be named
+and to be used in more than one location.</p>
+<pre class="playground"><code class="language-rust ignore nightly mdbook-runnable edition2024">#![feature(type_alias_impl_trait)]
+<span class="boring">fn main() {}
+</span>type MyDisplay = impl std::fmt::Display;
+
+#[define_opaque(MyDisplay)]
+fn foo() -&gt; MyDisplay { "hello," }
+
+#[define_opaque(MyDisplay)]
+fn bar() -&gt; MyDisplay { " world" }</code></pre>
+<p>Notionally (and hopefully literally), RPIT desugars to a TAIT in
+a manner similar to this:</p>
+<pre class="playground"><code class="language-rust ignore nightly mdbook-runnable edition2024">#![feature(type_alias_impl_trait)]
+<span class="boring">fn main() {}
+</span><span class="boring">use std::fmt::Display;
+</span>fn foo1() -&gt; impl Display { "hi" }
+
+// Same thing... or so
+type __Unnameable_Tait = impl Display;
+#[define_opaque(__Unnameable_Tait)]
+fn foo2() -&gt; __Unnameable_Tait { "hi" }</code></pre>
+<p>TAITs must still be an alias of a singular, concrete type.</p>
+<p>Other downsides of opaque types generally from the perspective of the caller include</p>
+<ul>
+<li>Opaque types are invariant on all parameters, whereas nominal structs need not be</li>
+<li>No traits, including local traits, can be implemented on opaque types</li>
+<li>All of a nominal structs trait implementations, public fields, and public inherent
+methods are available, while opaque types reveal much less</li>
+</ul>
+<h3 id="tradeoffs-between-rpit-and-dyn-trait"><a class="header" href="#tradeoffs-between-rpit-and-dyn-trait">Tradeoffs between RPIT and <code>dyn Trait</code></a></h3>
+<p>RPITs and <code>dyn Trait</code> returns share some benefits for the function writer:</p>
+<ul>
+<li>So long as the bounds don’t change, you can change the concrete or base type</li>
+<li>You can return unnameable types, such as closures</li>
+<li>It simplifies complicated types, such as long iterator combinator chains</li>
+</ul>
+<p><code>dyn Trait</code> does have some limitations and downsides:</p>
+<ul>
+<li>Only one non-auto-trait is supportable without <a href="./dyn-trait-combining.html">subtrait boilerplate</a>
+<ul>
+<li>In contrast, with RPIT you can return <code>impl Trait1 + Trait2</code></li>
+</ul>
+</li>
+<li>Only <code>dyn</code> compatible traits are supportable
+<ul>
+<li>In contrast, with RPIT you can return <code>impl Clone</code></li>
+</ul>
+</li>
+<li>Boxing in some form is required to returned owned types</li>
+<li>You pay the typical optimization penalties of not knowing the base type and performing dynamic dispatch</li>
+</ul>
+<p>However, RPITs also have their downsides:</p>
+<ul>
+<li>As an opaque alias, you can only return one actual, concrete type</li>
+<li>For now, the return type is unnameable, which can be awkward for consumers
+<ul>
+<li>e.g. you can’t store the result as a non-generic field in your struct</li>
+<li>…unless the opaque type bounds are <code>dyn</code> compatible and you can type erase it yourself</li>
+</ul>
+</li>
+<li>Auto-traits are leaky, so it’s easy for the function writer to accidentally break SemVer
+<ul>
+<li>Whereas auto-traits are explicit with <code>dyn Trait</code></li>
+</ul>
+</li>
+<li>RPIT methods in traits (stabilized in Rust 1.75) are <a href="dyn-safety.html">not <code>dyn</code>-dispatchable</a></li>
+<li>Every RPIT is a distinct opaque type (note that TAIT works around this restriction)</li>
+</ul>
+<p>RPITs also have some rather tricky behavior around type parameter and lifetime capture.
+The planned <code>impl Trait</code> functionalities deserve their own exploration independent of
+<code>dyn Trait</code>, so I’ll only mention them in brief:</p>
+<ul>
+<li>RPIT captures all type and lifetime parameters by default
+<ul>
+<li>Though <a href="https://doc.rust-lang.org/nightly/edition-guide/rust-2024/rpit-lifetime-capture.html#capturing">precise capturing</a> can mitigate this to some extent</li>
+</ul>
+</li>
+<li>RPIT captures specific lifetimes and not <a href="./dyn-trait-lifetime.html#when-multiple-lifetimes-are-involved">the intersection of all lifetimes</a>
+<ul>
+<li>And thus it is <a href="https://github.com/danielhenrymantilla/fix_hidden_lifetime_bug.rs">tedious to capture an intersection of input lifetimes</a> instead of a union</li>
+</ul>
+</li>
+</ul>
+<p>Despite all these downsides, I would say that RPIT has a <em>slight</em> edge over <code>dyn Trait</code>
+in return position <em>when applicable,</em> especially for owned types.  The advantage between
+<code>dyn Trait</code> and a (named) TAIT will be even greater, once that is available:</p>
+<ul>
+<li>You can give the return type a name and reuse it in multiple places</li>
+<li>TAIT inherently has precise capturing
+<ul>
+<li>I.e. you have control over, and are explicit about, which lifetime and type parameters are captured</li>
+</ul>
+</li>
+</ul>
+<p>But <code>dyn Trait</code> will still sometimes the better option, e.g.:</p>
+<ul>
+<li>when you need to type erase and return distinct types</li>
+<li>when you need trait object safety</li>
+</ul>
+<p>However, there is often a third possibility available, which we explore below:
+return a generic struct.</p>
+<h3 id="an-alternative-to-both-nominal-generic-structs"><a class="header" href="#an-alternative-to-both-nominal-generic-structs">An alternative to both: nominal generic structs</a></h3>
+<p>Here we can take inspiration from the standard library.  One of the more popular
+situations to use RPIT or return <code>dyn Trait</code> is when dealing with iterators
+(as iterator chains have long types and often involve unnameable types such as
+closures as well).
+<a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">So let’s look at the Iterator methods.</a></p>
+<p>You may notice a pattern with the combinators:</p>
+<pre><code class="language-rust ignore">fn chain&lt;U&gt;(self, other: U) -&gt; Chain&lt;Self, &lt;U as IntoIterator&gt;::IntoIter&gt;
+where
+    Self: Sized,
+    U: IntoIterator&lt;Item = Self::Item&gt;,
+{ todo!() }
+
+fn filter&lt;P&gt;(self, predicate: P) -&gt; Filter&lt;Self, P&gt;
+where
+    Self: Sized,
+    P: FnMut(&amp;Self::Item) -&gt; bool,
+{ todo!() }
+
+fn map&lt;B, F&gt;(self, f: F) -&gt; Map&lt;Self, F&gt;
+where
+    Self: Sized,
+    F: FnMut(Self::Item) -&gt; B,
+{ todo!() }</code></pre>
+<p>The pattern is to have a function which is parameterized by a generic type
+return a concrete (nominal) struct, also parameterized by the generic type.
+This is possible even if the parameter itself is unnameable – for example,
+in the case of <code>map</code>, the <code>F: FnMut(Self::Item) -&gt; B</code> parameter might well
+be an unnameable closure.</p>
+<p>The downside is much more boilerplate if you opt to follow this pattern
+yourself: You have to define the struct, and (for examples like these)
+implement the <code>Iterator</code> trait for them, and perhaps other traits such
+as <code>DoubleEndedIterator</code> as desired.  This will probably involve storing
+the original iterator and calling <code>next().map(|item| ...)</code> on it, or
+such.</p>
+<p>The upside is that you (and the consumers of your method) get many of the upsides of both RPIT and <code>dyn Trait</code>:</p>
+<ul>
+<li>No dynamic dispatch penalty</li>
+<li>No boxing penalty</li>
+<li>No concrete-type specific optimization loss</li>
+<li>No single trait limitation</li>
+<li>No <code>dyn</code> compatibility limitation</li>
+<li>Applicable in traits</li>
+<li>Ability to be specific about captures</li>
+<li>Ability to change your implementation within the API bounds</li>
+<li>Nameable return type</li>
+</ul>
+<p>You do retain some of the downsides:</p>
+<ul>
+<li>Auto-traits are leaky and still a semver hazard, as with RPIT</li>
+<li>Multiple concrete types aren’t possible (without also utilizing type erasure), as with RPIT</li>
+</ul>
+<p>And incur some unique ones as well:</p>
+<ul>
+<li>Variance of data types are leaky too</li>
+<li>Unnameable types that aren’t input type parameters can’t be supported (without also utilizing type erasure)</li>
+</ul>
+<p>On the whole, when using a nominal type is possible, it is the best option for
+consumers of the function.  But it’s also the most amount of work for the function
+implementor.</p>
+<p>I recommend nominal types for general libraries (i.e. intended for wide consumption)
+when possible, following the lead of the standard library.</p>
+<h2 id="generic-structs"><a class="header" href="#generic-structs">Generic structs</a></h2>
+<p>In the last section, we covered how generic structs can often be used as an
+alternative to RPIT or returning <code>dyn Trait</code> in some form.   A related question
+is, when should you use type erasure within your data types?</p>
+<p>The main reason to use type erasure in your data types are when you want to
+treat implementors of a trait as if they were the same type, for instance when
+storing a collection of callbacks.  In this case, the decision to use type
+erasure is a question of functionality, and not really much of a choice.</p>
+<p>However, you may also want to use type erasure in your data types in order
+to make your own struct non-generic.  When your data type is generic, after
+all, those who use your data type in such a way that the parameter takes on
+more than one type will have to propagate the use of generics themselves, or
+face the decision of type erasing your data type themselves.</p>
+<p>This can not only be a question of ergonomics, but also of compile time and
+even run time performance.  Compiling strictly more code by having all your
+methods monomorphized will naturally tend to result in longer compile times,
+and the increase in actual code size <em>can sometimes be slower at runtime</em>
+than a touch of dynamic dispatch in the right areas.</p>
+<p>Unfortunately, there is no silver bullet when it comes to choosing between
+being generic and using type erasure.  However, a general principle is that
+your optimization sensitive, call-heavy code areas should not be type erased,
+and instead push type erasure to a boundary outside of your heavy computations.</p>
+<p>For example, the failure to devirtualize and inline a call to
+<code>&lt;dyn Iterator&gt;::next</code> in a tight loop may have a relatively large impact,
+whereas a dynamic callback that only fires occasionally (and then dispatches
+to the optimized, non-type-erased implementation) is not likely to be
+noticeable at all.</p>
+<h2 id="enums"><a class="header" href="#enums"><code>enum</code>s</a></h2>
+<p>Finally we’ll mention one other alternative to type erasure:
+just put all of the implementing types in an <code>enum</code>!</p>
+<p>This clearly only applies when you have a fixed set of types that you
+expect to implement your trait.  The downside of using an <code>enum</code> is that
+it can involve a lot of boilerplate, since you’re frequently having to check
+which variant you are instead of relying on dynamic dispatch to perform
+that operation for you.</p>
+<p>The upside is avoiding practically all of the downsides of type erasure
+and the other alternatives such as opaque types.</p>
+<p>Macros can help ease the pain of such boilerplate, and there are also
+<a href="https://crates.io/crates/ambassador">crates in the ecosystem</a> aimed at
+reducing the boilerplate.</p>
+<p>In fact, <a href="https://crates.io/crates/enum_dispatch">there are also crates for this pattern as a whole.</a></p>
+<p>In particular, if you find yourself in a situation where you’ve
+<a href="./dyn-any.html">chosen to use <code>dyn Any</code></a> but you find yourself with
+a bunch of attempted downcasts against a known set of types, you
+should <em>strongly</em> consider just using an <code>enum</code>.  It won’t be much
+less ergonomic (if at all) and will be more efficient.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="dyn-elision-citations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="dyn-trait-examples.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="dyn-elision-citations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="dyn-trait-examples.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
